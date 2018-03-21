@@ -35,7 +35,7 @@ func addSystemInfo(level Level, message *Message) {
 		case LEVEL:
 			value = level.String()
 		case TIME:
-			value = time.Now().Format("2006-01-02 15:04:05")
+			value = time.Now().Format("2006-01-02 15:04:05:06")
 		}
 		prefixes[key] = value
 	}

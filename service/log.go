@@ -3,7 +3,6 @@ package golog
 import (
 	"fmt"
 	"os"
-	"sync"
 )
 
 // NewLog ...
@@ -15,7 +14,6 @@ func NewLog(options ...GoLogOption) *GoLog {
 		prefixes:      make(map[string]interface{}),
 		tags:          make(map[string]interface{}),
 		fields:        make(map[string]interface{}),
-		mux:           &sync.Mutex{},
 	}
 	golog.Reconfigure(options...)
 
@@ -86,8 +84,6 @@ func (log *GoLog) Errorf(format string, arguments ...interface{}) {
 }
 
 func (log *GoLog) writeLog(level Level, message interface{}) {
-	log.mux.Lock()
-	defer log.mux.Unlock()
 	if level > log.level {
 		return
 	}
