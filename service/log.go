@@ -6,7 +6,7 @@ import (
 )
 
 // NewLog ...
-func NewLog(options ...GoLogOption) *GoLog {
+func NewLog(options ...GoLogOption) ILog {
 	golog := &GoLog{
 		writer:        os.Stdout,
 		formatHandler: JsonFormatHandler,
