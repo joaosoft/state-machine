@@ -5,13 +5,13 @@ import (
 	"sync"
 )
 
-type Log interface {
+type ILog interface {
 	SetLevel(level Level)
 
-	With(prefixes, tags, fields map[string]interface{}) Log
-	WithPrefixes(prefixes map[string]interface{}) Log
-	WithTags(tags map[string]interface{}) Log
-	WithFields(fields map[string]interface{}) Log
+	With(prefixes, tags, fields map[string]interface{}) ILog
+	WithPrefixes(prefixes map[string]interface{}) ILog
+	WithTags(tags map[string]interface{}) ILog
+	WithFields(fields map[string]interface{}) ILog
 
 	Debug(message interface{})
 	Info(message interface{})

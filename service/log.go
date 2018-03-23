@@ -24,29 +24,29 @@ func (log *GoLog) SetLevel(level Level) {
 	log.level = level
 }
 
-func (log *GoLog) With(prefixes, tags, fields map[string]interface{}) Log {
+func (log *GoLog) With(prefixes, tags, fields map[string]interface{}) ILog {
 	log.WithPrefixes(prefixes)
 	log.WithTags(tags)
 	log.WithFields(fields)
 	return log
 }
 
-func (log *GoLog) WithPrefixes(prefixes map[string]interface{}) Log {
+func (log *GoLog) WithPrefixes(prefixes map[string]interface{}) ILog {
 	log.prefixes = prefixes
 	return log
 }
 
-func (log *GoLog) WithTags(tags map[string]interface{}) Log {
+func (log *GoLog) WithTags(tags map[string]interface{}) ILog {
 	log.tags = tags
 	return log
 }
 
-func (log *GoLog) WithFields(fields map[string]interface{}) Log {
+func (log *GoLog) WithFields(fields map[string]interface{}) ILog {
 	log.fields = fields
 	return log
 }
 
-func (log *GoLog) WithField(key string, value interface{}) Log {
+func (log *GoLog) WithField(key string, value interface{}) ILog {
 	log.fields[key] = fmt.Sprintf("%s", value)
 	return log
 }
