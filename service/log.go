@@ -88,7 +88,7 @@ func (log *GoLog) writeLog(level Level, message interface{}) {
 		return
 	}
 
-	if bytes, err := log.formatHandler(level, &Message{Prefixes: log.prefixes, Tags: log.tags, Message: message, Fields: log.fields}); err != nil {
+	if bytes, err := log.formatHandler(level, &Message{Prefixes: log.prefixes, Tags: log.tags, Message: fmt.Sprint(message), Fields: log.fields}); err != nil {
 		return
 	} else {
 		log.writer.Write([]byte(fmt.Sprintf("%s\n", bytes)))
