@@ -11,6 +11,7 @@ After a read of the project https://gitlab.com/vredens/go-logger extracted some 
 * prefixes
 * tags
 * fields
+* write to file [go-writer](https://go-writer/tree/master/bin/launcher/main.go)
 
 ## Dependecy Management 
 >### Dep
