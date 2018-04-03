@@ -11,7 +11,7 @@ After a read of the project https://gitlab.com/vredens/go-logger extracted some 
 * prefixes
 * tags
 * fields
-* write to file [go-writer](https://go-writer/tree/master/bin/launcher/main.go)
+* write to file [go-writer](https://github.com/joaosoft/go-writer/tree/master/bin/launcher/main.go)
 
 ## Dependecy Management 
 >### Dep
@@ -49,7 +49,7 @@ type Log interface {
 ```
 
 ## Usage 
-This examples are available in the project at [go-log/bin/launcher/main.go](https://go-log/tree/master/bin/launcher/main.go)
+This examples are available in the project at [go-log/bin/launcher/main.go](https://github.com/joaosoft/go-log/tree/master/bin/launcher/main.go)
 
 ```go
 //
