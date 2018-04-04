@@ -24,6 +24,7 @@ func main() {
 	log.Error("isto é uma mensagem de error")
 	log.Info("isto é uma mensagem de info")
 	log.Debug("isto é uma mensagem de debug")
+	log.Error("")
 
 	fmt.Println("--------------")
 	<-time.After(time.Second)

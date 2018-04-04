@@ -32,10 +32,10 @@ type Entry struct {
 }
 
 type Message struct {
-	Prefixes map[string]interface{} `json:"prefixes"`
-	Tags     map[string]interface{} `json:"tags"`
-	Message  interface{}            `json:"message"`
-	Fields   map[string]interface{} `json:"fields"`
+	Prefixes map[string]interface{} `json:"prefixes,omitempty"`
+	Tags     map[string]interface{} `json:"tags,omitempty"`
+	Message  interface{}            `json:"message,omitempty"`
+	Fields   map[string]interface{} `json:"fields,omitempty"`
 }
 
 // GoLog ...
