@@ -1,4 +1,4 @@
-package stdout
+package main
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"github.com/joaosoft/go-writer/service"
 )
 
-func Run() {
+func runTestStdout() {
 	//
 	// stdout fileWriter
 	quit := make(chan bool)
@@ -34,16 +34,11 @@ func Run() {
 	sum := 0
 	for i := 0; i < 100000; i++ {
 		log.Infof("MESSAGE %d", i+1)
-
-		if i == 50000 {
-			panic("FUDEU-SE")
-		}
-
 		sum += 1
 	}
 	elapsed := time.Since(start)
 	log.Infof("ELAPSED TIME: %s", elapsed.String())
 
-	<-time.After(time.Second * 30)
+	<-time.After(time.Second * 10)
 	quit <- true
 }

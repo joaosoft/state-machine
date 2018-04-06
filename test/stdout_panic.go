@@ -1,4 +1,4 @@
-package file
+package main
 
 import (
 	"fmt"
@@ -8,16 +8,14 @@ import (
 	"github.com/joaosoft/go-writer/service"
 )
 
-func Run() {
+func runTestStdoutPanic() {
 	//
-	// file fileWriter
+	// stdout fileWriter
 	quit := make(chan bool)
-	fileWriter := gowriter.NewFileWriter(
-		gowriter.WithFileDirectory("./testing"),
-		gowriter.WithFileName("dummy_"),
-		gowriter.WithFileMaxMegaByteSize(1),
-		gowriter.WithFileFlushTime(time.Second*5),
-		gowriter.WithFileQuitChannel(quit),
+	stdoutWriter := gowriter.NewStdoutWriter(
+		gowriter.WithStdoutFormatHandler(gowriter.JsonFormatHandler),
+		gowriter.WithStdoutFlushTime(time.Second*5),
+		gowriter.WithStdoutQuitChannel(quit),
 	)
 
 	//
@@ -25,7 +23,7 @@ func Run() {
 	fmt.Println(":: LOG JSON")
 	log := golog.NewLog(
 		golog.WithLevel(golog.InfoLevel),
-		golog.WithSpecialWriter(fileWriter)).
+		golog.WithSpecialWriter(stdoutWriter)).
 		With(
 			map[string]interface{}{"level": golog.LEVEL, "time": golog.TIME},
 			map[string]interface{}{"service": "log"},
@@ -36,12 +34,15 @@ func Run() {
 	sum := 0
 	for i := 0; i < 100000; i++ {
 		log.Infof("MESSAGE %d", i+1)
-
 		sum += 1
+
+		if i == 50000 {
+			panic("FUCKED!")
+		}
 	}
 	elapsed := time.Since(start)
 	log.Infof("ELAPSED TIME: %s", elapsed.String())
 
-	<-time.After(time.Second * 30)
+	<-time.After(time.Second * 10)
 	quit <- true
 }
