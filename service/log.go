@@ -29,10 +29,6 @@ func (log *GoLog) SetLevel(level Level) {
 	log.level = level
 }
 
-func (golog *GoLog) GetLevel() Level {
-	return golog.level
-}
-
 func (log *GoLog) With(prefixes, tags, fields map[string]interface{}) ILog {
 	log.WithPrefixes(prefixes)
 	log.WithTags(tags)
