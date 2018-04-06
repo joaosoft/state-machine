@@ -2,6 +2,8 @@ package golog
 
 import (
 	"io"
+
+	"github.com/joaosoft/go-writer/service"
 )
 
 // GoLogOption ...
@@ -21,6 +23,13 @@ func WithWriter(writer io.Writer) GoLogOption {
 	}
 }
 
+// WithSpecialWriter ...
+func WithSpecialWriter(writer ISpecialWriter) GoLogOption {
+	return func(golog *GoLog) {
+		golog.specialWriter = writer
+	}
+}
+
 // WithLevel ...
 func WithLevel(level Level) GoLogOption {
 	return func(golog *GoLog) {
@@ -29,7 +38,7 @@ func WithLevel(level Level) GoLogOption {
 }
 
 // WithFormatHandler ...
-func WithFormatHandler(formatHandler FormatHandler) GoLogOption {
+func WithFormatHandler(formatHandler gowriter.FormatHandler) GoLogOption {
 	return func(golog *GoLog) {
 		golog.formatHandler = formatHandler
 	}

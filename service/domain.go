@@ -3,7 +3,13 @@ package golog
 import (
 	"io"
 	"sync"
+
+	"github.com/joaosoft/go-writer/service"
 )
+
+type ISpecialWriter interface {
+	SWrite(prefixes map[string]interface{}, tags map[string]interface{}, message interface{}, fields map[string]interface{}) (n int, err error)
+}
 
 type ILog interface {
 	SetLevel(level Level)
@@ -24,27 +30,14 @@ type ILog interface {
 	Errorf(format string, arguments ...interface{})
 }
 
-type FormatHandler func(level Level, message *Message) ([]byte, error)
-
-type Entry struct {
-	Name  string      `json:"name"`
-	Value interface{} `json:"value"`
-}
-
-type Message struct {
-	Prefixes map[string]interface{} `json:"prefixes,omitempty"`
-	Tags     map[string]interface{} `json:"tags,omitempty"`
-	Message  interface{}            `json:"message,omitempty"`
-	Fields   map[string]interface{} `json:"fields,omitempty"`
-}
-
 // GoLog ...
 type GoLog struct {
 	level         Level
 	writer        io.Writer
+	specialWriter ISpecialWriter
 	prefixes      map[string]interface{} `json:"prefixes"`
 	tags          map[string]interface{} `json:"tags"`
 	fields        map[string]interface{} `json:"fields"`
-	formatHandler FormatHandler
+	formatHandler gowriter.FormatHandler
 	mux           *sync.Mutex
 }

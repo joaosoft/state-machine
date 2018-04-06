@@ -5,6 +5,8 @@ import (
 	"go-log/service"
 	"os"
 	"time"
+
+	"github.com/joaosoft/go-writer/service"
 )
 
 func main() {
@@ -13,7 +15,7 @@ func main() {
 	fmt.Println(":: LOG TEXT")
 	log := golog.NewLog(
 		golog.WithLevel(golog.InfoLevel),
-		golog.WithFormatHandler(golog.TextFormatHandler),
+		golog.WithFormatHandler(gowriter.TextFormatHandler),
 		golog.WithWriter(os.Stdout)).
 		With(
 			map[string]interface{}{"level": golog.LEVEL, "time": golog.TIME},
@@ -34,7 +36,7 @@ func main() {
 	fmt.Println(":: LOG JSON")
 	log = golog.NewLog(
 		golog.WithLevel(golog.InfoLevel),
-		golog.WithFormatHandler(golog.JsonFormatHandler),
+		golog.WithFormatHandler(gowriter.JsonFormatHandler),
 		golog.WithWriter(os.Stdout)).
 		With(
 			map[string]interface{}{"level": golog.LEVEL, "time": golog.TIME},
