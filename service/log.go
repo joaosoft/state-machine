@@ -20,7 +20,6 @@ func NewLog(options ...GoLogOption) ILog {
 		fields:        make(map[string]interface{}),
 	}
 	golog.Reconfigure(options...)
-	addSystemInfo(golog.level, golog.prefixes)
 
 	return golog
 }
@@ -38,7 +37,6 @@ func (log *GoLog) With(prefixes, tags, fields map[string]interface{}) ILog {
 
 func (log *GoLog) WithPrefixes(prefixes map[string]interface{}) ILog {
 	log.prefixes = prefixes
-	addSystemInfo(log.level, log.prefixes)
 	return log
 }
 
@@ -94,6 +92,7 @@ func (log *GoLog) writeLog(level Level, message interface{}) {
 		return
 	}
 
+	addSystemInfo(level, log.prefixes)
 	if log.specialWriter == nil {
 		if bytes, err := log.formatHandler(log.prefixes, log.tags, fmt.Sprint(message), log.fields); err != nil {
 			return
