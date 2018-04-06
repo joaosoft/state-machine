@@ -11,7 +11,11 @@ After a read of the project https://gitlab.com/vredens/go-logger extracted some 
 * prefixes
 * tags
 * fields
-* write to file [go-writer](https://github.com/joaosoft/go-writer/tree/master/bin/launcher/main.go)
+* writers at [[go-writer]](https://github.com/joaosoft/go-writer/tree/master/bin/launcher/main.go)
+  * to file (with queue processing)[1] 
+  * to stdout (with queue processing)[1] [[here]](https://github.com/joaosoft/go-writer/tree/master/test/main.go)
+  
+  [1] this writer allows you to continue the processing and dispatch the logging
 
 ## Dependecy Management 
 >### Dep

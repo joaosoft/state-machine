@@ -13,7 +13,7 @@ func main() {
 	// stdout fileWriter
 	quit := make(chan bool)
 	stdoutWriter := gowriter.NewStdoutWriter(
-		gowriter.WithStdoutSpecialFormatHandler(gowriter.TextFormatHandler),
+		gowriter.WithStdoutSpecialFormatHandler(gowriter.JsonFormatHandler),
 		gowriter.WithStdoutFlushTime(time.Second*5),
 		gowriter.WithStdoutQuitChannel(quit),
 	)
