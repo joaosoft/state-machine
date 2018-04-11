@@ -109,8 +109,12 @@ func addSystemInfo(level Level, prefixes map[string]interface{}) {
 		switch value {
 		case LEVEL:
 			value = level.String()
-		case TIME:
+		case TIMESTAMP:
 			value = time.Now().Format("2006-01-02 15:04:05:06")
+		case DATE:
+			value = time.Now().Format("2006-01-02")
+		case TIME:
+			value = time.Now().Format("15:04:05:06")
 		}
 		prefixes[key] = value
 	}
