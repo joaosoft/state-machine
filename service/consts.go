@@ -23,6 +23,10 @@ const (
 	// Special Prefixes
 	// Add the level value to the prefix
 	LEVEL = "{{LEVEL}}"
+	// Add the timestamp value to the prefix
+	TIMESTAMP = "{{TIMESTAMP}}"
+	// Add the date value to the prefix
+	DATE = "{{DATE}}"
 	// Add the time value to the prefix
 	TIME = "{{TIME}}"
 )

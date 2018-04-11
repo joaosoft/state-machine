@@ -64,7 +64,7 @@ log := golog.NewLog(
     golog.WithFormatHandler(golog.TextFormatHandler), 
     golog.WithWriter(os.Stdout)).
         With(
-            map[string]interface{}{"level": golog.LEVEL, "time": golog.TIME}, 
+            map[string]interface{}{"level": golog.LEVEL, "timestamp": golog.TIMESTAMP, "date": golog.DATE, "time": golog.TIME},
             map[string]interface{}{"service": "log"}, 
             map[string]interface{}{"name": "joão"})
 
@@ -83,10 +83,10 @@ log = golog.NewLog(
     golog.WithLevel(golog.InfoLevel),
     golog.WithFormatHandler(golog.JsonFormatHandler),
     golog.WithWriter(os.Stdout)).
-    With(
-    map[string]interface{}{"level": golog.LEVEL, "time": golog.TIME},
-    map[string]interface{}{"service": "log"},
-    map[string]interface{}{"name": "joão"})
+        With(
+            map[string]interface{}{"level": golog.LEVEL, "timestamp": golog.TIMESTAMP, "date": golog.DATE, "time": golog.TIME},
+            map[string]interface{}{"service": "log"},
+            map[string]interface{}{"name": "joão"})
 
 // logging...
 log.Errorf("isto é uma mensagem de error %s", "hello")

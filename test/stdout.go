@@ -25,7 +25,7 @@ func runTestStdout() {
 		golog.WithLevel(golog.InfoLevel),
 		golog.WithSpecialWriter(stdoutWriter)).
 		With(
-			map[string]interface{}{"level": golog.LEVEL, "time": golog.TIME},
+			map[string]interface{}{"level": golog.LEVEL, "timestamp": golog.TIMESTAMP, "date": golog.DATE, "time": golog.TIME},
 			map[string]interface{}{"service": "log"},
 			map[string]interface{}{"name": "joão"})
 

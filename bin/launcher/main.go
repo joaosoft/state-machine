@@ -18,7 +18,7 @@ func main() {
 		golog.WithFormatHandler(gowriter.TextFormatHandler),
 		golog.WithWriter(os.Stdout)).
 		With(
-			map[string]interface{}{"level": golog.LEVEL, "time": golog.TIME},
+			map[string]interface{}{"level": golog.LEVEL, "timestamp": golog.TIMESTAMP, "date": golog.DATE, "time": golog.TIME},
 			map[string]interface{}{"service": "log"},
 			map[string]interface{}{"name": "joão"})
 
@@ -39,7 +39,7 @@ func main() {
 		golog.WithFormatHandler(gowriter.JsonFormatHandler),
 		golog.WithWriter(os.Stdout)).
 		With(
-			map[string]interface{}{"level": golog.LEVEL, "time": golog.TIME},
+			map[string]interface{}{"level": golog.LEVEL, "timestamp": golog.TIMESTAMP, "date": golog.DATE, "time": golog.TIME},
 			map[string]interface{}{"service": "log"},
 			map[string]interface{}{"name": "joão"})
 
