@@ -28,7 +28,7 @@ func NewLog(options ...GoLogOption) ILog {
 func NewLogDefault(service string, level Level) ILog {
 	return NewLog(
 		WithLevel(level),
-		WithFormatHandler(gowriter.TextFormatHandler),
+		WithFormatHandler(gowriter.JsonFormatHandler),
 		WithWriter(os.Stdout)).
 		With(
 			map[string]interface{}{"level": LEVEL, "timestamp": TIMESTAMP},
