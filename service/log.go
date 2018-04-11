@@ -24,6 +24,18 @@ func NewLog(options ...GoLogOption) ILog {
 	return golog
 }
 
+// NewLogDefault
+func NewLogDefault(service string, level Level) ILog {
+	return NewLog(
+		WithLevel(level),
+		WithFormatHandler(gowriter.TextFormatHandler),
+		WithWriter(os.Stdout)).
+		With(
+			map[string]interface{}{"level": LEVEL, "timestamp": TIMESTAMP},
+			map[string]interface{}{"service": service},
+			map[string]interface{}{})
+}
+
 func (log *GoLog) SetLevel(level Level) {
 	log.level = level
 }
