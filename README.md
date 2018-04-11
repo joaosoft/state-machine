@@ -1,5 +1,5 @@
 # go-log
-[![Build Status](https://travis-ci.org/joaosoft/go-log.svg?branch=master)](https://travis-ci.org/joaosoft/go-log) | [![codecov](https://codecov.io/gh/joaosoft/go-log/branch/master/graph/badge.svg)](https://codecov.io/gh/joaosoft/go-log)
+[![Build Status](https://travis-ci.org/joaosoft/go-log.svg?branch=master)](https://travis-ci.org/joaosoft/go-log) | [![codecov](https://codecov.io/gh/joaosoft/go-log/branch/master/graph/badge.svg)](https://codecov.io/gh/joaosoft/go-log) | [![Go Report Card](https://goreportcard.com/badge/github.com/joaosoft/go-log)](https://goreportcard.com/report/github.com/joaosoft/go-log) | [![GoDoc](https://godoc.org/github.com/joaosoft/go-log?status.svg)](https://godoc.org/github.com/joaosoft/go-log/service)
 
 A simplified logger that allows you to add complexity depending of your requirements.
 After a read of the project https://gitlab.com/vredens/go-logger extracted some concepts like allowing to add tags and fields to logger infrastructure. 
