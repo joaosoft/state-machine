@@ -9,7 +9,7 @@ import (
 	"github.com/joaosoft/go-writer/service"
 )
 
-func main() {
+func runTestDefault() {
 	//
 	// log to text
 	fmt.Println(":: LOG TEXT")

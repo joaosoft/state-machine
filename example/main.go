@@ -5,6 +5,10 @@ import (
 )
 
 func main() {
+	// default
+	fmt.Println("default...")
+	runTestDefault()
+
 	// write log to file with queue
 	fmt.Println("write to file...")
 	runTestFile()
