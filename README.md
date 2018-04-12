@@ -11,9 +11,9 @@ After a read of the project https://gitlab.com/vredens/go-logger extracted some 
 * prefixes
 * tags
 * fields
-* writers at [[go-writer]](https://github.com/joaosoft/go-writer/tree/master/bin/launcher/main.go)
+* writers at [[go-writer]](https://github.com/joaosoft/go-writer/tree/master/bin/example)
   * to file (with queue processing)[1] 
-  * to stdout (with queue processing)[1] [[here]](https://github.com/joaosoft/go-writer/tree/master/test/main.go)
+  * to stdout (with queue processing)[1] [[here]](https://github.com/joaosoft/go-writer/tree/master/example)
   
   [1] this writer allows you to continue the processing and dispatch the logging
 
@@ -53,7 +53,7 @@ type Log interface {
 ```
 
 ## Usage 
-This examples are available in the project at [go-log/bin/launcher/main.go](https://github.com/joaosoft/go-log/tree/master/bin/launcher/main.go)
+This examples are available in the project at [go-log/example](https://github.com/joaosoft/go-log/tree/master/example)
 
 ```go
 //
