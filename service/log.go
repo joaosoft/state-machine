@@ -67,36 +67,60 @@ func (log *GoLog) WithField(key string, value interface{}) ILog {
 	return log
 }
 
-func (log *GoLog) Debug(message interface{}) {
-	log.writeLog(DebugLevel, fmt.Sprint(message))
+func (log *GoLog) Debug(message interface{}) IAddition {
+	msg := fmt.Sprint(message)
+	log.writeLog(DebugLevel, msg)
+
+	return newAddition(msg)
 }
 
-func (log *GoLog) Info(message interface{}) {
-	log.writeLog(InfoLevel, fmt.Sprint(message))
+func (log *GoLog) Info(message interface{}) IAddition {
+	msg := fmt.Sprint(message)
+	log.writeLog(InfoLevel, msg)
+
+	return newAddition(msg)
 }
 
-func (log *GoLog) Warn(message interface{}) {
-	log.writeLog(WarnLevel, fmt.Sprint(message))
+func (log *GoLog) Warn(message interface{}) IAddition {
+	msg := fmt.Sprint(message)
+	log.writeLog(WarnLevel, msg)
+
+	return newAddition(msg)
 }
 
-func (log *GoLog) Error(message interface{}) {
-	log.writeLog(ErrorLevel, fmt.Sprint(message))
+func (log *GoLog) Error(message interface{}) IAddition {
+	msg := fmt.Sprint(message)
+	log.writeLog(ErrorLevel, msg)
+
+	return newAddition(msg)
 }
 
-func (log *GoLog) Debugf(format string, arguments ...interface{}) {
-	log.writeLog(DebugLevel, fmt.Sprintf(format, arguments...))
+func (log *GoLog) Debugf(format string, arguments ...interface{}) IAddition {
+	msg := fmt.Sprintf(format, arguments...)
+	log.writeLog(DebugLevel, msg)
+
+	return newAddition(msg)
 }
 
-func (log *GoLog) Infof(format string, arguments ...interface{}) {
-	log.writeLog(InfoLevel, fmt.Sprintf(format, arguments...))
+func (log *GoLog) Infof(format string, arguments ...interface{}) IAddition {
+	msg := fmt.Sprintf(format, arguments...)
+	log.writeLog(InfoLevel, msg)
+
+	return newAddition(msg)
 }
 
-func (log *GoLog) Warnf(format string, arguments ...interface{}) {
-	log.writeLog(WarnLevel, fmt.Sprintf(format, arguments...))
+func (log *GoLog) Warnf(format string, arguments ...interface{}) IAddition {
+	msg := fmt.Sprintf(format, arguments...)
+	log.writeLog(WarnLevel, msg)
+
+	return newAddition(msg)
 }
 
-func (log *GoLog) Errorf(format string, arguments ...interface{}) {
-	log.writeLog(ErrorLevel, fmt.Sprintf(format, arguments...))
+func (log *GoLog) Errorf(format string, arguments ...interface{}) IAddition {
+	msg := fmt.Sprintf(format, arguments...)
+	log.writeLog(ErrorLevel, msg)
+
+	return newAddition(msg)
 }
 
 func (log *GoLog) writeLog(level Level, message interface{}) {

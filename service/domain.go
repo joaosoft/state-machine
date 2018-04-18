@@ -7,6 +7,10 @@ import (
 	"github.com/joaosoft/go-writer/service"
 )
 
+type IAddition interface {
+	ToError(err *error) IAddition
+}
+
 type ISpecialWriter interface {
 	SWrite(prefixes map[string]interface{}, tags map[string]interface{}, message interface{}, fields map[string]interface{}) (n int, err error)
 }
@@ -19,15 +23,15 @@ type ILog interface {
 	WithTags(tags map[string]interface{}) ILog
 	WithFields(fields map[string]interface{}) ILog
 
-	Debug(message interface{})
-	Info(message interface{})
-	Warn(message interface{})
-	Error(message interface{})
+	Debug(message interface{}) IAddition
+	Info(message interface{}) IAddition
+	Warn(message interface{}) IAddition
+	Error(message interface{}) IAddition
 
-	Debugf(format string, arguments ...interface{})
-	Infof(format string, arguments ...interface{})
-	Warnf(format string, arguments ...interface{})
-	Errorf(format string, arguments ...interface{})
+	Debugf(format string, arguments ...interface{}) IAddition
+	Infof(format string, arguments ...interface{}) IAddition
+	Warnf(format string, arguments ...interface{}) IAddition
+	Errorf(format string, arguments ...interface{}) IAddition
 }
 
 // GoLog ...
