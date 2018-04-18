@@ -104,15 +104,15 @@ func (log *GoLog) writeLog(level Level, message interface{}) {
 		return
 	}
 
-	addSystemInfo(level, log.prefixes)
+	prefixes := addSystemInfo(level, log.prefixes)
 	if log.specialWriter == nil {
-		if bytes, err := log.formatHandler(log.prefixes, log.tags, fmt.Sprint(message), log.fields); err != nil {
+		if bytes, err := log.formatHandler(prefixes, log.tags, fmt.Sprint(message), log.fields); err != nil {
 			return
 		} else {
 			log.writer.Write(bytes)
 		}
 	} else {
-		log.specialWriter.SWrite(log.prefixes, log.tags, message, log.fields)
+		log.specialWriter.SWrite(prefixes, log.tags, message, log.fields)
 	}
 }
 
