@@ -116,7 +116,8 @@ func (log *GoLog) writeLog(level Level, message interface{}) {
 	}
 }
 
-func addSystemInfo(level Level, prefixes map[string]interface{}) {
+func addSystemInfo(level Level, prefixes map[string]interface{}) map[string]interface{} {
+	newPrefixes := make(map[string]interface{})
 	for key, value := range prefixes {
 		switch value {
 		case LEVEL:
@@ -128,6 +129,8 @@ func addSystemInfo(level Level, prefixes map[string]interface{}) {
 		case TIME:
 			value = time.Now().Format("15:04:05:06")
 		}
-		prefixes[key] = value
+
+		newPrefixes[key] = value
 	}
+	return newPrefixes
 }
