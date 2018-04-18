@@ -14,6 +14,7 @@ After a read of the project https://gitlab.com/vredens/go-logger extracted some 
 * writers at [[go-writer]](https://github.com/joaosoft/go-writer/tree/master/bin/example)
   * to file (with queue processing)[1] 
   * to stdout (with queue processing)[1] [[here]](https://github.com/joaosoft/go-writer/tree/master/example)
+* addition commands (ToError(&err))
   
   [1] this writer allows you to continue the processing and dispatch the logging
 
@@ -92,6 +93,11 @@ log = golog.NewLog(
 log.Errorf("isto é uma mensagem de error %s", "hello")
 log.Infof("isto é uma  mensagem de info %s ", "hi")
 log.Debugf("isto é uma mensagem de debug %s", "ehh")
+
+// error...
+var err error
+log.Errorf("deu erro na linha %d", 201).ToError(&err)
+fmt.Printf("ERROR: %s", err.Error())
 ```
 
 ###### Output 

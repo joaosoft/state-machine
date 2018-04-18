@@ -5,23 +5,27 @@ import (
 )
 
 func main() {
+	// addition
+	fmt.Println("\naddition...")
+	runTestAddition()
+
 	// default
-	fmt.Println("default...")
+	fmt.Println("\ndefault...")
 	runTestDefault()
 
 	// write log to file with queue
-	fmt.Println("write to file...")
+	fmt.Println("\nwrite to file...")
 	runTestFile()
 
 	// write log to stdout with queue
-	fmt.Println("write to stdout...")
+	fmt.Println("\nwrite to stdout...")
 	runTestStdout()
 
 	// write log to stdout with queue on panic
-	fmt.Println("write to stdout on panic...")
+	fmt.Println("\nwrite to stdout on panic...")
 	runTestStdoutPanic()
 
 	// write log to file with queue on panic
-	fmt.Println("write to file on panic...")
+	fmt.Println("\nwrite to file on panic...")
 	runTestFilePanic()
 }
