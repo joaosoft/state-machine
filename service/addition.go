@@ -2,7 +2,8 @@ package golog
 
 import (
 	"errors"
-	gomanager "go-manager/service"
+
+	"github.com/joaosoft/go-manager/service"
 )
 
 type Addition struct {

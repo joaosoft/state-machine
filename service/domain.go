@@ -1,10 +1,10 @@
 package golog
 
 import (
-	gomanager "go-manager/service"
 	"io"
 	"sync"
 
+	"github.com/joaosoft/go-manager/service"
 	"github.com/joaosoft/go-writer/service"
 )
 
