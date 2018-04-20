@@ -1,6 +1,7 @@
 package golog
 
 import (
+	gomanager "go-manager/service"
 	"io"
 	"sync"
 
@@ -9,6 +10,7 @@ import (
 
 type IAddition interface {
 	ToError(err *error) IAddition
+	ToErrorData(err *gomanager.ErrorData) IAddition
 }
 
 type ISpecialWriter interface {

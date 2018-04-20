@@ -2,6 +2,7 @@ package golog
 
 import (
 	"errors"
+	gomanager "go-manager/service"
 )
 
 type Addition struct {
@@ -20,5 +21,13 @@ func newAddition(message string) IAddition {
 // ToError
 func (addition *Addition) ToError(err *error) IAddition {
 	*err = errors.New(addition.message)
+	return addition
+}
+
+// ToErrorData
+func (addition *Addition) ToErrorData(err *gomanager.ErrorData) IAddition {
+	newErr := errors.New(addition.message)
+	err.Add(newErr)
+
 	return addition
 }
