@@ -4,13 +4,13 @@ import (
 	"io"
 	"sync"
 
-	"github.com/joaosoft/go-manager/service"
+	"github.com/joaosoft/go-error/service"
 	"github.com/joaosoft/go-writer/service"
 )
 
 type IAddition interface {
 	ToError(err *error) IAddition
-	ToErrorData(err *gomanager.ErrorData) IAddition
+	ToErrorData(err *goerror.ErrorData) IAddition
 }
 
 type ISpecialWriter interface {

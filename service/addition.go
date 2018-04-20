@@ -3,7 +3,7 @@ package golog
 import (
 	"errors"
 
-	"github.com/joaosoft/go-manager/service"
+	"github.com/joaosoft/go-error/service"
 )
 
 type Addition struct {
@@ -26,7 +26,7 @@ func (addition *Addition) ToError(err *error) IAddition {
 }
 
 // ToErrorData
-func (addition *Addition) ToErrorData(err *gomanager.ErrorData) IAddition {
+func (addition *Addition) ToErrorData(err *goerror.ErrorData) IAddition {
 	newErr := errors.New(addition.message)
 	err.Add(newErr)
 
