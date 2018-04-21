@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/joaosoft/go-error"
   packages = ["service"]
-  revision = "b4e0aab88a369100b50f185e3eceb0dacf238296"
+  revision = "a44e27c13ad9fed6a8a813e8e6f8251768581404"
 
 [[projects]]
   branch = "master"

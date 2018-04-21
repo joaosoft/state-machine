@@ -28,7 +28,7 @@ func (addition *Addition) ToError(err *error) IAddition {
 // ToErrorData
 func (addition *Addition) ToErrorData(err *goerror.ErrorData) IAddition {
 	newErr := errors.New(addition.message)
-	err.Add(newErr)
+	err.AddError(newErr)
 
 	return addition
 }
