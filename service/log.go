@@ -9,6 +9,8 @@ import (
 	"github.com/joaosoft/go-writer/service"
 )
 
+var log = NewLogEmpty(InfoLevel)
+
 // NewLog ...
 func NewLog(options ...GoLogOption) ILog {
 	golog := &GoLog{
@@ -34,6 +36,15 @@ func NewLogDefault(service string, level Level) ILog {
 			map[string]interface{}{"level": LEVEL, "timestamp": TIMESTAMP},
 			map[string]interface{}{"service": service},
 			map[string]interface{}{})
+}
+
+// NewLogEmpty
+func NewLogEmpty(level Level) ILog {
+	return NewLog(
+		WithLevel(level),
+		WithFormatHandler(gowriter.JsonFormatHandler),
+		WithWriter(os.Stdout)).
+		WithPrefixes(map[string]interface{}{"level": LEVEL, "timestamp": TIMESTAMP})
 }
 
 func (log *GoLog) SetLevel(level Level) {
