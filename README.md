@@ -2,6 +2,13 @@
 [![Build Status](https://travis-ci.org/joaosoft/go-log.svg?branch=master)](https://travis-ci.org/joaosoft/go-log) | [![codecov](https://codecov.io/gh/joaosoft/go-log/branch/master/graph/badge.svg)](https://codecov.io/gh/joaosoft/go-log) | [![Go Report Card](https://goreportcard.com/badge/github.com/joaosoft/go-log)](https://goreportcard.com/report/github.com/joaosoft/go-log) | [![GoDoc](https://godoc.org/github.com/joaosoft/go-log?status.svg)](https://godoc.org/github.com/joaosoft/go-log/service)
 
 A simplified logger that allows you to add complexity depending of your requirements.
+The easy way to use the logger:
+``` Go
+import log github.com/joaosoft/go-log/service
+
+log.Info("hello")
+```
+you also can config it, as i prefer, please see below
 After a read of the project https://gitlab.com/vredens/go-logger extracted some concepts like allowing to add tags and fields to logger infrastructure. 
 
 ###### If i miss something or you have something interesting, please be part of this project. Let me know! My contact is at the end.
@@ -36,21 +43,35 @@ go get github.com/joaosoft/go-log/service
 type Log interface {
 	SetLevel(level Level)
 
-	With(prefixes, tags, fields map[string]interface{}) Log
-	WithPrefixes(prefixes map[string]interface{}) Log
-	WithTags(tags map[string]interface{}) Log
-	WithFields(fields map[string]interface{}) Log
+	With(prefixes, tags, fields map[string]interface{}) ILog
+	WithPrefixes(prefixes map[string]interface{}) ILog
+	WithTags(tags map[string]interface{}) ILog
+	WithFields(fields map[string]interface{}) ILog
 
-	Debug(message interface{})
-	Info(message interface{})
-	Warn(message interface{})
-	Error(message interface{})
+	WithPrefix(key string, value interface{}) ILog
+	WithTag(key string, value interface{}) ILog
+	WithField(key string, value interface{}) ILog
 
-	Debugf(format string, arguments ...interface{})
-	Infof(format string, arguments ...interface{})
-	Warnf(format string, arguments ...interface{})
-	Errorf(format string, arguments ...interface{})
+	Debug(message interface{}) IAddition
+	Info(message interface{}) IAddition
+	Warn(message interface{}) IAddition
+	Error(message interface{}) IAddition
+
+	Debugf(format string, arguments ...interface{}) IAddition
+	Infof(format string, arguments ...interface{}) IAddition
+	Warnf(format string, arguments ...interface{}) IAddition
+	Errorf(format string, arguments ...interface{}) IAddition
 }
+
+type IAddition interface {
+	ToError(err *error) IAddition
+	ToErrorData(err *goerror.ErrorData) IAddition
+}
+
+type ISpecialWriter interface {
+	SWrite(prefixes map[string]interface{}, tags map[string]interface{}, message interface{}, fields map[string]interface{}) (n int, err error)
+}
+
 ```
 
 ## Usage 
