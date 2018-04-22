@@ -69,7 +69,7 @@ func (log *GoLog) WithField(key string, value interface{}) ILog {
 
 func (log *GoLog) Debug(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
-	log.writeLog(DebugLevel, msg)
+	log.writeLog(DebugLevel, message)
 
 	return newAddition(msg)
 }
@@ -130,7 +130,7 @@ func (log *GoLog) writeLog(level Level, message interface{}) {
 
 	prefixes := addSystemInfo(level, log.prefixes)
 	if log.specialWriter == nil {
-		if bytes, err := log.formatHandler(prefixes, log.tags, fmt.Sprint(message), log.fields); err != nil {
+		if bytes, err := log.formatHandler(prefixes, log.tags, message, log.fields); err != nil {
 			return
 		} else {
 			log.writer.Write(bytes)
