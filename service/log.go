@@ -73,6 +73,16 @@ func (log *GoLog) WithFields(fields map[string]interface{}) ILog {
 	return log
 }
 
+func (log *GoLog) WithPrefix(key string, value interface{}) ILog {
+	log.prefixes[key] = fmt.Sprintf("%s", value)
+	return log
+}
+
+func (log *GoLog) WithTag(key string, value interface{}) ILog {
+	log.tags[key] = fmt.Sprintf("%s", value)
+	return log
+}
+
 func (log *GoLog) WithField(key string, value interface{}) ILog {
 	log.fields[key] = fmt.Sprintf("%s", value)
 	return log

@@ -25,6 +25,10 @@ type ILog interface {
 	WithTags(tags map[string]interface{}) ILog
 	WithFields(fields map[string]interface{}) ILog
 
+	WithPrefix(key string, value interface{}) ILog
+	WithTag(key string, value interface{}) ILog
+	WithField(key string, value interface{}) ILog
+
 	Debug(message interface{}) IAddition
 	Info(message interface{}) IAddition
 	Warn(message interface{}) IAddition
