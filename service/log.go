@@ -12,8 +12,8 @@ import (
 var log = NewLogEmpty(InfoLevel)
 
 // NewLog ...
-func NewLog(options ...GoLogOption) ILog {
-	golog := &GoLog{
+func NewLog(options ...logOption) ILog {
+	golog := &Log{
 		writer:        os.Stdout,
 		formatHandler: gowriter.JsonFormatHandler,
 		level:         InfoLevel,
@@ -47,104 +47,104 @@ func NewLogEmpty(level Level) ILog {
 		WithPrefixes(map[string]interface{}{"level": LEVEL, "timestamp": TIMESTAMP})
 }
 
-func (log *GoLog) SetLevel(level Level) {
+func (log *Log) SetLevel(level Level) {
 	log.level = level
 }
 
-func (log *GoLog) With(prefixes, tags, fields map[string]interface{}) ILog {
+func (log *Log) With(prefixes, tags, fields map[string]interface{}) ILog {
 	log.WithPrefixes(prefixes)
 	log.WithTags(tags)
 	log.WithFields(fields)
 	return log
 }
 
-func (log *GoLog) WithPrefixes(prefixes map[string]interface{}) ILog {
+func (log *Log) WithPrefixes(prefixes map[string]interface{}) ILog {
 	log.prefixes = prefixes
 	return log
 }
 
-func (log *GoLog) WithTags(tags map[string]interface{}) ILog {
+func (log *Log) WithTags(tags map[string]interface{}) ILog {
 	log.tags = tags
 	return log
 }
 
-func (log *GoLog) WithFields(fields map[string]interface{}) ILog {
+func (log *Log) WithFields(fields map[string]interface{}) ILog {
 	log.fields = fields
 	return log
 }
 
-func (log *GoLog) WithPrefix(key string, value interface{}) ILog {
+func (log *Log) WithPrefix(key string, value interface{}) ILog {
 	log.prefixes[key] = fmt.Sprintf("%s", value)
 	return log
 }
 
-func (log *GoLog) WithTag(key string, value interface{}) ILog {
+func (log *Log) WithTag(key string, value interface{}) ILog {
 	log.tags[key] = fmt.Sprintf("%s", value)
 	return log
 }
 
-func (log *GoLog) WithField(key string, value interface{}) ILog {
+func (log *Log) WithField(key string, value interface{}) ILog {
 	log.fields[key] = fmt.Sprintf("%s", value)
 	return log
 }
 
-func (log *GoLog) Debug(message interface{}) IAddition {
+func (log *Log) Debug(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
 	log.writeLog(DebugLevel, message)
 
 	return newAddition(msg)
 }
 
-func (log *GoLog) Info(message interface{}) IAddition {
+func (log *Log) Info(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
 	log.writeLog(InfoLevel, msg)
 
 	return newAddition(msg)
 }
 
-func (log *GoLog) Warn(message interface{}) IAddition {
+func (log *Log) Warn(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
 	log.writeLog(WarnLevel, msg)
 
 	return newAddition(msg)
 }
 
-func (log *GoLog) Error(message interface{}) IAddition {
+func (log *Log) Error(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
 	log.writeLog(ErrorLevel, msg)
 
 	return newAddition(msg)
 }
 
-func (log *GoLog) Debugf(format string, arguments ...interface{}) IAddition {
+func (log *Log) Debugf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
 	log.writeLog(DebugLevel, msg)
 
 	return newAddition(msg)
 }
 
-func (log *GoLog) Infof(format string, arguments ...interface{}) IAddition {
+func (log *Log) Infof(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
 	log.writeLog(InfoLevel, msg)
 
 	return newAddition(msg)
 }
 
-func (log *GoLog) Warnf(format string, arguments ...interface{}) IAddition {
+func (log *Log) Warnf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
 	log.writeLog(WarnLevel, msg)
 
 	return newAddition(msg)
 }
 
-func (log *GoLog) Errorf(format string, arguments ...interface{}) IAddition {
+func (log *Log) Errorf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
 	log.writeLog(ErrorLevel, msg)
 
 	return newAddition(msg)
 }
 
-func (log *GoLog) writeLog(level Level, message interface{}) {
+func (log *Log) writeLog(level Level, message interface{}) {
 	if level > log.level {
 		return
 	}

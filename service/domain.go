@@ -38,10 +38,12 @@ type ILog interface {
 	Infof(format string, arguments ...interface{}) IAddition
 	Warnf(format string, arguments ...interface{}) IAddition
 	Errorf(format string, arguments ...interface{}) IAddition
+
+	Reconfigure(options ...logOption)
 }
 
-// GoLog ...
-type GoLog struct {
+// Log ...
+type Log struct {
 	level         Level
 	writer        io.Writer
 	specialWriter ISpecialWriter

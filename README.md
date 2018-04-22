@@ -61,6 +61,8 @@ type Log interface {
 	Infof(format string, arguments ...interface{}) IAddition
 	Warnf(format string, arguments ...interface{}) IAddition
 	Errorf(format string, arguments ...interface{}) IAddition
+	
+	Reconfigure(options ...logOption)
 }
 
 type IAddition interface {

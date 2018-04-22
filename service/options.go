@@ -6,40 +6,40 @@ import (
 	"github.com/joaosoft/go-writer/service"
 )
 
-// GoLogOption ...
-type GoLogOption func(golog *GoLog)
+// logOption ...
+type logOption func(log *Log)
 
 // Reconfigure ...
-func (golog *GoLog) Reconfigure(options ...GoLogOption) {
+func (log *Log) Reconfigure(options ...logOption) {
 	for _, option := range options {
-		option(golog)
+		option(log)
 	}
 }
 
 // WithWriter ...
-func WithWriter(writer io.Writer) GoLogOption {
-	return func(golog *GoLog) {
-		golog.writer = writer
+func WithWriter(writer io.Writer) logOption {
+	return func(log *Log) {
+		log.writer = writer
 	}
 }
 
 // WithSpecialWriter ...
-func WithSpecialWriter(writer ISpecialWriter) GoLogOption {
-	return func(golog *GoLog) {
-		golog.specialWriter = writer
+func WithSpecialWriter(writer ISpecialWriter) logOption {
+	return func(log *Log) {
+		log.specialWriter = writer
 	}
 }
 
 // WithLevel ...
-func WithLevel(level Level) GoLogOption {
-	return func(golog *GoLog) {
-		golog.level = level
+func WithLevel(level Level) logOption {
+	return func(log *Log) {
+		log.level = level
 	}
 }
 
 // WithFormatHandler ...
-func WithFormatHandler(formatHandler gowriter.FormatHandler) GoLogOption {
-	return func(golog *GoLog) {
-		golog.formatHandler = formatHandler
+func WithFormatHandler(formatHandler gowriter.FormatHandler) logOption {
+	return func(log *Log) {
+		log.formatHandler = formatHandler
 	}
 }

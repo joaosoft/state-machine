@@ -6,7 +6,7 @@ import (
 )
 
 func ParseLevel(level string) (Level, error) {
-	switch strings.ToUpper(level) {
+	switch strings.ToLower(level) {
 	case "panic":
 		return PanicLevel, nil
 	case "error":
