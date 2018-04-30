@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"go-log/service"
+	golog "go-log/app"
 	"time"
 
-	"github.com/joaosoft/go-writer/service"
+	gowriter "github.com/joaosoft/go-writer/app"
 )
 
 func runTestFilePanic() {

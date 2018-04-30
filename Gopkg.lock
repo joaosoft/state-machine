@@ -4,20 +4,20 @@
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/go-error"
-  packages = ["service"]
-  revision = "a44e27c13ad9fed6a8a813e8e6f8251768581404"
+  packages = ["app"]
+  revision = "1c12dfac60bb5480598d09e10ae0a057fabf65ef"
 
 [[projects]]
   branch = "master"
   name = "github.com/joaosoft/go-writer"
-  packages = ["service"]
-  revision = "03b024de562bdef1b632537ae5918aa17dc3c505"
+  packages = ["app"]
+  revision = "fc3d6933fa02e56ddae34584bbee10f02527a7cd"
 
 [[projects]]
   name = "github.com/labstack/gommon"
   packages = ["color","log"]
-  revision = "6fe1405d73ec4bd4cd8a4ac8e2a2b2bf95d03954"
-  version = "0.2.4"
+  revision = "588f4e8bddc6cb45c27b448e925c7fd6a5545434"
+  version = "0.2.5"
 
 [[projects]]
   name = "github.com/mattn/go-colorable"
@@ -53,11 +53,11 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "79b0c6888797020a994db17c8510466c72fe75d9"
+  revision = "4adea008a5e5f820b6028611ae0b6b3fbcec534b"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "842927b369e7bba696e6efc492c7e8a43888855d5b53e8a97af4069f6b44c0c6"
+  inputs-digest = "bca3ea564344dd92d1a1019065bfde1444864f367723be803ce1d02d05b65b4e"
   solver-name = "gps-cdcl"
   solver-version = 1

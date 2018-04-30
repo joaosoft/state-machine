@@ -6,7 +6,7 @@ import (
 
 	"time"
 
-	"github.com/joaosoft/go-writer/service"
+	gowriter "github.com/joaosoft/go-writer/app"
 )
 
 var log = NewLogEmpty(InfoLevel)

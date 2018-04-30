@@ -3,7 +3,7 @@ package golog
 import (
 	"errors"
 
-	"github.com/joaosoft/go-error/service"
+	goerror "github.com/joaosoft/go-error/app"
 )
 
 type Addition struct {

@@ -3,7 +3,7 @@ package golog
 import (
 	"io"
 
-	"github.com/joaosoft/go-writer/service"
+	gowriter "github.com/joaosoft/go-writer/app"
 )
 
 // logOption ...

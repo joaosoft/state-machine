@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"go-log/service"
+	"go-log/app"
 	"os"
 
-	"github.com/joaosoft/go-writer/service"
+	gowriter "github.com/joaosoft/go-writer/app"
 )
 
 func runTestAddition() {

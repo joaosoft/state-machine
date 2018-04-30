@@ -4,8 +4,8 @@ import (
 	"io"
 	"sync"
 
-	"github.com/joaosoft/go-error/service"
-	"github.com/joaosoft/go-writer/service"
+	goerror "github.com/joaosoft/go-error/app"
+	gowriter "github.com/joaosoft/go-writer/app"
 )
 
 type IAddition interface {
