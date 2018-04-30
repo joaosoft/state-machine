@@ -52,40 +52,57 @@ func (log *Log) SetLevel(level Level) {
 }
 
 func (log *Log) With(prefixes, tags, fields map[string]interface{}) ILog {
-	log.WithPrefixes(prefixes)
-	log.WithTags(tags)
-	log.WithFields(fields)
-	return log
+	newLog := log.clone().WithPrefixes(prefixes).WithTags(tags).WithFields(fields)
+	return newLog
 }
 
 func (log *Log) WithPrefixes(prefixes map[string]interface{}) ILog {
-	log.prefixes = prefixes
-	return log
+	newLog := log.clone()
+	newLog.prefixes = prefixes
+	return newLog
 }
 
 func (log *Log) WithTags(tags map[string]interface{}) ILog {
-	log.tags = tags
-	return log
+	newLog := log.clone()
+	newLog.tags = tags
+	return newLog
 }
 
 func (log *Log) WithFields(fields map[string]interface{}) ILog {
-	log.fields = fields
-	return log
+	newLog := log.clone()
+	newLog.fields = fields
+	return newLog
 }
 
 func (log *Log) WithPrefix(key string, value interface{}) ILog {
-	log.prefixes[key] = fmt.Sprintf("%s", value)
-	return log
+	newLog := log.clone()
+	newLog.prefixes[key] = fmt.Sprintf("%s", value)
+	return newLog
 }
 
 func (log *Log) WithTag(key string, value interface{}) ILog {
-	log.tags[key] = fmt.Sprintf("%s", value)
-	return log
+	newLog := log.clone()
+	newLog.tags[key] = fmt.Sprintf("%s", value)
+	return newLog
 }
 
 func (log *Log) WithField(key string, value interface{}) ILog {
-	log.fields[key] = fmt.Sprintf("%s", value)
-	return log
+	newLog := log.clone()
+	newLog.fields[key] = fmt.Sprintf("%s", value)
+	return newLog
+}
+
+// Clone ...
+func (log *Log) clone() *Log {
+	return &Log{
+		level:         log.level,
+		writer:        log.writer,
+		formatHandler: log.formatHandler,
+		specialWriter: log.specialWriter,
+		tags:          log.tags,
+		prefixes:      log.prefixes,
+		fields:        log.fields,
+	}
 }
 
 func (log *Log) Debug(message interface{}) IAddition {

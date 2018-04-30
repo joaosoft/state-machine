@@ -2,10 +2,9 @@ package golog
 
 import (
 	"io"
-	"sync"
 
-	goerror "github.com/joaosoft/go-error/app"
-	gowriter "github.com/joaosoft/go-writer/app"
+	"github.com/joaosoft/go-error/app"
+	"github.com/joaosoft/go-writer/app"
 )
 
 type IAddition interface {
@@ -51,5 +50,4 @@ type Log struct {
 	tags          map[string]interface{} `json:"tags"`
 	fields        map[string]interface{} `json:"fields"`
 	formatHandler gowriter.FormatHandler
-	mux           *sync.Mutex
 }
