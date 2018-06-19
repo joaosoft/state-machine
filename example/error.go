@@ -14,10 +14,10 @@ func runTestAddition() {
 	fmt.Println(":: LOG TEXT")
 	log := golog.NewLog(
 		golog.WithLevel(golog.InfoLevel),
-		golog.WithFormatHandler(gowriter.TextFormatHandler),
+		golog.WithFormatHandler(gowriter.JsonFormatHandler),
 		golog.WithWriter(os.Stdout)).
 		With(
-			map[string]interface{}{"level": golog.LEVEL, "timestamp": golog.TIMESTAMP, "date": golog.DATE, "time": golog.TIME},
+			map[string]interface{}{"level": golog.LEVEL, "timestamp": golog.TIMESTAMP, "date": golog.DATE, "time": golog.TIME, "ip": golog.IP, "package": golog.PACKAGE, "function": golog.FUNCTION, "trace": golog.TRACE},
 			map[string]interface{}{"service": "log"},
 			map[string]interface{}{"name": "joão"})
 

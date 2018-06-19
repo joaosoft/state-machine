@@ -29,4 +29,14 @@ const (
 	DATE = "{{DATE}}"
 	// Add the time value to the prefix
 	TIME = "{{TIME}}"
+	// Add the client ip address
+	IP = "{{IP}}"
+	// Add the error trace
+	TRACE = "{{TRACE}}"
+	// Add the package name
+	PACKAGE = "{{PACKAGE}}"
+	// Add the file
+	FILE = "{{FILE}}"
+	// Add the function name
+	FUNCTION = "{{FUNCTION}}"
 )

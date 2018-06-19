@@ -7,6 +7,9 @@ import (
 	"time"
 
 	gowriter "github.com/joaosoft/go-writer/app"
+	"net"
+	"runtime"
+	"strings"
 )
 
 var log = NewLogEmpty(InfoLevel)
@@ -184,12 +187,62 @@ func addSystemInfo(level Level, prefixes map[string]interface{}) map[string]inte
 		switch value {
 		case LEVEL:
 			value = level.String()
+
 		case TIMESTAMP:
 			value = time.Now().Format("2006-01-02 15:04:05:06")
+
 		case DATE:
 			value = time.Now().Format("2006-01-02")
+
 		case TIME:
 			value = time.Now().Format("15:04:05:06")
+
+		case IP:
+			addresses, _ := net.InterfaceAddrs()
+			for _, a := range addresses {
+				if ipNet, ok := a.(*net.IPNet); ok && !ipNet.IP.IsLoopback() {
+					if ipNet.IP.To4() != nil {
+						value = ipNet.IP.String()
+					}
+				}
+			}
+
+		case TRACE:
+			pc := make([]uintptr, 1)
+			runtime.Callers(4, pc)
+			function := runtime.FuncForPC(pc[0])
+			file, line := function.FileLine(pc[0])
+			info := strings.SplitN(function.Name(), ".", 2)
+
+			value = struct {
+				File     string `json:"file"`
+				Line     int    `json:"line"`
+				Package  string `json:"package"`
+				Function string `json:"function"`
+			}{
+				File:     file,
+				Line:     line,
+				Package:  info[0],
+				Function: info[1],
+			}
+
+		case FILE:
+			pc := make([]uintptr, 1)
+			runtime.Callers(4, pc)
+			function := runtime.FuncForPC(pc[0])
+			value, _ = function.FileLine(pc[0])
+
+		case PACKAGE:
+			pc := make([]uintptr, 1)
+			runtime.Callers(4, pc)
+			function := runtime.FuncForPC(pc[0])
+			value = strings.SplitN(function.Name(), ".", 2)[0]
+
+		case FUNCTION:
+			pc := make([]uintptr, 1)
+			runtime.Callers(4, pc)
+			function := runtime.FuncForPC(pc[0])
+			value = strings.SplitN(function.Name(), ".", 2)[1]
 		}
 
 		newPrefixes[key] = value
