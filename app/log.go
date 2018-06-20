@@ -9,6 +9,7 @@ import (
 	gowriter "github.com/joaosoft/go-writer/app"
 	"net"
 	"runtime"
+	"runtime/debug"
 	"strings"
 )
 
@@ -213,17 +214,21 @@ func addSystemInfo(level Level, prefixes map[string]interface{}) map[string]inte
 			function := runtime.FuncForPC(pc[0])
 			file, line := function.FileLine(pc[0])
 			info := strings.SplitN(function.Name(), ".", 2)
+			stack := string(debug.Stack())
+			stack = stack[strings.Index(stack, function.Name()):]
 
 			value = struct {
 				File     string `json:"file"`
 				Line     int    `json:"line"`
 				Package  string `json:"package"`
 				Function string `json:"function"`
+				Stack    string `json:"stack"`
 			}{
 				File:     file,
 				Line:     line,
 				Package:  info[0],
 				Function: info[1],
+				Stack:    stack,
 			}
 
 		case FILE:
@@ -243,6 +248,13 @@ func addSystemInfo(level Level, prefixes map[string]interface{}) map[string]inte
 			runtime.Callers(4, pc)
 			function := runtime.FuncForPC(pc[0])
 			value = strings.SplitN(function.Name(), ".", 2)[1]
+
+		case STACK:
+			pc := make([]uintptr, 1)
+			runtime.Callers(4, pc)
+			function := runtime.FuncForPC(pc[0])
+			stack := string(debug.Stack())
+			value = stack[strings.Index(stack, function.Name()):]
 		}
 
 		newPrefixes[key] = value

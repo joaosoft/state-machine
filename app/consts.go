@@ -39,4 +39,6 @@ const (
 	FILE = "{{FILE}}"
 	// Add the function name
 	FUNCTION = "{{FUNCTION}}"
+	// Add the debug stack
+	STACK = "{{STACK}}"
 )
