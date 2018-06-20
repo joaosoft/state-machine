@@ -18,7 +18,7 @@ After a read of the project https://gitlab.com/vredens/go-logger extracted some 
 
 ## With support for
 * formatted messages
-* prefixes (special prefixes: DATE, TIME, TIMESTAMP, LEVEL, IP, PACKAGE, FUNCTION, FILE, TRACE)
+* prefixes (special prefixes: DATE, TIME, TIMESTAMP, LEVEL, IP, PACKAGE, FUNCTION, FILE, TRACE, STACK)
 * tags
 * fields
 * writers at [[go-writer]](https://github.com/joaosoft/go-writer/tree/master/bin/example)
