@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	golog "go-log/app"
+	logger "logger/models"
 	"time"
 
 	gowriter "github.com/joaosoft/go-writer/app"
 )
 
-func runTestStdout() {
+func ExampleStdoutWritterWithPanic() {
 	//
 	// stdout fileWriter
 	quit := make(chan bool)
@@ -21,11 +21,11 @@ func runTestStdout() {
 	//
 	// log to json
 	fmt.Println(":: LOG JSON")
-	log := golog.NewLog(
-		golog.WithLevel(golog.InfoLevel),
-		golog.WithSpecialWriter(stdoutWriter)).
+	log := logger.NewLogger(
+		logger.WithLevel(logger.InfoLevel),
+		logger.WithSpecialWriter(stdoutWriter)).
 		With(
-			map[string]interface{}{"level": golog.LEVEL, "timestamp": golog.TIMESTAMP, "date": golog.DATE, "time": golog.TIME},
+			map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
 			map[string]interface{}{"service": "log"},
 			map[string]interface{}{"name": "joão"})
 
@@ -35,6 +35,10 @@ func runTestStdout() {
 	for i := 0; i < 100000; i++ {
 		log.Infof("MESSAGE %d", i+1)
 		sum += 1
+
+		if i == 50000 {
+			panic("FUCKED!")
+		}
 	}
 	elapsed := time.Since(start)
 	log.Infof("ELAPSED TIME: %s", elapsed.String())

@@ -2,23 +2,23 @@ package main
 
 import (
 	"fmt"
-	"go-log/app"
+	"logger/models"
 	"os"
 	"time"
 
 	gowriter "github.com/joaosoft/go-writer/app"
 )
 
-func runTestDefault() {
+func ExampleDefaultLogger() {
 	//
 	// log to text
 	fmt.Println(":: LOG TEXT")
-	log := golog.NewLog(
-		golog.WithLevel(golog.InfoLevel),
-		golog.WithFormatHandler(gowriter.TextFormatHandler),
-		golog.WithWriter(os.Stdout)).
+	log := logger.NewLogger(
+		logger.WithLevel(logger.InfoLevel),
+		logger.WithFormatHandler(gowriter.TextFormatHandler),
+		logger.WithWriter(os.Stdout)).
 		With(
-			map[string]interface{}{"level": golog.LEVEL, "timestamp": golog.TIMESTAMP, "date": golog.DATE, "time": golog.TIME},
+			map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
 			map[string]interface{}{"service": "log"},
 			map[string]interface{}{"name": "joão"})
 
@@ -34,12 +34,12 @@ func runTestDefault() {
 	//
 	// log to json
 	fmt.Println(":: LOG JSON")
-	log = golog.NewLog(
-		golog.WithLevel(golog.InfoLevel),
-		golog.WithFormatHandler(gowriter.JsonFormatHandler),
-		golog.WithWriter(os.Stdout)).
+	log = logger.NewLogger(
+		logger.WithLevel(logger.InfoLevel),
+		logger.WithFormatHandler(gowriter.JsonFormatHandler),
+		logger.WithWriter(os.Stdout)).
 		With(
-			map[string]interface{}{"level": golog.LEVEL, "timestamp": golog.TIMESTAMP, "date": golog.DATE, "time": golog.TIME},
+			map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
 			map[string]interface{}{"service": "log"},
 			map[string]interface{}{"name": "joão"})
 

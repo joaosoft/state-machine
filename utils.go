@@ -1,4 +1,4 @@
-package golog
+package logger
 
 import (
 	"fmt"
@@ -9,6 +9,8 @@ func ParseLevel(level string) (Level, error) {
 	switch strings.ToLower(level) {
 	case "panic":
 		return PanicLevel, nil
+	case "fatal":
+		return FatalLevel, nil
 	case "error":
 		return ErrorLevel, nil
 	case "warn":
@@ -26,6 +28,8 @@ func (level Level) String() string {
 	switch level {
 	case PanicLevel:
 		return "panic"
+	case FatalLevel:
+		return "fatal"
 	case ErrorLevel:
 		return "error"
 	case WarnLevel:

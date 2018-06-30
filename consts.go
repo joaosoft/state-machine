@@ -1,4 +1,4 @@
-package golog
+package logger
 
 // Level ...
 type Level int

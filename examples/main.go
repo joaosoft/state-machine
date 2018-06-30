@@ -7,25 +7,25 @@ import (
 func main() {
 	// addition
 	fmt.Println("\naddition...")
-	runTestAddition()
+	ExampleAdditionError()
 
 	// default
 	fmt.Println("\ndefault...")
-	runTestDefault()
+	ExampleDefaultLogger()
 
 	// write log to file with queue
 	fmt.Println("\nwrite to file...")
-	runTestFile()
+	ExampleFileWritter()
 
 	// write log to stdout with queue
 	fmt.Println("\nwrite to stdout...")
-	runTestStdout()
+	ExampleStdoutWritter()
 
 	// write log to stdout with queue on panic
 	fmt.Println("\nwrite to stdout on panic...")
-	runTestStdoutPanic()
+	ExampleStdoutWritterWithPanic()
 
 	// write log to file with queue on panic
 	fmt.Println("\nwrite to file on panic...")
-	runTestFilePanic()
+	ExampleFileWritterWithPanic()
 }

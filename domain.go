@@ -1,4 +1,4 @@
-package golog
+package logger
 
 import (
 	"io"
@@ -16,17 +16,17 @@ type ISpecialWriter interface {
 	SWrite(prefixes map[string]interface{}, tags map[string]interface{}, message interface{}, fields map[string]interface{}) (n int, err error)
 }
 
-type ILog interface {
+type ILogger interface {
 	SetLevel(level Level)
 
-	With(prefixes, tags, fields map[string]interface{}) ILog
-	WithPrefixes(prefixes map[string]interface{}) ILog
-	WithTags(tags map[string]interface{}) ILog
-	WithFields(fields map[string]interface{}) ILog
+	With(prefixes, tags, fields map[string]interface{}) ILogger
+	WithPrefixes(prefixes map[string]interface{}) ILogger
+	WithTags(tags map[string]interface{}) ILogger
+	WithFields(fields map[string]interface{}) ILogger
 
-	WithPrefix(key string, value interface{}) ILog
-	WithTag(key string, value interface{}) ILog
-	WithField(key string, value interface{}) ILog
+	WithPrefix(key string, value interface{}) ILogger
+	WithTag(key string, value interface{}) ILogger
+	WithField(key string, value interface{}) ILogger
 
 	Debug(message interface{}) IAddition
 	Info(message interface{}) IAddition
@@ -38,11 +38,11 @@ type ILog interface {
 	Warnf(format string, arguments ...interface{}) IAddition
 	Errorf(format string, arguments ...interface{}) IAddition
 
-	Reconfigure(options ...logOption)
+	Reconfigure(options ...LoggerOption)
 }
 
-// Log ...
-type Log struct {
+// Logger ...
+type Logger struct {
 	level         Level
 	writer        io.Writer
 	specialWriter ISpecialWriter

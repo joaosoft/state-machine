@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
-	golog "go-log/app"
+	logger "logger/models"
 	"time"
 
 	gowriter "github.com/joaosoft/go-writer/app"
 )
 
-func runTestFile() {
+func ExampleFileWritter() {
 	//
 	// file fileWriter
 	quit := make(chan bool)
@@ -23,11 +23,11 @@ func runTestFile() {
 	//
 	// log to json
 	fmt.Println(":: LOG JSON")
-	log := golog.NewLog(
-		golog.WithLevel(golog.InfoLevel),
-		golog.WithSpecialWriter(fileWriter)).
+	log := logger.NewLogger(
+		logger.WithLevel(logger.InfoLevel),
+		logger.WithSpecialWriter(fileWriter)).
 		With(
-			map[string]interface{}{"level": golog.LEVEL, "timestamp": golog.TIMESTAMP, "date": golog.DATE, "time": golog.TIME},
+			map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
 			map[string]interface{}{"service": "log"},
 			map[string]interface{}{"name": "joão"})
 

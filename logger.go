@@ -1,11 +1,9 @@
-package golog
+package logger
 
 import (
 	"fmt"
 	"os"
-
 	"time"
-
 	gowriter "github.com/joaosoft/go-writer/app"
 	"net"
 	"runtime"
@@ -13,11 +11,11 @@ import (
 	"strings"
 )
 
-var log = NewLogEmpty(InfoLevel)
+var logger = NewLoggerEmpty(InfoLevel)
 
-// NewLog ...
-func NewLog(options ...logOption) ILog {
-	golog := &Log{
+// NewLogger ...
+func NewLogger(options ...LoggerOption) ILogger {
+	logger := &Logger{
 		writer:        os.Stdout,
 		formatHandler: gowriter.JsonFormatHandler,
 		level:         InfoLevel,
@@ -25,160 +23,160 @@ func NewLog(options ...logOption) ILog {
 		tags:          make(map[string]interface{}),
 		fields:        make(map[string]interface{}),
 	}
-	golog.Reconfigure(options...)
+	logger.Reconfigure(options...)
 
-	return golog
+	return logger
 }
 
 // NewLogDefault
-func NewLogDefault(service string, level Level) ILog {
-	return NewLog(
+func NewLogDefault(service string, level Level) ILogger {
+	return NewLogger(
 		WithLevel(level),
 		WithFormatHandler(gowriter.JsonFormatHandler),
 		WithWriter(os.Stdout)).
 		With(
-			map[string]interface{}{"level": LEVEL, "timestamp": TIMESTAMP},
+			map[string]interface{}{"level": LEVEL, "timestamp": TIMESTAMP, "date": DATE, "time": TIME, "ip": IP, "package": PACKAGE, "function": FUNCTION, "stack": STACK, "trace": TRACE},
 			map[string]interface{}{"service": service},
 			map[string]interface{}{})
 }
 
-// NewLogEmpty
-func NewLogEmpty(level Level) ILog {
-	return NewLog(
+// NewLoggerEmpty
+func NewLoggerEmpty(level Level) ILogger {
+	return NewLogger(
 		WithLevel(level),
 		WithFormatHandler(gowriter.JsonFormatHandler),
 		WithWriter(os.Stdout)).
-		WithPrefixes(map[string]interface{}{"level": LEVEL, "timestamp": TIMESTAMP})
+		WithPrefixes(map[string]interface{}{"level": LEVEL, "timestamp": TIMESTAMP, "date": DATE, "time": TIME, "ip": IP, "package": PACKAGE, "function": FUNCTION, "stack": STACK, "trace": TRACE})
 }
 
-func (log *Log) SetLevel(level Level) {
-	log.level = level
+func (logger *Logger) SetLevel(level Level) {
+	logger.level = level
 }
 
-func (log *Log) With(prefixes, tags, fields map[string]interface{}) ILog {
-	newLog := log.clone().WithPrefixes(prefixes).WithTags(tags).WithFields(fields)
+func (logger *Logger) With(prefixes, tags, fields map[string]interface{}) ILogger {
+	newLog := logger.clone().WithPrefixes(prefixes).WithTags(tags).WithFields(fields)
 	return newLog
 }
 
-func (log *Log) WithPrefixes(prefixes map[string]interface{}) ILog {
-	newLog := log.clone()
+func (logger *Logger) WithPrefixes(prefixes map[string]interface{}) ILogger {
+	newLog := logger.clone()
 	newLog.prefixes = prefixes
 	return newLog
 }
 
-func (log *Log) WithTags(tags map[string]interface{}) ILog {
-	newLog := log.clone()
+func (logger *Logger) WithTags(tags map[string]interface{}) ILogger {
+	newLog := logger.clone()
 	newLog.tags = tags
 	return newLog
 }
 
-func (log *Log) WithFields(fields map[string]interface{}) ILog {
-	newLog := log.clone()
+func (logger *Logger) WithFields(fields map[string]interface{}) ILogger {
+	newLog := logger.clone()
 	newLog.fields = fields
 	return newLog
 }
 
-func (log *Log) WithPrefix(key string, value interface{}) ILog {
-	newLog := log.clone()
+func (logger *Logger) WithPrefix(key string, value interface{}) ILogger {
+	newLog := logger.clone()
 	newLog.prefixes[key] = fmt.Sprintf("%s", value)
 	return newLog
 }
 
-func (log *Log) WithTag(key string, value interface{}) ILog {
-	newLog := log.clone()
+func (logger *Logger) WithTag(key string, value interface{}) ILogger {
+	newLog := logger.clone()
 	newLog.tags[key] = fmt.Sprintf("%s", value)
 	return newLog
 }
 
-func (log *Log) WithField(key string, value interface{}) ILog {
-	newLog := log.clone()
+func (logger *Logger) WithField(key string, value interface{}) ILogger {
+	newLog := logger.clone()
 	newLog.fields[key] = fmt.Sprintf("%s", value)
 	return newLog
 }
 
 // Clone ...
-func (log *Log) clone() *Log {
-	return &Log{
-		level:         log.level,
-		writer:        log.writer,
-		formatHandler: log.formatHandler,
-		specialWriter: log.specialWriter,
-		tags:          log.tags,
-		prefixes:      log.prefixes,
-		fields:        log.fields,
+func (logger *Logger) clone() *Logger {
+	return &Logger{
+		level:         logger.level,
+		writer:        logger.writer,
+		formatHandler: logger.formatHandler,
+		specialWriter: logger.specialWriter,
+		tags:          logger.tags,
+		prefixes:      logger.prefixes,
+		fields:        logger.fields,
 	}
 }
 
-func (log *Log) Debug(message interface{}) IAddition {
+func (logger *Logger) Debug(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
-	log.writeLog(DebugLevel, message)
+	logger.writeLog(DebugLevel, message)
 
-	return newAddition(msg)
+	return NewAddition(msg)
 }
 
-func (log *Log) Info(message interface{}) IAddition {
+func (logger *Logger) Info(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
-	log.writeLog(InfoLevel, msg)
+	logger.writeLog(InfoLevel, msg)
 
-	return newAddition(msg)
+	return NewAddition(msg)
 }
 
-func (log *Log) Warn(message interface{}) IAddition {
+func (logger *Logger) Warn(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
-	log.writeLog(WarnLevel, msg)
+	logger.writeLog(WarnLevel, msg)
 
-	return newAddition(msg)
+	return NewAddition(msg)
 }
 
-func (log *Log) Error(message interface{}) IAddition {
+func (logger *Logger) Error(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
-	log.writeLog(ErrorLevel, msg)
+	logger.writeLog(ErrorLevel, msg)
 
-	return newAddition(msg)
+	return NewAddition(msg)
 }
 
-func (log *Log) Debugf(format string, arguments ...interface{}) IAddition {
+func (logger *Logger) Debugf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
-	log.writeLog(DebugLevel, msg)
+	logger.writeLog(DebugLevel, msg)
 
-	return newAddition(msg)
+	return NewAddition(msg)
 }
 
-func (log *Log) Infof(format string, arguments ...interface{}) IAddition {
+func (logger *Logger) Infof(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
-	log.writeLog(InfoLevel, msg)
+	logger.writeLog(InfoLevel, msg)
 
-	return newAddition(msg)
+	return NewAddition(msg)
 }
 
-func (log *Log) Warnf(format string, arguments ...interface{}) IAddition {
+func (logger *Logger) Warnf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
-	log.writeLog(WarnLevel, msg)
+	logger.writeLog(WarnLevel, msg)
 
-	return newAddition(msg)
+	return NewAddition(msg)
 }
 
-func (log *Log) Errorf(format string, arguments ...interface{}) IAddition {
+func (logger *Logger) Errorf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
-	log.writeLog(ErrorLevel, msg)
+	logger.writeLog(ErrorLevel, msg)
 
-	return newAddition(msg)
+	return NewAddition(msg)
 }
 
-func (log *Log) writeLog(level Level, message interface{}) {
-	if level > log.level {
+func (logger *Logger) writeLog(level Level, message interface{}) {
+	if level > logger.level {
 		return
 	}
 
-	prefixes := addSystemInfo(level, log.prefixes)
-	if log.specialWriter == nil {
-		if bytes, err := log.formatHandler(prefixes, log.tags, message, log.fields); err != nil {
+	prefixes := addSystemInfo(level, logger.prefixes)
+	if logger.specialWriter == nil {
+		if bytes, err := logger.formatHandler(prefixes, logger.tags, message, logger.fields); err != nil {
 			return
 		} else {
-			log.writer.Write(bytes)
+			logger.writer.Write(bytes)
 		}
 	} else {
-		log.specialWriter.SWrite(prefixes, log.tags, message, log.fields)
+		logger.specialWriter.SWrite(prefixes, logger.tags, message, logger.fields)
 	}
 }
 

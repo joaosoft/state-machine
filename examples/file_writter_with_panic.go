@@ -2,30 +2,31 @@ package main
 
 import (
 	"fmt"
-	golog "go-log/app"
-	"time"
-
 	gowriter "github.com/joaosoft/go-writer/app"
+	logger "logger/models"
+	"time"
 )
 
-func runTestStdoutPanic() {
+func ExampleFileWritterWithPanic() {
 	//
 	// stdout fileWriter
 	quit := make(chan bool)
-	stdoutWriter := gowriter.NewStdoutWriter(
-		gowriter.WithStdoutFormatHandler(gowriter.JsonFormatHandler),
-		gowriter.WithStdoutFlushTime(time.Second*5),
-		gowriter.WithStdoutQuitChannel(quit),
+	fileWriter := gowriter.NewFileWriter(
+		gowriter.WithFileDirectory("./testing"),
+		gowriter.WithFileName("dummy_"),
+		gowriter.WithFileMaxMegaByteSize(1),
+		gowriter.WithFileFlushTime(time.Second*5),
+		gowriter.WithFileQuitChannel(quit),
 	)
 
 	//
 	// log to json
 	fmt.Println(":: LOG JSON")
-	log := golog.NewLog(
-		golog.WithLevel(golog.InfoLevel),
-		golog.WithSpecialWriter(stdoutWriter)).
+	log := logger.NewLogger(
+		logger.WithLevel(logger.InfoLevel),
+		logger.WithSpecialWriter(fileWriter)).
 		With(
-			map[string]interface{}{"level": golog.LEVEL, "timestamp": golog.TIMESTAMP, "date": golog.DATE, "time": golog.TIME},
+			map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
 			map[string]interface{}{"service": "log"},
 			map[string]interface{}{"name": "joão"})
 

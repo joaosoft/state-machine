@@ -1,8 +1,7 @@
-package golog
+package logger
 
 import (
 	"errors"
-
 	goerror "github.com/joaosoft/go-error/app"
 )
 
@@ -10,8 +9,8 @@ type Addition struct {
 	message string
 }
 
-// newAddition ...
-func newAddition(message string) IAddition {
+// NewAddition ...
+func NewAddition(message string) IAddition {
 	addition := &Addition{
 		message: message,
 	}
