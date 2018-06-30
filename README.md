@@ -86,12 +86,12 @@ This examples are available in the project at [go-log/example](https://github.co
 //
 // log to text
 fmt.Println(":: LOG TEXT")
-log := golog.NewLog(
-    golog.WithLevel(golog.InfoLevel), 
-    golog.WithFormatHandler(golog.TextFormatHandler), 
-    golog.WithWriter(os.Stdout)).
+log := logger.NewLog(
+    logger.WithLevel(logger.InfoLevel), 
+    logger.WithFormatHandler(logger.TextFormatHandler), 
+    logger.WithWriter(os.Stdout)).
         With(
-            map[string]interface{}{"level": golog.LEVEL, "timestamp": golog.TIMESTAMP, "date": golog.DATE, "time": golog.TIME},
+            map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
             map[string]interface{}{"service": "log"}, 
             map[string]interface{}{"name": "joão"})
 
@@ -106,12 +106,12 @@ fmt.Println("--------------")
 //
 // log to json
 fmt.Println(":: LOG JSON")
-log = golog.NewLog(
-    golog.WithLevel(golog.InfoLevel),
-    golog.WithFormatHandler(golog.JsonFormatHandler),
-    golog.WithWriter(os.Stdout)).
+log = logger.NewLog(
+    logger.WithLevel(logger.InfoLevel),
+    logger.WithFormatHandler(logger.JsonFormatHandler),
+    logger.WithWriter(os.Stdout)).
         With(
-            map[string]interface{}{"level": golog.LEVEL, "timestamp": golog.TIMESTAMP, "date": golog.DATE, "time": golog.TIME},
+            map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
             map[string]interface{}{"service": "log"},
             map[string]interface{}{"name": "joão"})
 
