@@ -1,10 +1,10 @@
-# go-log
-[![Build Status](https://travis-ci.org/joaosoft/go-log.svg?branch=master)](https://travis-ci.org/joaosoft/go-log) | [![codecov](https://codecov.io/gh/joaosoft/go-log/branch/master/graph/badge.svg)](https://codecov.io/gh/joaosoft/go-log) | [![Go Report Card](https://goreportcard.com/badge/github.com/joaosoft/go-log)](https://goreportcard.com/report/github.com/joaosoft/go-log) | [![GoDoc](https://godoc.org/github.com/joaosoft/go-log?status.svg)](https://godoc.org/github.com/joaosoft/go-log/app)
+# logger
+[![Build Status](https://travis-ci.org/joaosoft/logger.svg?branch=master)](https://travis-ci.org/joaosoft/logger) | [![codecov](https://codecov.io/gh/joaosoft/logger/branch/master/graph/badge.svg)](https://codecov.io/gh/joaosoft/logger) | [![Go Report Card](https://goreportcard.com/badge/github.com/joaosoft/logger)](https://goreportcard.com/report/github.com/joaosoft/logger) | [![GoDoc](https://godoc.org/github.com/joaosoft/logger?status.svg)](https://godoc.org/github.com/joaosoft/logger)
 
 A simplified logger that allows you to add complexity depending of your requirements.
 The easy way to use the logger:
 ``` Go
-import log github.com/joaosoft/go-log/app
+import log github.com/joaosoft/logger
 
 
 
@@ -12,7 +12,7 @@ import log github.com/joaosoft/go-log/app
 log.Info("hello")
 ```
 you also can config it, as i prefer, please see below
-After a read of the project https://gitlab.com/vredens/go-logger extracted some concepts like allowing to add tags and fields to logger infrastructure. 
+After a read of the project https://gitlab.com/vredens/loggerger extracted some concepts like allowing to add tags and fields to logger infrastructure. 
 
 ###### If i miss something or you have something interesting, please be part of this project. Let me know! My contact is at the end.
 
@@ -38,7 +38,7 @@ Project dependencies are managed using Dep. Read more about [Dep](https://github
 
 >### Go
 ```
-go get github.com/joaosoft/go-log/service
+go get github.com/joaosoft/logger/service
 ```
 
 ## Interface 
@@ -80,7 +80,7 @@ type ISpecialWriter interface {
 ```
 
 ## Usage 
-This examples are available in the project at [go-log/example](https://github.com/joaosoft/go-log/tree/master/example)
+This examples are available in the project at [logger/example](https://github.com/joaosoft/logger/tree/master/example)
 
 ```go
 //
