@@ -43,17 +43,17 @@ go get github.com/joaosoft/logger/service
 
 ## Interface 
 ```go
-type Log interface {
+type Logger interface {
 	SetLevel(level Level)
 
-	With(prefixes, tags, fields map[string]interface{}) ILog
-	WithPrefixes(prefixes map[string]interface{}) ILog
-	WithTags(tags map[string]interface{}) ILog
-	WithFields(fields map[string]interface{}) ILog
+	With(prefixes, tags, fields map[string]interface{}) ILogger
+	WithPrefixes(prefixes map[string]interface{}) ILogger
+	WithTags(tags map[string]interface{}) ILogger
+	WithFields(fields map[string]interface{}) ILogger
 
-	WithPrefix(key string, value interface{}) ILog
-	WithTag(key string, value interface{}) ILog
-	WithField(key string, value interface{}) ILog
+	WithPrefix(key string, value interface{}) ILogger
+	WithTag(key string, value interface{}) ILogger
+	WithField(key string, value interface{}) ILogger
 
 	Debug(message interface{}) IAddition
 	Info(message interface{}) IAddition
@@ -65,7 +65,7 @@ type Log interface {
 	Warnf(format string, arguments ...interface{}) IAddition
 	Errorf(format string, arguments ...interface{}) IAddition
 	
-	Reconfigure(options ...logOption)
+	Reconfigure(options ...LoggerOption)
 }
 
 type IAddition interface {
@@ -80,7 +80,7 @@ type ISpecialWriter interface {
 ```
 
 ## Usage 
-This examples are available in the project at [logger/example](https://github.com/joaosoft/logger/tree/master/example)
+This examples are available in the project at [logger/examples](https://github.com/joaosoft/logger/tree/master/examples)
 
 ```go
 //
