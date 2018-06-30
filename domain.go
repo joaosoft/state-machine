@@ -2,14 +2,13 @@ package logger
 
 import (
 	"io"
-
-	"github.com/joaosoft/go-error/app"
-	"github.com/joaosoft/go-writer/app"
+	errors "github.com/joaosoft/errors"
+	writers "github.com/joaosoft/writers"
 )
 
 type IAddition interface {
 	ToError(err *error) IAddition
-	ToErrorData(err *goerror.ErrorData) IAddition
+	ToErrorData(err *errors.ErrorData) IAddition
 }
 
 type ISpecialWriter interface {
@@ -49,5 +48,5 @@ type Logger struct {
 	prefixes      map[string]interface{} `json:"prefixes"`
 	tags          map[string]interface{} `json:"tags"`
 	fields        map[string]interface{} `json:"fields"`
-	formatHandler gowriter.FormatHandler
+	formatHandler writers.FormatHandler
 }

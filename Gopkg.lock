@@ -3,19 +3,22 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/joaosoft/go-error"
-  packages = ["app"]
-  revision = "1c12dfac60bb5480598d09e10ae0a057fabf65ef"
+  name = "github.com/joaosoft/errors"
+  packages = ["."]
+  revision = "1d5bd3de67a4e2116faeab177d4a858d6eac3665"
 
 [[projects]]
   branch = "master"
-  name = "github.com/joaosoft/go-writer"
-  packages = ["app"]
-  revision = "fc3d6933fa02e56ddae34584bbee10f02527a7cd"
+  name = "github.com/joaosoft/writers"
+  packages = ["."]
+  revision = "c83132dc7909baecca1a5eea285810991a9e12ec"
 
 [[projects]]
   name = "github.com/labstack/gommon"
-  packages = ["color","log"]
+  packages = [
+    "color",
+    "log"
+  ]
   revision = "588f4e8bddc6cb45c27b448e925c7fd6a5545434"
   version = "0.2.5"
 
@@ -58,6 +61,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bca3ea564344dd92d1a1019065bfde1444864f367723be803ce1d02d05b65b4e"
+  inputs-digest = "679d76e0d435130ef45c1bd4a978fbef407ed1d3a19908538e593871773699ed"
   solver-name = "gps-cdcl"
   solver-version = 1

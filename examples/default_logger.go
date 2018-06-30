@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	gowriter "github.com/joaosoft/go-writer/app"
+	writer "github.com/joaosoft/writers"
 )
 
 func ExampleDefaultLogger() {
@@ -15,7 +15,7 @@ func ExampleDefaultLogger() {
 	fmt.Println(":: LOG TEXT")
 	log := logger.NewLogger(
 		logger.WithLevel(logger.InfoLevel),
-		logger.WithFormatHandler(gowriter.TextFormatHandler),
+		logger.WithFormatHandler(writer.TextFormatHandler),
 		logger.WithWriter(os.Stdout)).
 		With(
 			map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
@@ -36,7 +36,7 @@ func ExampleDefaultLogger() {
 	fmt.Println(":: LOG JSON")
 	log = logger.NewLogger(
 		logger.WithLevel(logger.InfoLevel),
-		logger.WithFormatHandler(gowriter.JsonFormatHandler),
+		logger.WithFormatHandler(writer.JsonFormatHandler),
 		logger.WithWriter(os.Stdout)).
 		With(
 			map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},

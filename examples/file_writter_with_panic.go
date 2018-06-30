@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	gowriter "github.com/joaosoft/go-writer/app"
+	writer "github.com/joaosoft/writers"
 	logger "logger/models"
 	"time"
 )
@@ -11,12 +11,12 @@ func ExampleFileWritterWithPanic() {
 	//
 	// stdout fileWriter
 	quit := make(chan bool)
-	fileWriter := gowriter.NewFileWriter(
-		gowriter.WithFileDirectory("./testing"),
-		gowriter.WithFileName("dummy_"),
-		gowriter.WithFileMaxMegaByteSize(1),
-		gowriter.WithFileFlushTime(time.Second*5),
-		gowriter.WithFileQuitChannel(quit),
+	fileWriter := writer.NewFileWriter(
+		writer.WithFileDirectory("./testing"),
+		writer.WithFileName("dummy_"),
+		writer.WithFileMaxMegaByteSize(1),
+		writer.WithFileFlushTime(time.Second*5),
+		writer.WithFileQuitChannel(quit),
 	)
 
 	//

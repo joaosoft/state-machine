@@ -1,8 +1,8 @@
 package logger
 
 import (
-	"errors"
-	goerror "github.com/joaosoft/go-error/app"
+	errors "github.com/joaosoft/errors"
+	goerrors "errors"
 )
 
 type Addition struct {
@@ -20,14 +20,14 @@ func NewAddition(message string) IAddition {
 
 // ToError
 func (addition *Addition) ToError(err *error) IAddition {
-	*err = errors.New(addition.message)
+	*err = goerrors.New(addition.message)
+
 	return addition
 }
 
 // ToErrorData
-func (addition *Addition) ToErrorData(err *goerror.ErrorData) IAddition {
-	newErr := errors.New(addition.message)
-	err.AddError(newErr)
+func (addition *Addition) ToErrorData(err *errors.ErrorData) IAddition {
+	err.AddError(err)
 
 	return addition
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"time"
-	gowriter "github.com/joaosoft/go-writer/app"
+	writer "github.com/joaosoft/writers"
 	"net"
 	"runtime"
 	"runtime/debug"
@@ -17,7 +17,7 @@ var logger = NewLoggerEmpty(InfoLevel)
 func NewLogger(options ...LoggerOption) ILogger {
 	logger := &Logger{
 		writer:        os.Stdout,
-		formatHandler: gowriter.JsonFormatHandler,
+		formatHandler: writer.JsonFormatHandler,
 		level:         InfoLevel,
 		prefixes:      make(map[string]interface{}),
 		tags:          make(map[string]interface{}),
@@ -32,7 +32,7 @@ func NewLogger(options ...LoggerOption) ILogger {
 func NewLogDefault(service string, level Level) ILogger {
 	return NewLogger(
 		WithLevel(level),
-		WithFormatHandler(gowriter.JsonFormatHandler),
+		WithFormatHandler(writer.JsonFormatHandler),
 		WithWriter(os.Stdout)).
 		With(
 			map[string]interface{}{"level": LEVEL, "timestamp": TIMESTAMP, "date": DATE, "time": TIME, "ip": IP, "package": PACKAGE, "function": FUNCTION, "stack": STACK, "trace": TRACE},
@@ -44,7 +44,7 @@ func NewLogDefault(service string, level Level) ILogger {
 func NewLoggerEmpty(level Level) ILogger {
 	return NewLogger(
 		WithLevel(level),
-		WithFormatHandler(gowriter.JsonFormatHandler),
+		WithFormatHandler(writer.JsonFormatHandler),
 		WithWriter(os.Stdout)).
 		WithPrefixes(map[string]interface{}{"level": LEVEL, "timestamp": TIMESTAMP, "date": DATE, "time": TIME, "ip": IP, "package": PACKAGE, "function": FUNCTION, "stack": STACK, "trace": TRACE})
 }

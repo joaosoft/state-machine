@@ -1,7 +1,7 @@
 package logger
 
 import (
-	gowriter "github.com/joaosoft/go-writer/app"
+	writer "github.com/joaosoft/writers"
 	"io"
 )
 
@@ -37,7 +37,7 @@ func WithLevel(level Level) LoggerOption {
 }
 
 // WithFormatHandler ...
-func WithFormatHandler(formatHandler gowriter.FormatHandler) LoggerOption {
+func WithFormatHandler(formatHandler writer.FormatHandler) LoggerOption {
 	return func(logger *Logger) {
 		logger.formatHandler = formatHandler
 	}

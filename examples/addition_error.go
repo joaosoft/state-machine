@@ -5,7 +5,7 @@ import (
 	"logger/models"
 	"os"
 
-	gowriter "github.com/joaosoft/go-writer/app"
+	writer "github.com/joaosoft/writers"
 )
 
 func ExampleAdditionError() {
@@ -14,7 +14,7 @@ func ExampleAdditionError() {
 	fmt.Println(":: LOG TEXT")
 	log := logger.NewLogger(
 		logger.WithLevel(logger.InfoLevel),
-		logger.WithFormatHandler(gowriter.TextFormatHandler),
+		logger.WithFormatHandler(writer.TextFormatHandler),
 		logger.WithWriter(os.Stdout)).
 		With(
 			map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME, "ip": logger.IP, "package": logger.PACKAGE, "function": logger.FUNCTION, "stack": logger.STACK, "trace": logger.TRACE},

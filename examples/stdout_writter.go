@@ -5,17 +5,17 @@ import (
 	logger "logger/models"
 	"time"
 
-	gowriter "github.com/joaosoft/go-writer/app"
+	writer "github.com/joaosoft/writers"
 )
 
 func ExampleStdoutWritter() {
 	//
 	// stdout fileWriter
 	quit := make(chan bool)
-	stdoutWriter := gowriter.NewStdoutWriter(
-		gowriter.WithStdoutFormatHandler(gowriter.JsonFormatHandler),
-		gowriter.WithStdoutFlushTime(time.Second*5),
-		gowriter.WithStdoutQuitChannel(quit),
+	stdoutWriter := writer.NewStdoutWriter(
+		writer.WithStdoutFormatHandler(writer.JsonFormatHandler),
+		writer.WithStdoutFlushTime(time.Second*5),
+		writer.WithStdoutQuitChannel(quit),
 	)
 
 	//

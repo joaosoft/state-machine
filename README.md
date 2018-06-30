@@ -21,9 +21,9 @@ After a read of the project https://gitlab.com/vredens/go-logger extracted some 
 * prefixes (special prefixes: DATE, TIME, TIMESTAMP, LEVEL, IP, PACKAGE, FUNCTION, FILE, TRACE, STACK)
 * tags
 * fields
-* writers at [[go-writer]](https://github.com/joaosoft/go-writer/tree/master/bin/example)
+* writers at [[writer]](https://github.com/joaosoft/writers/tree/master/bin/examples)
   * to file (with queue processing)[1] 
-  * to stdout (with queue processing)[1] [[here]](https://github.com/joaosoft/go-writer/tree/master/example)
+  * to stdout (with queue processing)[1] [[here]](https://github.com/joaosoft/writers/tree/master/examples)
 * addition commands (ToError(&err))
   
   [1] this writer allows you to continue the processing and dispatch the logging
@@ -70,7 +70,7 @@ type Log interface {
 
 type IAddition interface {
 	ToError(err *error) IAddition
-	ToErrorData(err *goerror.ErrorData) IAddition
+	ToErrorData(err *errors.ErrorData) IAddition
 }
 
 type ISpecialWriter interface {
