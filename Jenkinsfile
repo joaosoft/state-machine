@@ -2,15 +2,24 @@
 pipeline {
   agent any
   stages {
-    stage('run tests') {
+
+    stage('Build') {
       steps {
-        sh 'bash make utest'
-        sh 'bash make itest'
+        deleteDir()
+        checkout scm
       }
     }
+
+    stage('run tests') {
+      steps {
+        sh 'make utest'
+        sh 'make itest'
+      }
+    }
+
     stage('build image') {
       steps {
-        sh 'bash make build'
+        sh 'make build'
       }
     }
   }
