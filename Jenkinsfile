@@ -12,14 +12,17 @@ pipeline {
 
     stage('run tests') {
       steps {
-        make utest
-        make itest
+        // Permission to execute
+        sh "chmod +x -R ${env.WORKSPACE}/../${env.JOB_NAME}@script"
+
+        // Call SH
+        sh "${env.WORKSPACE}/../${env.JOB_NAME}@script/make itest"
       }
     }
 
     stage('build image') {
       steps {
-        make build
+        sh 'make build'
       }
     }
   }
