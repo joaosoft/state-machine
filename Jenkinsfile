@@ -4,13 +4,13 @@ pipeline {
   stages {
     stage('run tests') {
       steps {
-        sh './make utest'
-        sh './make itest'
+        sh 'bash make utest'
+        sh 'bash make itest'
       }
     }
     stage('build image') {
       steps {
-        sh './make build'
+        sh 'bash make build'
       }
     }
   }
