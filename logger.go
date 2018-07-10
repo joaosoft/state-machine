@@ -211,19 +211,20 @@ func (logger *Logger) writeLog(level Level, message interface{}) {
 		return
 	}
 
-	prefixes := addSystemInfo(level, logger.prefixes)
+	prefixes := handleSpecialTags(level, logger.prefixes)
+	sufixes := handleSpecialTags(level, logger.sufixes)
 	if logger.specialWriter == nil {
-		if bytes, err := logger.formatHandler(prefixes, logger.tags, message, logger.fields, logger.sufixes); err != nil {
+		if bytes, err := logger.formatHandler(prefixes, logger.tags, message, logger.fields, sufixes); err != nil {
 			return
 		} else {
 			logger.writer.Write(bytes)
 		}
 	} else {
-		logger.specialWriter.SWrite(prefixes, logger.tags, message, logger.fields, logger.sufixes)
+		logger.specialWriter.SWrite(prefixes, logger.tags, message, logger.fields, sufixes)
 	}
 }
 
-func addSystemInfo(level Level, prefixes map[string]interface{}) map[string]interface{} {
+func handleSpecialTags(level Level, prefixes map[string]interface{}) map[string]interface{} {
 	newPrefixes := make(map[string]interface{})
 	for key, value := range prefixes {
 		switch value {
