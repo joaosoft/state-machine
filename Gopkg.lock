@@ -11,7 +11,7 @@
   branch = "master"
   name = "github.com/joaosoft/writers"
   packages = ["."]
-  revision = "f0c935fdc24aa0480363e70a9218aa5064e47d92"
+  revision = "c6e9863c9c957294bb3682ef598e5320b01cdc8b"
 
 [[projects]]
   name = "github.com/labstack/gommon"

@@ -6,8 +6,8 @@ func SetLevel(level Level) {
 	internalLogger.SetLevel(level)
 }
 
-func With(prefixes, tags, fields map[string]interface{}) ILogger {
-	return internalLogger.With(prefixes, tags, fields)
+func With(prefixes, tags, fields, sufixes map[string]interface{}) ILogger {
+	return internalLogger.With(prefixes, tags, fields, sufixes)
 }
 
 func WithPrefixes(prefixes map[string]interface{}) ILogger {
@@ -22,6 +22,10 @@ func WithFields(fields map[string]interface{}) ILogger {
 	return internalLogger.WithFields(fields)
 }
 
+func WithSufixes(sufixes map[string]interface{}) ILogger {
+	return internalLogger.WithSufixes(sufixes)
+}
+
 func WithPrefix(key string, value interface{}) ILogger {
 	return internalLogger.WithPrefix(key, value)
 }
@@ -32,6 +36,10 @@ func WithTag(key string, value interface{}) ILogger {
 
 func WithField(key string, value interface{}) ILogger {
 	return internalLogger.WithField(key, value)
+}
+
+func WithSufix(key string, value interface{}) ILogger {
+	return internalLogger.WithSufix(key, value)
 }
 
 func Debug(message interface{}) IAddition {

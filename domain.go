@@ -12,20 +12,22 @@ type IAddition interface {
 }
 
 type ISpecialWriter interface {
-	SWrite(prefixes map[string]interface{}, tags map[string]interface{}, message interface{}, fields map[string]interface{}) (n int, err error)
+	SWrite(prefixes map[string]interface{}, tags map[string]interface{}, message interface{}, fields map[string]interface{}, sufixes map[string]interface{}) (n int, err error)
 }
 
 type ILogger interface {
 	SetLevel(level Level)
 
-	With(prefixes, tags, fields map[string]interface{}) ILogger
+	With(prefixes, tags, fields, sufixes map[string]interface{}) ILogger
 	WithPrefixes(prefixes map[string]interface{}) ILogger
 	WithTags(tags map[string]interface{}) ILogger
 	WithFields(fields map[string]interface{}) ILogger
+	WithSufixes(sufixes map[string]interface{}) ILogger
 
 	WithPrefix(key string, value interface{}) ILogger
 	WithTag(key string, value interface{}) ILogger
 	WithField(key string, value interface{}) ILogger
+	WithSufix(key string, value interface{}) ILogger
 
 	Debug(message interface{}) IAddition
 	Info(message interface{}) IAddition
@@ -52,5 +54,6 @@ type Logger struct {
 	prefixes      map[string]interface{} `json:"prefixes"`
 	tags          map[string]interface{} `json:"tags"`
 	fields        map[string]interface{} `json:"fields"`
+	sufixes        map[string]interface{} `json:"sufixes"`
 	formatHandler writers.FormatHandler
 }

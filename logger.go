@@ -35,9 +35,10 @@ func NewLogDefault(service string, level Level) ILogger {
 		WithFormatHandler(writer.JsonFormatHandler),
 		WithWriter(os.Stdout)).
 		With(
-			map[string]interface{}{"level": LEVEL, "timestamp": TIMESTAMP, "date": DATE, "time": TIME, "ip": IP, "package": PACKAGE, "function": FUNCTION, "stack": STACK, "trace": TRACE},
+			map[string]interface{}{"level": LEVEL, "timestamp": TIMESTAMP},
 			map[string]interface{}{"service": service},
-			map[string]interface{}{})
+			map[string]interface{}{},
+			map[string]interface{}{"ip": IP, "package": PACKAGE, "function": FUNCTION, "stack": STACK, "trace": TRACE})
 }
 
 // NewLoggerEmpty
@@ -46,15 +47,16 @@ func NewLoggerEmpty(level Level) ILogger {
 		WithLevel(level),
 		WithFormatHandler(writer.JsonFormatHandler),
 		WithWriter(os.Stdout)).
-		WithPrefixes(map[string]interface{}{"level": LEVEL, "timestamp": TIMESTAMP, "date": DATE, "time": TIME, "ip": IP, "package": PACKAGE, "function": FUNCTION, "stack": STACK, "trace": TRACE})
+		WithPrefixes(map[string]interface{}{"level": LEVEL, "timestamp": TIMESTAMP}).
+		WithSufixes(map[string]interface{}{"ip": IP, "package": PACKAGE, "function": FUNCTION, "stack": STACK, "trace": TRACE})
 }
 
 func (logger *Logger) SetLevel(level Level) {
 	logger.level = level
 }
 
-func (logger *Logger) With(prefixes, tags, fields map[string]interface{}) ILogger {
-	newLog := logger.clone().WithPrefixes(prefixes).WithTags(tags).WithFields(fields)
+func (logger *Logger) With(prefixes, tags, fields, sufixes map[string]interface{}) ILogger {
+	newLog := logger.clone().WithPrefixes(prefixes).WithTags(tags).WithFields(fields).WithSufixes(sufixes)
 	return newLog
 }
 
@@ -76,6 +78,12 @@ func (logger *Logger) WithFields(fields map[string]interface{}) ILogger {
 	return newLog
 }
 
+func (logger *Logger) WithSufixes(sufixes map[string]interface{}) ILogger {
+	newLog := logger.clone()
+	newLog.sufixes = sufixes
+	return newLog
+}
+
 func (logger *Logger) WithPrefix(key string, value interface{}) ILogger {
 	newLog := logger.clone()
 	newLog.prefixes[key] = fmt.Sprintf("%s", value)
@@ -94,6 +102,12 @@ func (logger *Logger) WithField(key string, value interface{}) ILogger {
 	return newLog
 }
 
+func (logger *Logger) WithSufix(key string, value interface{}) ILogger {
+	newLog := logger.clone()
+	newLog.sufixes[key] = fmt.Sprintf("%s", value)
+	return newLog
+}
+
 // Clone ...
 func (logger *Logger) clone() *Logger {
 	return &Logger{
@@ -104,6 +118,7 @@ func (logger *Logger) clone() *Logger {
 		tags:          logger.tags,
 		prefixes:      logger.prefixes,
 		fields:        logger.fields,
+		sufixes: 	   logger.sufixes,
 	}
 }
 
@@ -204,7 +219,7 @@ func (logger *Logger) writeLog(level Level, message interface{}) {
 			logger.writer.Write(bytes)
 		}
 	} else {
-		logger.specialWriter.SWrite(prefixes, logger.tags, message, logger.fields)
+		logger.specialWriter.SWrite(prefixes, logger.tags, message, logger.fields, logger.sufixes)
 	}
 }
 
