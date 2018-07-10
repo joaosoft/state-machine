@@ -85,3 +85,7 @@ func Fatalf(format string, arguments ...interface{}) IAddition {
 func Reconfigure(options ...LoggerOption) {
 	internalLogger.Reconfigure(options...)
 }
+
+func Get() ILogger {
+	return internalLogger
+}
