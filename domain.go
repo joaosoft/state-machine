@@ -31,11 +31,15 @@ type ILogger interface {
 	Info(message interface{}) IAddition
 	Warn(message interface{}) IAddition
 	Error(message interface{}) IAddition
+	Panic(message interface{}) IAddition
+	Fatal(message interface{}) IAddition
 
 	Debugf(format string, arguments ...interface{}) IAddition
 	Infof(format string, arguments ...interface{}) IAddition
 	Warnf(format string, arguments ...interface{}) IAddition
 	Errorf(format string, arguments ...interface{}) IAddition
+	Panicf(format string, arguments ...interface{}) IAddition
+	Fatalf(format string, arguments ...interface{}) IAddition
 
 	Reconfigure(options ...LoggerOption)
 }

@@ -135,6 +135,20 @@ func (logger *Logger) Error(message interface{}) IAddition {
 	return NewAddition(msg)
 }
 
+func (logger *Logger) Panic(message interface{}) IAddition {
+	msg := fmt.Sprint(message)
+	logger.writeLog(PanicLevel, msg)
+
+	return NewAddition(msg)
+}
+
+func (logger *Logger) Fatal(message interface{}) IAddition {
+	msg := fmt.Sprint(message)
+	logger.writeLog(FatalLevel, msg)
+
+	return NewAddition(msg)
+}
+
 func (logger *Logger) Debugf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
 	logger.writeLog(DebugLevel, msg)
@@ -159,6 +173,20 @@ func (logger *Logger) Warnf(format string, arguments ...interface{}) IAddition {
 func (logger *Logger) Errorf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
 	logger.writeLog(ErrorLevel, msg)
+
+	return NewAddition(msg)
+}
+
+func (logger *Logger) Panicf(format string, arguments ...interface{}) IAddition {
+	msg := fmt.Sprintf(format, arguments...)
+	logger.writeLog(PanicLevel, msg)
+
+	return NewAddition(msg)
+}
+
+func (logger *Logger) Fatalf(format string, arguments ...interface{}) IAddition {
+	msg := fmt.Sprintf(format, arguments...)
+	logger.writeLog(FatalLevel, msg)
 
 	return NewAddition(msg)
 }

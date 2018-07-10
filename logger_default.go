@@ -22,6 +22,14 @@ func WithFields(fields map[string]interface{}) ILogger {
 	return internalLogger.WithFields(fields)
 }
 
+func WithPrefix(key string, value interface{}) ILogger {
+	return internalLogger.WithPrefix(key, value)
+}
+
+func WithTag(key string, value interface{}) ILogger {
+	return internalLogger.WithTag(key, value)
+}
+
 func WithField(key string, value interface{}) ILogger {
 	return internalLogger.WithField(key, value)
 }
@@ -42,6 +50,14 @@ func Error(message interface{}) IAddition {
 	return internalLogger.Error(message)
 }
 
+func Panic(message interface{}) IAddition {
+	return internalLogger.Panic(message)
+}
+
+func Fatal(message interface{}) IAddition {
+	return internalLogger.Fatal(message)
+}
+
 func Debugf(format string, arguments ...interface{}) IAddition {
 	return internalLogger.Debugf(format, arguments)
 }
@@ -56,6 +72,14 @@ func Warnf(format string, arguments ...interface{}) IAddition {
 
 func Errorf(format string, arguments ...interface{}) IAddition {
 	return internalLogger.Errorf(format, arguments)
+}
+
+func Panicf(format string, arguments ...interface{}) IAddition {
+	return internalLogger.Panicf(format, arguments)
+}
+
+func Fatalf(format string, arguments ...interface{}) IAddition {
+	return internalLogger.Fatalf(format, arguments)
 }
 
 func Reconfigure(options ...LoggerOption) {
