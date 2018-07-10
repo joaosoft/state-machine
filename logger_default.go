@@ -57,3 +57,7 @@ func Warnf(format string, arguments ...interface{}) IAddition {
 func Errorf(format string, arguments ...interface{}) IAddition {
 	return internalLogger.Errorf(format, arguments)
 }
+
+func Reconfigure(options ...LoggerOption) {
+	internalLogger.Reconfigure(options...)
+}

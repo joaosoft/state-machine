@@ -11,7 +11,7 @@
   branch = "master"
   name = "github.com/joaosoft/writers"
   packages = ["."]
-  revision = "c83132dc7909baecca1a5eea285810991a9e12ec"
+  revision = "f0c935fdc24aa0480363e70a9218aa5064e47d92"
 
 [[projects]]
   name = "github.com/labstack/gommon"
@@ -19,8 +19,8 @@
     "color",
     "log"
   ]
-  revision = "588f4e8bddc6cb45c27b448e925c7fd6a5545434"
-  version = "0.2.5"
+  revision = "d6898124de917583f5ff5592ef931d1dfe0ddc05"
+  version = "0.2.6"
 
 [[projects]]
   name = "github.com/mattn/go-colorable"
@@ -56,7 +56,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "4adea008a5e5f820b6028611ae0b6b3fbcec534b"
+  revision = "1b2967e3c290b7c545b3db0deeda16e9be4f98a2"
 
 [solve-meta]
   analyzer-name = "dep"

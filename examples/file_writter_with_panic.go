@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	writer "github.com/joaosoft/writers"
-	logger "logger/models"
+	logger "../../logger"
 	"time"
 )
 

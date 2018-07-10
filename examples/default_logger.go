@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"logger/models"
+	logger "../../logger"
 	"os"
 	"time"
 
