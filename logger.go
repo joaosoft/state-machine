@@ -213,7 +213,7 @@ func (logger *Logger) writeLog(level Level, message interface{}) {
 
 	prefixes := addSystemInfo(level, logger.prefixes)
 	if logger.specialWriter == nil {
-		if bytes, err := logger.formatHandler(prefixes, logger.tags, message, logger.fields); err != nil {
+		if bytes, err := logger.formatHandler(prefixes, logger.tags, message, logger.fields, logger.sufixes); err != nil {
 			return
 		} else {
 			logger.writer.Write(bytes)
