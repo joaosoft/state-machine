@@ -20,7 +20,8 @@ func ExampleDefaultLogger() {
 		With(
 			map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
 			map[string]interface{}{"service": "log"},
-			map[string]interface{}{"name": "joão"})
+			map[string]interface{}{"name": "joão"},
+			map[string]interface{}{"ip": logger.IP, "function": logger.FUNCTION, "file": logger.FILE})
 
 	// logging...
 	log.Error("isto é uma mensagem de error")
