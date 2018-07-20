@@ -11,7 +11,7 @@
   branch = "master"
   name = "github.com/joaosoft/writers"
   packages = ["."]
-  revision = "771a9b6ea8d80f483b61e182bbc5bd563c8588d5"
+  revision = "1bf8fc39ed07431e08f868eb80edbb65ceb33514"
 
 [[projects]]
   name = "github.com/labstack/gommon"
@@ -33,12 +33,6 @@
   packages = ["."]
   revision = "0360b2af4f38e8d38c7fce2a9f4e702702d73a39"
   version = "v0.0.3"
-
-[[projects]]
-  name = "github.com/satori/go.uuid"
-  packages = ["."]
-  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
-  version = "v1.2.0"
 
 [[projects]]
   branch = "master"
