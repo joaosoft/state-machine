@@ -252,7 +252,7 @@ func handleSpecialTags(level Level, prefixes map[string]interface{}) map[string]
 			}
 
 		case TRACE:
-			if level > ErrorLevel {
+			if level <= ErrorLevel {
 				pc := make([]uintptr, 1)
 				runtime.Callers(4, pc)
 				function := runtime.FuncForPC(pc[0])
@@ -277,7 +277,7 @@ func handleSpecialTags(level Level, prefixes map[string]interface{}) map[string]
 			}
 
 		case FILE:
-			if level > ErrorLevel {
+			if level <= ErrorLevel {
 				pc := make([]uintptr, 1)
 				runtime.Callers(4, pc)
 				function := runtime.FuncForPC(pc[0])
@@ -285,7 +285,7 @@ func handleSpecialTags(level Level, prefixes map[string]interface{}) map[string]
 			}
 
 		case PACKAGE:
-			if level > ErrorLevel {
+			if level <= ErrorLevel {
 				pc := make([]uintptr, 1)
 				runtime.Callers(4, pc)
 				function := runtime.FuncForPC(pc[0])
@@ -293,7 +293,7 @@ func handleSpecialTags(level Level, prefixes map[string]interface{}) map[string]
 			}
 
 		case FUNCTION:
-			if level > ErrorLevel {
+			if level <= ErrorLevel {
 				pc := make([]uintptr, 1)
 				runtime.Callers(4, pc)
 				function := runtime.FuncForPC(pc[0])
@@ -301,7 +301,7 @@ func handleSpecialTags(level Level, prefixes map[string]interface{}) map[string]
 			}
 
 		case STACK:
-			if level > ErrorLevel {
+			if level <= ErrorLevel {
 				pc := make([]uintptr, 1)
 				runtime.Callers(4, pc)
 				function := runtime.FuncForPC(pc[0])
