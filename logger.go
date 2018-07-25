@@ -274,6 +274,8 @@ func handleSpecialTags(level Level, prefixes map[string]interface{}) map[string]
 					Function: info[1],
 					Stack:    stack,
 				}
+			} else {
+				continue
 			}
 
 		case FILE:
@@ -282,6 +284,8 @@ func handleSpecialTags(level Level, prefixes map[string]interface{}) map[string]
 				runtime.Callers(4, pc)
 				function := runtime.FuncForPC(pc[0])
 				value, _ = function.FileLine(pc[0])
+			} else {
+				continue
 			}
 
 		case PACKAGE:
@@ -290,6 +294,8 @@ func handleSpecialTags(level Level, prefixes map[string]interface{}) map[string]
 				runtime.Callers(4, pc)
 				function := runtime.FuncForPC(pc[0])
 				value = strings.SplitN(function.Name(), ".", 2)[0]
+			} else {
+				continue
 			}
 
 		case FUNCTION:
@@ -298,6 +304,8 @@ func handleSpecialTags(level Level, prefixes map[string]interface{}) map[string]
 				runtime.Callers(4, pc)
 				function := runtime.FuncForPC(pc[0])
 				value = strings.SplitN(function.Name(), ".", 2)[1]
+			} else {
+				continue
 			}
 
 		case STACK:
@@ -307,6 +315,8 @@ func handleSpecialTags(level Level, prefixes map[string]interface{}) map[string]
 				function := runtime.FuncForPC(pc[0])
 				stack := string(debug.Stack())
 				value = stack[strings.Index(stack, function.Name()):]
+			} else {
+				continue
 			}
 		}
 
