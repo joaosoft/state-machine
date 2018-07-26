@@ -11,7 +11,7 @@
   branch = "master"
   name = "github.com/joaosoft/writers"
   packages = ["."]
-  revision = "8a2b16715c7c524aca8f5eab7e376b0ee7c4b9ab"
+  revision = "ac09d2935fa7e36fadd1d108d06bacd3cbe412fc"
 
 [[projects]]
   name = "github.com/labstack/gommon"
@@ -35,10 +35,10 @@
   version = "v0.0.3"
 
 [[projects]]
+  branch = "master"
   name = "github.com/satori/go.uuid"
   packages = ["."]
-  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
-  version = "v1.2.0"
+  revision = "36e9d2ebbde5e3f13ab2e25625fd453271d6522e"
 
 [[projects]]
   branch = "master"
@@ -61,6 +61,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "679d76e0d435130ef45c1bd4a978fbef407ed1d3a19908538e593871773699ed"
+  inputs-digest = "bf4677177d30000710583707c09a2a287781d55ebeddce0e600e14f69f3b2a34"
   solver-name = "gps-cdcl"
   solver-version = 1
