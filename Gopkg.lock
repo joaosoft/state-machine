@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/joaosoft/errors"
   packages = ["."]
-  revision = "13b30c041d5b1bea7077599cc7c1095be3d7ff49"
+  revision = "555ebff2d1a6c8e7013623e9639f3a3f1cae969b"
 
 [[projects]]
   branch = "master"
