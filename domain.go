@@ -8,7 +8,7 @@ import (
 
 type IAddition interface {
 	ToError(err *error) IAddition
-	ToErrorData(err *errors.ErrorData) IAddition
+	ToErr(err *errors.Err) IAddition
 }
 
 type ISpecialWriter interface {
