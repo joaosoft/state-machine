@@ -2,13 +2,14 @@ package logger
 
 import (
 	"io"
+
 	errors "github.com/joaosoft/errors"
 	writers "github.com/joaosoft/writers"
 )
 
 type IAddition interface {
 	ToError(err *error) IAddition
-	ToErr(err *errors.Err) IAddition
+	ToErr(err errors.IErr) IAddition
 }
 
 type ISpecialWriter interface {
@@ -54,6 +55,6 @@ type Logger struct {
 	prefixes      map[string]interface{} `json:"prefixes"`
 	tags          map[string]interface{} `json:"tags"`
 	fields        map[string]interface{} `json:"fields"`
-	sufixes        map[string]interface{} `json:"sufixes"`
+	sufixes       map[string]interface{} `json:"sufixes"`
 	formatHandler writers.FormatHandler
 }

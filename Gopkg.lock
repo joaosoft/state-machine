@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/joaosoft/errors"
   packages = ["."]
-  revision = "f46e81c553ca6700877861d3020e495d56cc2291"
+  revision = "6fd05bc0ae5d976dba85b2254d2fdbc2bdec3a32"
 
 [[projects]]
   branch = "master"
@@ -56,7 +56,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "acbc56fc7007d2a01796d5bde54f39e3b3e95945"
+  revision = "904bdc257025c7b3f43c19360ad3ab85783fad78"
 
 [solve-meta]
   analyzer-name = "dep"
