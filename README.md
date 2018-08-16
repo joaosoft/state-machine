@@ -70,7 +70,6 @@ type Logger interface {
 
 type IAddition interface {
 	ToError() error
-	ToErr() *errors.IErr
 }
 
 type ISpecialWriter interface {
