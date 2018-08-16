@@ -4,10 +4,11 @@ import (
 	"io"
 
 	writers "github.com/joaosoft/writers"
+	"github.com/joaosoft/errors"
 )
 
 type IAddition interface {
-	ToError() error
+	ToError() errors.IErr
 }
 
 type ISpecialWriter interface {
