@@ -69,8 +69,8 @@ type Logger interface {
 }
 
 type IAddition interface {
-	ToError(err *error) IAddition
-	ToErr(err *errors.Err) IAddition
+	ToError() error
+	ToErr() *errors.IErr
 }
 
 type ISpecialWriter interface {
@@ -86,19 +86,21 @@ This examples are available in the project at [logger/examples](https://github.c
 //
 // log to text
 fmt.Println(":: LOG TEXT")
-log := logger.NewLog(
-    logger.WithLevel(logger.InfoLevel), 
-    logger.WithFormatHandler(logger.TextFormatHandler), 
+log := logger.NewLogger(
+    logger.WithLevel(logger.InfoLevel),
+    logger.WithFormatHandler(writer.TextFormatHandler),
     logger.WithWriter(os.Stdout)).
-        With(
-            map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
-            map[string]interface{}{"service": "log"}, 
-            map[string]interface{}{"name": "joão"})
+    With(
+        map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
+        map[string]interface{}{"service": "log"},
+        map[string]interface{}{"name": "joão"},
+        map[string]interface{}{"ip": logger.IP, "function": logger.FUNCTION, "file": logger.FILE})
 
 // logging...
 log.Error("isto é uma mensagem de error")
 log.Info("isto é uma mensagem de info")
 log.Debug("isto é uma mensagem de debug")
+log.Error("")
 
 fmt.Println("--------------")
 <-time.After(time.Second)
@@ -106,36 +108,34 @@ fmt.Println("--------------")
 //
 // log to json
 fmt.Println(":: LOG JSON")
-log = logger.NewLog(
+log = logger.NewLogger(
     logger.WithLevel(logger.InfoLevel),
-    logger.WithFormatHandler(logger.JsonFormatHandler),
+    logger.WithFormatHandler(writer.JsonFormatHandler),
     logger.WithWriter(os.Stdout)).
-        With(
-            map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
-            map[string]interface{}{"service": "log"},
-            map[string]interface{}{"name": "joão"})
+    With(
+        map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
+        map[string]interface{}{"service": "log"},
+        map[string]interface{}{"name": "joão"},
+        map[string]interface{}{"ip": logger.IP, "function": logger.FUNCTION, "file": logger.FILE})
 
 // logging...
 log.Errorf("isto é uma mensagem de error %s", "hello")
 log.Infof("isto é uma  mensagem de info %s ", "hi")
 log.Debugf("isto é uma mensagem de debug %s", "ehh")
-
-// error...
-var err error
-log.Errorf("deu erro na linha %d", 201).ToError(&err)
-fmt.Printf("ERROR: %s", err.Error())
 ```
 
 ###### Output 
 
 ```javascript
+default...
 :: LOG TEXT
-{prefixes:map[level:error time:2018-03-20 02:47:21] tags:map[service:log] message:isto é uma mensagem de error fields:map[name:joão]}
-{prefixes:map[level:info time:2018-03-20 02:47:21] tags:map[service:log] message:isto é uma mensagem de info fields:map[name:joão]}
+{prefixes:map[level:error timestamp:2018-08-16 20:27:13:18 date:2018-08-16 time:20:27:13:18] tags:map[service:log] message:isto é uma mensagem de error fields:map[name:joão] sufixes:map[ip:192.168.1.4 function:Example.ExampleDefaultLogger file:/Users/joaoribeiro/workspace/go/personal/src/logger/examples/main.go]}
+{prefixes:map[level:info timestamp:2018-08-16 20:27:13:18 date:2018-08-16 time:20:27:13:18] tags:map[service:log] message:isto é uma mensagem de info fields:map[name:joão] sufixes:map[ip:192.168.1.4]}
+{prefixes:map[level:error timestamp:2018-08-16 20:27:13:18 date:2018-08-16 time:20:27:13:18] tags:map[service:log] message: fields:map[name:joão] sufixes:map[ip:192.168.1.4 function:Example.ExampleDefaultLogger file:/Users/joaoribeiro/workspace/go/personal/src/logger/examples/main.go]}
 --------------
 :: LOG JSON
-{"prefixes":{"level":"error","time":"2018-03-20 02:47:22"},"tags":{"service":"log"},"message":"isto é uma mensagem de error hello","fields":{"name":"joão"}}
-{"prefixes":{"level":"info","time":"2018-03-20 02:47:22"},"tags":{"service":"log"},"message":"isto é uma  mensagem de info hi ","fields":{"name":"joão"}}
+{"prefixes":{"date":"2018-08-16","level":"error","time":"20:27:14:18","timestamp":"2018-08-16 20:27:14:18"},"tags":{"service":"log"},"message":"isto é uma mensagem de error hello","fields":{"name":"joão"},"sufixes":{"file":"/Users/joaoribeiro/workspace/go/personal/src/logger/examples/main.go","function":"Example.ExampleDefaultLogger","ip":"192.168.1.4"}}
+{"prefixes":{"date":"2018-08-16","level":"info","time":"20:27:14:18","timestamp":"2018-08-16 20:27:14:18"},"tags":{"service":"log"},"message":"isto é uma  mensagem de info hi ","fields":{"name":"joão"},"sufixes":{"ip":"192.168.1.4"}}
 ```
 
 ## Known issues

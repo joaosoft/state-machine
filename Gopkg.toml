@@ -31,12 +31,16 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/joaosoft/writers"
+  name = "github.com/joaosoft/logger"
 
-[prune]
-  go-tests = true
-  unused-packages = true
+[[constraint]]
+  branch = "master"
+  name = "github.com/joaosoft/writers"
 
 [[override]]
   name = "github.com/satori/go.uuid"
   branch = "master"
+
+[prune]
+  go-tests = true
+  unused-packages = true
