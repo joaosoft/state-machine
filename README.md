@@ -24,7 +24,7 @@ After a read of the project https://gitlab.com/vredens/loggerger extracted some 
 * writers at [[writer]](https://github.com/joaosoft/writers/tree/master/bin/examples)
   * to file (with queue processing)[1] 
   * to stdout (with queue processing)[1] [[here]](https://github.com/joaosoft/writers/tree/master/examples)
-* addition commands (ToError(&err))
+* addition commands (ToError())
   
   [1] this writer allows you to continue the processing and dispatch the logging
 
