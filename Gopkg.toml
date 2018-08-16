@@ -31,10 +31,6 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/joaosoft/logger"
-
-[[constraint]]
-  branch = "master"
   name = "github.com/joaosoft/writers"
 
 [[override]]

@@ -18,6 +18,6 @@ func NewAddition(message string) IAddition {
 }
 
 // ToError
-func (addition *Addition) ToError() errors.IErr {
+func (addition *Addition) ToError() error {
 	return errors.New("0", addition.message)
 }
