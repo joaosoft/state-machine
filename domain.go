@@ -3,13 +3,11 @@ package logger
 import (
 	"io"
 
-	errors "github.com/joaosoft/errors"
 	writers "github.com/joaosoft/writers"
 )
 
 type IAddition interface {
-	ToError(err *error) IAddition
-	ToErr(err errors.IErr) IAddition
+	ToError() error
 }
 
 type ISpecialWriter interface {

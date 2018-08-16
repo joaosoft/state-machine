@@ -1,8 +1,6 @@
 package logger
 
 import (
-	errs "errors"
-
 	"github.com/joaosoft/errors"
 )
 
@@ -20,15 +18,6 @@ func NewAddition(message string) IAddition {
 }
 
 // ToError
-func (addition *Addition) ToError(err *error) IAddition {
-	*err = errs.New(addition.message)
-
-	return addition
-}
-
-// ToErr
-func (addition *Addition) ToErr(err errors.IErr) IAddition {
-	err.Add(errors.New("0", addition.message))
-
-	return addition
+func (addition *Addition) ToError() error {
+	return errors.New("0", addition.message)
 }

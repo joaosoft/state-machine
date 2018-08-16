@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	logger "../../logger"
 	"os"
 	"time"
+
+	logger "../../logger"
 
 	writer "github.com/joaosoft/writers"
 )
@@ -42,7 +43,8 @@ func ExampleDefaultLogger() {
 		With(
 			map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
 			map[string]interface{}{"service": "log"},
-			map[string]interface{}{"name": "joão"})
+			map[string]interface{}{"name": "joão"},
+			map[string]interface{}{"ip": logger.IP, "function": logger.FUNCTION, "file": logger.FILE})
 
 	// logging...
 	log.Errorf("isto é uma mensagem de error %s", "hello")

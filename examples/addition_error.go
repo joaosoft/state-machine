@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	logger "../../logger"
 	"os"
+
+	logger "../../logger"
 
 	writer "github.com/joaosoft/writers"
 )
@@ -22,7 +23,6 @@ func ExampleAdditionError() {
 			map[string]interface{}{"name": "joão"},
 			map[string]interface{}{"ip": logger.IP, "function": logger.FUNCTION, "file": logger.FILE})
 
-	var err error
-	log.Errorf("deu erro na linha %d", 201).ToError(&err)
+	err := log.Errorf("deu erro na linha %d", 201).ToError()
 	fmt.Printf("ERROR: %s", err.Error())
 }
