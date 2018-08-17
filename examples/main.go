@@ -100,6 +100,26 @@ func (e Example) ExampleDefaultLogger() {
 	log.Debugf("isto é uma mensagem de debug %s", "ehh")
 }
 
+func (e Example) ExampleNoneLogger() {
+	//
+	// log to none
+	fmt.Println(":: LOG NONE")
+	log := logger.NewLogger(
+		logger.WithLevel(logger.NoneLevel),
+		logger.WithFormatHandler(writer.JsonFormatHandler),
+		logger.WithWriter(os.Stdout)).
+		With(
+			map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
+			map[string]interface{}{"service": "log"},
+			map[string]interface{}{"name": "joão"},
+			map[string]interface{}{"ip": logger.IP, "function": logger.FUNCTION, "file": logger.FILE})
+
+	// logging...
+	log.Errorf("isto é uma mensagem de error %s", "hello")
+	log.Infof("isto é uma  mensagem de info %s ", "hi")
+	log.Debugf("isto é uma mensagem de debug %s", "ehh")
+}
+
 func (e Example) ExampleFileWritter() {
 	//
 	// file fileWriter

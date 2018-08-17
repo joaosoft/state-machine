@@ -19,6 +19,8 @@ func ParseLevel(level string) (Level, error) {
 		return InfoLevel, nil
 	case "debug":
 		return DebugLevel, nil
+	case "none":
+		return NoneLevel, nil
 	default:
 		return DefaultLevel, fmt.Errorf("invalid level: %s, set default level: %s", level, DefaultLevel)
 	}
@@ -38,6 +40,8 @@ func (level Level) String() string {
 		return "info"
 	case DebugLevel:
 		return "debug"
+	case NoneLevel:
+		return "none"
 	default:
 		return "info"
 	}

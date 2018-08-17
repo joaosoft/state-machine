@@ -6,9 +6,6 @@ The easy way to use the logger:
 ``` Go
 import log github.com/joaosoft/logger
 
-
-
-
 log.Info("hello")
 ```
 you also can config it, as i prefer, please see below
@@ -18,7 +15,7 @@ After a read of the project https://gitlab.com/vredens/loggerger extracted some 
 
 ## With support for
 * formatted messages
-* prefixes (special prefixes: DATE, TIME, TIMESTAMP, LEVEL, IP, PACKAGE, FUNCTION, FILE, TRACE, STACK)
+* prefixes (special prefixes: **DATE, TIME, TIMESTAMP, LEVEL, IP, PACKAGE, FUNCTION, FILE, TRACE, STACK**)
 * tags
 * fields
 * writers at [[writer]](https://github.com/joaosoft/writers/tree/master/bin/examples)
@@ -26,7 +23,30 @@ After a read of the project https://gitlab.com/vredens/loggerger extracted some 
   * to stdout (with queue processing)[1] [[here]](https://github.com/joaosoft/writers/tree/master/examples)
 * addition commands (ToError())
   
-  [1] this writer allows you to continue the processing and dispatch the logging
+  **[1]** this writer allows you to continue the processing and dispatch the logging
+
+## Levels
+* **DefaultLevel**, default level
+* **PanicLevel**, when there is no recover
+* **FatalLevel**, when the error is fatal to the application
+* **ErrorLevel**, when there is a controlled error
+* **WarnLevel**, when there is a warning
+* **InfoLevel**, when it is a informational message
+* **DebugLevel**, when it is a debugging message
+* **NoneLevel**, when the logging is disabled
+
+## Special Prefix's
+* **LEVEL**, add the level value to the prefix
+* **TIMESTAMP**, add the timestamp value to the prefix
+* **DATE**, add the date value to the prefix
+* **TIME**, add the time value to the prefix
+* **IP**, add the client ip address
+* **TRACE**, add the error trace
+* **PACKAGE**, add the package name
+* **FILE**, add the file
+* **FUNCTION**, add the function name
+* **STACK**, add the debug stack
+
 
 ## Dependecy Management 
 >### Dep

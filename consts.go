@@ -12,6 +12,7 @@ const (
 	WarnLevel               // WarnLevel, when there is a warning
 	InfoLevel               // InfoLevel, when it is a informational message
 	DebugLevel              // DebugLevel, when it is a debugging message
+	NoneLevel               // NoneLevel, when the logging is disabled
 
 	// Special Prefixes
 	LEVEL     Prefix = "{{LEVEL}}"     // Add the level value to the prefix
