@@ -33,6 +33,7 @@ After a read of the project https://gitlab.com/vredens/loggerger extracted some 
 * **WarnLevel**, when there is a warning
 * **InfoLevel**, when it is a informational message
 * **DebugLevel**, when it is a debugging message
+* **PrintLevel**, when it is a system message
 * **NoneLevel**, when the logging is disabled
 
 ## Special Prefix's

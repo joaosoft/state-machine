@@ -7,6 +7,8 @@ import (
 
 func ParseLevel(level string) (Level, error) {
 	switch strings.ToLower(level) {
+	case "print":
+		return PrintLevel, nil
 	case "panic":
 		return PanicLevel, nil
 	case "fatal":
@@ -28,6 +30,8 @@ func ParseLevel(level string) (Level, error) {
 
 func (level Level) String() string {
 	switch level {
+	case PrintLevel:
+		return "print"
 	case PanicLevel:
 		return "panic"
 	case FatalLevel:

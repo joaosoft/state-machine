@@ -123,6 +123,13 @@ func (logger *Logger) clone() *Logger {
 	}
 }
 
+func (logger *Logger) Print(message interface{}) IAddition {
+	msg := fmt.Sprint(message)
+	logger.writeLog(PrintLevel, message)
+
+	return NewAddition(msg)
+}
+
 func (logger *Logger) Debug(message interface{}) IAddition {
 	msg := fmt.Sprint(message)
 	logger.writeLog(DebugLevel, message)
@@ -165,6 +172,13 @@ func (logger *Logger) Fatal(message interface{}) IAddition {
 	return NewAddition(msg)
 }
 
+func (logger *Logger) Printf(format string, arguments ...interface{}) IAddition {
+	msg := fmt.Sprintf(format, arguments...)
+	logger.writeLog(PrintLevel, msg)
+
+	return NewAddition(msg)
+}
+
 func (logger *Logger) Debugf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
 	logger.writeLog(DebugLevel, msg)
@@ -193,16 +207,16 @@ func (logger *Logger) Errorf(format string, arguments ...interface{}) IAddition 
 	return NewAddition(msg)
 }
 
-func (logger *Logger) Panicf(format string, arguments ...interface{}) IAddition {
+func (logger *Logger) Fatalf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
-	logger.writeLog(PanicLevel, msg)
+	logger.writeLog(FatalLevel, msg)
 
 	return NewAddition(msg)
 }
 
-func (logger *Logger) Fatalf(format string, arguments ...interface{}) IAddition {
+func (logger *Logger) Panicf(format string, arguments ...interface{}) IAddition {
 	msg := fmt.Sprintf(format, arguments...)
-	logger.writeLog(FatalLevel, msg)
+	logger.writeLog(PanicLevel, msg)
 
 	return NewAddition(msg)
 }
