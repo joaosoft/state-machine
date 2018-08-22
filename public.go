@@ -42,6 +42,10 @@ func WithSufix(key string, value interface{}) ILogger {
 	return internalLogger.WithSufix(key, value)
 }
 
+func Print(message interface{}) IAddition {
+	return internalLogger.Print(message)
+}
+
 func Debug(message interface{}) IAddition {
 	return internalLogger.Debug(message)
 }
@@ -64,6 +68,10 @@ func Panic(message interface{}) IAddition {
 
 func Fatal(message interface{}) IAddition {
 	return internalLogger.Fatal(message)
+}
+
+func Printf(format string, arguments ...interface{}) IAddition {
+	return internalLogger.Printf(format, arguments)
 }
 
 func Debugf(format string, arguments ...interface{}) IAddition {

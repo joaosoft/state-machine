@@ -28,6 +28,7 @@ type ILogger interface {
 	WithField(key string, value interface{}) ILogger
 	WithSufix(key string, value interface{}) ILogger
 
+	Print(message interface{}) IAddition
 	Debug(message interface{}) IAddition
 	Info(message interface{}) IAddition
 	Warn(message interface{}) IAddition
@@ -35,6 +36,7 @@ type ILogger interface {
 	Panic(message interface{}) IAddition
 	Fatal(message interface{}) IAddition
 
+	Printf(format string, arguments ...interface{}) IAddition
 	Debugf(format string, arguments ...interface{}) IAddition
 	Infof(format string, arguments ...interface{}) IAddition
 	Warnf(format string, arguments ...interface{}) IAddition
