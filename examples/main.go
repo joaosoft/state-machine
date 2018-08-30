@@ -16,6 +16,9 @@ func main() {
 	e := Example{}
 
 	// default
+	fmt.Println("\nlevel info...")
+	e.ExampleLevelInfo()
+
 	fmt.Println("\ndefault...")
 	e.ExampleDefaultLogger()
 
@@ -38,6 +41,30 @@ func main() {
 	// write log to file with queue on panic
 	fmt.Println("\nwrite to file on panic...")
 	e.ExampleFileWritterWithPanic()
+}
+
+func (e Example) ExampleLevelInfo() {
+	//
+	// log to text
+	fmt.Println(":: LOG NONE")
+	log := logger.NewLogger(
+		logger.WithLevel(logger.NoneLevel),
+		logger.WithFormatHandler(writer.JsonFormatHandler),
+		logger.WithWriter(os.Stdout)).
+		With(
+			map[string]interface{}{"level": logger.LEVEL, "timestamp": logger.TIMESTAMP, "date": logger.DATE, "time": logger.TIME},
+			map[string]interface{}{"service": "log"},
+			map[string]interface{}{"name": "joão"},
+			map[string]interface{}{"ip": logger.IP, "function": logger.FUNCTION, "file": logger.FILE})
+
+	// logging...
+	log.Print("isto é uma mensagem de print")
+	log.Panic("isto é uma mensagem de panic")
+	log.Error("isto é uma mensagem de error")
+	log.Info("isto é uma mensagem de info")
+	log.Debug("isto é uma mensagem de debug")
+
+	fmt.Print("---- FIM ----")
 }
 
 func (e Example) ExampleAdditionError() {
