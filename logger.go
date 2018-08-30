@@ -109,7 +109,7 @@ func (logger *Logger) WithSufix(key string, value interface{}) ILogger {
 	return newLog
 }
 
-// Clone ...
+// CopyDependency ...
 func (logger *Logger) clone() *Logger {
 	return &Logger{
 		level:         logger.level,
