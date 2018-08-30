@@ -222,7 +222,7 @@ func (logger *Logger) Panicf(format string, arguments ...interface{}) IAddition 
 }
 
 func (logger *Logger) writeLog(level Level, message interface{}) {
-	if level > logger.level {
+	if level < logger.level {
 		return
 	}
 
