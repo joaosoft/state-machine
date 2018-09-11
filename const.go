@@ -1,10 +1,17 @@
 package color
 
-const Escape = "\x1b"
+const Escape = "\033"
 
 type Format int
 type Foreground int
 type Background int
+
+const (
+	NormalIntensityForeground = 30
+	HighIntensityForeground   = 90
+	NormalIntensityBackground = 40
+	HighIntensityBackground   = 100
+)
 
 const (
 	// format
@@ -22,7 +29,7 @@ const (
 
 const (
 	// foreground text colors
-	ForegroundBlack Foreground = iota + 30
+	ForegroundBlack Foreground = iota + NormalIntensityForeground
 	ForegroundRed
 	ForegroundGreen
 	ForegroundYellow
@@ -34,7 +41,7 @@ const (
 
 const (
 	// foreground hi-intensity text colors
-	ForegroundHiBlack Foreground = iota + 90
+	ForegroundHiBlack Foreground = iota + HighIntensityForeground
 	ForegroundHiRed
 	ForegroundHiGreen
 	ForegroundHiYellow
@@ -46,7 +53,7 @@ const (
 
 const (
 	// background text colors
-	BackgroundBlack Background = iota + 40
+	BackgroundBlack Background = iota + NormalIntensityBackground
 	BackgroundRed
 	BackgroundGreen
 	BackgroundYellow
@@ -58,7 +65,7 @@ const (
 
 const (
 	// background hi-intensity text colors
-	BackgroundHiBlack Background = iota + 100
+	BackgroundHiBlack Background = iota + HighIntensityBackground
 	BackgroundHiRed
 	BackgroundHiGreen
 	BackgroundHiYellow
