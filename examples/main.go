@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"state-machine"
+	state_machine "state-machine"
 )
 
 func main() {
@@ -17,25 +17,24 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("\ntransition from %d to %d ? %t", 1, 2, ok1)
 
 	ok2, err := stateMachine.CheckTransition(2, 3, "1", 2, true)
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("\ntransition from %d to %d ? %t", 2, 3, ok2)
 
 	ok3, err := stateMachine.CheckTransition(4, 1)
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("\ntransition from %d to %d ? %t", 4, 1, ok3)
 
 	ok4, err := stateMachine.CheckTransition(4, 5)
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Printf("\ntransition from %d to %d ? %t", 1, 2, ok1)
-	fmt.Printf("\ntransition from %d to %d ? %t", 2, 3, ok2)
-	fmt.Printf("\ntransition from %d to %d ? %t", 4, 1, ok3)
 	fmt.Printf("\ntransition from %d to %d ? %t", 4, 5, ok4)
 }
 

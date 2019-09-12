@@ -82,25 +82,24 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("\ntransition from %d to %d ? %t", 1, 2, ok1)
 
 	ok2, err := stateMachine.CheckTransition(2, 3, "1", 2, true)
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("\ntransition from %d to %d ? %t", 2, 3, ok2)
 
 	ok3, err := stateMachine.CheckTransition(4, 1)
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("\ntransition from %d to %d ? %t", 4, 1, ok3)
 
 	ok4, err := stateMachine.CheckTransition(4, 5)
 	if err != nil {
 		panic(err)
 	}
-
-	fmt.Printf("\ntransition from %d to %d ? %t", 1, 2, ok1)
-	fmt.Printf("\ntransition from %d to %d ? %t", 2, 3, ok2)
-	fmt.Printf("\ntransition from %d to %d ? %t", 4, 1, ok3)
 	fmt.Printf("\ntransition from %d to %d ? %t", 4, 5, ok4)
 }
 
@@ -112,12 +111,11 @@ func Check3(args ...interface{}) (bool, error) {
 
 >### Result
 ```
-executing check 3 handler with [[1 2 true]]
 transition from 1 to 2 ? true
+executing check 3 handler with [[1 2 true]]
 transition from 2 to 3 ? true
 transition from 4 to 1 ? false
 transition from 4 to 5 ? false
-
 ```
 
 ## Known issues
