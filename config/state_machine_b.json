@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Todo",
+    "transitions": [
+      {
+        "id":  2
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "In development",
+    "transitions": [
+      {
+        "id":  3,
+        "handler": "check_in-development"
+      },
+      {
+        "id":  4
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Done"
+  },
+  {
+    "id": 4,
+    "name": "Canceled"
+  }
+]

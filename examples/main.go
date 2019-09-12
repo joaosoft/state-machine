@@ -5,40 +5,52 @@ import (
 	state_machine "state-machine"
 )
 
+const (
+	StateMachineA = "A"
+	StateMachineB = "B"
+)
+
 func main() {
-	stateMachine, err := state_machine.New(
-		state_machine.WithTransitionCheckHandler("check_3", Check3),
-	)
-	if err != nil {
+	var err error
+
+	// add transition check handlers
+	state_machine.
+		AddTransitionCheckHandler("check_in-progress", CheckInProgress).
+		AddTransitionCheckHandler("check_in-development", CheckInDevelopment)
+
+	// add state machines
+	if err = state_machine.AddStateMachine(StateMachineA, "/config/state_machine_a.json"); err != nil {
+		panic(err)
+	}
+	if err = state_machine.AddStateMachine(StateMachineB, "/config/state_machine_b.json"); err != nil {
 		panic(err)
 	}
 
-	ok1, err := stateMachine.CheckTransition(1, 2)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("\ntransition from %d to %d ? %t", 1, 2, ok1)
+	// check transitions of state machines
+	stateMachines := []string{StateMachineA, StateMachineB}
+	maxLen := 5
+	ok := false
 
-	ok2, err := stateMachine.CheckTransition(2, 3, "1", 2, true)
-	if err != nil {
-		panic(err)
+	for _, stateMachine := range stateMachines {
+		fmt.Printf("\nState Machine: %s\n", stateMachine)
+		for i := 1; i <= maxLen; i++ {
+			for j := maxLen; j >= 1; j-- {
+				ok, err = state_machine.CheckTransition(stateMachine, i, j, 1, "text", true)
+				if err != nil {
+					panic(err)
+				}
+				fmt.Printf("\ntransition from %d to %d ? %t", i, j, ok)
+			}
+		}
 	}
-	fmt.Printf("\ntransition from %d to %d ? %t", 2, 3, ok2)
-
-	ok3, err := stateMachine.CheckTransition(4, 1)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("\ntransition from %d to %d ? %t", 4, 1, ok3)
-
-	ok4, err := stateMachine.CheckTransition(4, 5)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("\ntransition from %d to %d ? %t", 4, 5, ok4)
 }
 
-func Check3(args ...interface{}) (bool, error) {
-	fmt.Printf("\nexecuting check 3 handler with %+v", args)
+func CheckInProgress(args ...interface{}) (bool, error) {
+	fmt.Printf("\nexecuting check in-progress handler with %+v", args)
+	return true, nil
+}
+
+func CheckInDevelopment(args ...interface{}) (bool, error) {
+	fmt.Printf("\nexecuting check in-development handler with %+v", args)
 	return true, nil
 }

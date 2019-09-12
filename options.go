@@ -28,9 +28,3 @@ func WithLogLevel(level logger.Level) StateMachineOption {
 	}
 }
 
-// WithTransitionCheckHandler ...
-func WithTransitionCheckHandler(name string, handler TransitionCheckHandler) StateMachineOption {
-	return func(stateMachine *StateMachine) {
-		stateMachine.transitionCheckHandlers[name] = handler
-	}
-}

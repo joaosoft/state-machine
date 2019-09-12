@@ -13,21 +13,9 @@ type AppConfig struct {
 
 // StateMachineConfig ...
 type StateMachineConfig struct {
-	States    []StateConfig
 	Log       struct {
 		Level string `json:"level"`
 	} `json:"log"`
-}
-
-type StateConfig struct {
-	Id          int                `json:"id"`
-	Name        string             `json:"name"`
-	Transitions []TransitionConfig `json:"transitions"`
-}
-
-type TransitionConfig struct {
-	Id      int    `json:"id"`
-	Handler string `json:"handler"`
 }
 
 // NewConfig ...
