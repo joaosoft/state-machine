@@ -21,7 +21,7 @@ go get github.com/joaosoft/state-machine
 This example is available in the project at [state-machine/examples](https://github.com/joaosoft/state-machine/tree/master/examples)
 
 >### Configuration
-```
+```json
 {
   "state_machine": {
     "log": {
