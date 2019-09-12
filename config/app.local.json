@@ -1,0 +1,44 @@
+{
+  "state_machine": {
+    "log": {
+      "level": "info"
+    },
+    "states": [
+      {
+        "id": 1,
+        "name": "New",
+        "transitions": [
+          {
+            "id":  2
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "In progress",
+        "transitions": [
+          {
+            "id":  3,
+            "handler": "check_3"
+          },
+          {
+            "id":  4
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "name": "Approved"
+      },
+      {
+        "id": 4,
+        "name": "Denied"
+      }
+    ]
+  },
+  "manager": {
+    "log": {
+      "level": "info"
+    }
+  }
+}
