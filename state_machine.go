@@ -36,11 +36,13 @@ type StateMachine struct {
 }
 
 type State struct {
+	Id          int                 `json:"id"`
 	Name        string              `json:"name"`
 	Transitions map[int]*Transition `json:"transitions"`
 }
 
 type Transition struct {
+	Id      int                    `json:"id"`
 	Name    string                 `json:"name"`
 	Handler TransitionCheckHandler `json:"handler"`
 }
@@ -78,6 +80,7 @@ func (stateMachine *StateMachine) Add(name, file string) error {
 	states := make(StateMap)
 	for _, stateConfig := range config {
 		state := &State{
+			Id:          stateConfig.Id,
 			Name:        stateConfig.Name,
 			Transitions: make(map[int]*Transition),
 		}
@@ -90,6 +93,7 @@ func (stateMachine *StateMachine) Add(name, file string) error {
 				}
 			}
 			state.Transitions[transition.Id] = &Transition{
+				Id:      transition.Id,
 				Handler: handler,
 			}
 		}
