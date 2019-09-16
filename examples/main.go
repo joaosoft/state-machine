@@ -43,6 +43,12 @@ func main() {
 			}
 		}
 	}
+
+	// Get all transitions
+	transitions, err := state_machine.GetTransitions(StateMachineA, 1)
+	for _, transition := range transitions {
+		fmt.Printf("\ncan make transition to %s", transition.Name)
+	}
 }
 
 func CheckInProgress(args ...interface{}) (bool, error) {

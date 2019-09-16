@@ -25,7 +25,7 @@ type TransitionConfig struct {
 	Handler string `json:"handler"`
 }
 
-type StateMap map[int]State
+type StateMap map[int]*State
 
 type TransitionCheckHandler func(args ...interface{}) (bool, error)
 type StateMachine struct {
@@ -36,8 +36,13 @@ type StateMachine struct {
 }
 
 type State struct {
-	Name        string                         `json:"name"`
-	Transitions map[int]TransitionCheckHandler `json:"transitions"`
+	Name        string              `json:"name"`
+	Transitions map[int]*Transition `json:"transitions"`
+}
+
+type Transition struct {
+	Name    string                 `json:"name"`
+	Handler TransitionCheckHandler `json:"handler"`
 }
 
 func New(options ...StateMachineOption) (*StateMachine, error) {
@@ -72,9 +77,9 @@ func (stateMachine *StateMachine) Add(name, file string) error {
 
 	states := make(StateMap)
 	for _, stateConfig := range config {
-		state := State{
+		state := &State{
 			Name:        stateConfig.Name,
-			Transitions: make(map[int]TransitionCheckHandler),
+			Transitions: make(map[int]*Transition),
 		}
 
 		for _, transition := range stateConfig.Transitions {
@@ -84,11 +89,21 @@ func (stateMachine *StateMachine) Add(name, file string) error {
 					handler = h
 				}
 			}
-			state.Transitions[transition.Id] = handler
+			state.Transitions[transition.Id] = &Transition{
+				Handler: handler,
+			}
 		}
 
 		states[stateConfig.Id] = state
 	}
+
+	// load all transition names
+	for _, state := range states {
+		for key, transition := range state.Transitions {
+			transition.Name = states[key].Name
+		}
+	}
+
 	stateMachine.stateMachineMap[name] = states
 
 	return nil
@@ -102,14 +117,25 @@ func (stateMachine *StateMachine) AddTransitionCheckHandler(name string, handler
 func (stateMachine *StateMachine) CheckTransition(name string, from int, to int, args ...interface{}) (bool, error) {
 	if states, ok := stateMachine.stateMachineMap[name]; ok {
 		if state, ok := states[from]; ok {
-			if handler, ok := state.Transitions[to]; ok {
+			if transition, ok := state.Transitions[to]; ok {
 				var err error
-				if handler != nil {
-					ok, err = handler(args)
+				if transition.Handler != nil {
+					ok, err = transition.Handler(args)
 				}
 				return ok && err == nil, err
 			}
 		}
 	}
 	return false, nil
+}
+
+func (stateMachine *StateMachine) GetTransitions(name string, from int) (transitions []*Transition, err error) {
+	if states, ok := stateMachine.stateMachineMap[name]; ok {
+		if state, ok := states[from]; ok {
+			for _, transition := range state.Transitions {
+				transitions = append(transitions, transition)
+			}
+		}
+	}
+	return transitions, nil
 }
