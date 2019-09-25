@@ -1,7 +1,7 @@
 # state-machine
 [![Build Status](https://travis-ci.org/joaosoft/state-machine.svg?branch=master)](https://travis-ci.org/joaosoft/state-machine) | [![codecov](https://codecov.io/gh/joaosoft/state-machine/branch/master/graph/badge.svg)](https://codecov.io/gh/joaosoft/state-machine) | [![Go Report Card](https://goreportcard.com/badge/github.com/joaosoft/state-machine)](https://goreportcard.com/report/github.com/joaosoft/state-machine) | [![GoDoc](https://godoc.org/github.com/joaosoft/state-machine?status.svg)](https://godoc.org/github.com/joaosoft/state-machine)
 
-A simple state machine checker.
+A simple state machine.
 
 ###### If i miss something or you have something interesting, please be part of this project. Let me know! My contact is at the end.
 
@@ -21,49 +21,168 @@ go get github.com/joaosoft/state-machine
 This example is available in the project at [state-machine/examples](https://github.com/joaosoft/state-machine/tree/master/examples)
 
 >### Configuration
+#### State machine A
 ```json
 {
-  "state_machine": {
-    "log": {
-      "level": "info"
+  "state_machine": [
+    {
+      "id": 1,
+      "name": "New",
+      "transitions": [
+        {
+          "id": 2,
+          "check": [
+            "check_in-progress"
+          ],
+          "execute": [
+            "execute_in-progress"
+          ]
+        }
+      ]
     },
-    "states": [
+    {
+      "id": 2,
+      "name": "In progress",
+      "transitions": [
+        {
+          "id": 3,
+          "check": [
+            "check_in-progress_to_approved"
+          ],
+          "execute": [
+            "execute_approved"
+          ],
+          "events": {
+            "success": [
+              "event_success_approved"
+            ],
+            "error": [
+              "event_error_approved"
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "check": [
+            "check_in-progress_to_denied"
+          ],
+          "execute": [
+            "execute_denied"
+          ],
+          "events": {
+            "success": [
+              "event_success_denied"
+            ],
+            "error": [
+              "event_error_denied"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Approved"
+    },
+    {
+      "id": 4,
+      "name": "Denied"
+    }
+  ],
+  "users": {
+    "operator": [
       {
         "id": 1,
-        "name": "New",
-        "transitions": [
-          {
-            "id":  2
-          }
-        ]
+        "transitions": [2]
       },
       {
         "id": 2,
-        "name": "In progress",
-        "transitions": [
-          {
-            "id":  3,
-            "handler": "check_3"
-          },
-          {
-            "id":  4
-          }
-        ]
-      },
-      {
-        "id": 3,
-        "name": "Approved"
-      },
-      {
-        "id": 4,
-        "name": "Denied"
+        "transitions": [3, 4]
       }
     ]
-  },
-  "manager": {
-    "log": {
-      "level": "info"
+  }
+}
+```
+
+#### State machine B
+```json
+{
+  "state_machine": [
+    {
+      "id": 1,
+      "name": "Todo",
+      "transitions": [
+        {
+          "id": 2,
+          "check": [
+            "check_in-development"
+          ],
+          "execute": [
+            "execute_in-development"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "In development",
+      "transitions": [
+        {
+          "id": 3,
+          "check": [
+            "check_in-development_to_done"
+          ],
+          "execute": [
+            "execute_in-development"
+          ],
+          "events": {
+            "success": [
+              "event_success_in-development"
+            ],
+            "error": [
+              "event_error_in-development"
+            ]
+          }
+        },
+        {
+          "id": 4,
+          "check": [
+            "check_in-development_to_canceled"
+          ],
+          "execute": [
+            "execute_canceled"
+          ],
+          "events": {
+            "success": [
+              "event_success_canceled"
+            ],
+            "error": [
+              "event_error_canceled"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Done"
+    },
+    {
+      "id": 4,
+      "name": "Canceled"
     }
+  ],
+  "users": {
+    "worker": [
+      {
+        "id": 1,
+        "transitions": [2]
+      },
+      {
+        "id": 2,
+        "transitions": [3, 4]
+      }
+    ]
   }
 }
 ```
@@ -71,17 +190,29 @@ This example is available in the project at [state-machine/examples](https://git
 >### Implementation
 ```go
 const (
-	StateMachineA = "A"
-	StateMachineB = "B"
+	StateMachineA     = "A"
+	UserStateMachineA = "operator"
+
+	StateMachineB     = "B"
+	UserStateMachineB = "worker"
 )
 
 func main() {
 	var err error
 
-	// add transition check handlers
+	// add handlers
 	state_machine.
-		AddTransitionCheckHandler("check_in-progress", CheckInProgress).
-		AddTransitionCheckHandler("check_in-development", CheckInDevelopment)
+		// state machine A
+		AddCheckHandler("check_in-progress", CheckInProgress).
+		AddExecuteHandler("execute_in-progress", ExecuteInProgress).
+		AddEventOnSuccessHandler("event_success_in-progress", EventOnSuccessInProgress).
+		AddEventOnErrorHandler("event_error_in-progress", EventOnErrorInProgress).
+
+		// state machine B
+		AddCheckHandler("check_in-development", CheckInDevelopment).
+		AddExecuteHandler("execute_in-development", ExecuteInDevelopment).
+		AddEventOnSuccessHandler("event_success_in-development", EventOnSuccessInDevelopment).
+		AddEventOnErrorHandler("event_error_in-development", EventOnErrorInDevelopment)
 
 	// add state machines
 	if err = state_machine.AddStateMachine(StateMachineA, "/config/state_machine_a.json"); err != nil {
@@ -93,37 +224,41 @@ func main() {
 
 	// check transitions of state machines
 	stateMachines := []string{StateMachineA, StateMachineB}
+	stateMachinesUsers := []string{UserStateMachineA, UserStateMachineB}
 	maxLen := 5
 	ok := false
 
-	for _, stateMachine := range stateMachines {
-		fmt.Printf("\nState Machine: %s\n", stateMachine)
+	for index, stateMachine := range stateMachines {
+		fmt.Printf("\n\n\nState Machine: %s\n", stateMachine)
 		for i := 1; i <= maxLen; i++ {
 			for j := maxLen; j >= 1; j-- {
-				ok, err = state_machine.CheckTransition(stateMachine, i, j, 1, "text", true)
+				ok, err = state_machine.CheckTransition(stateMachine, stateMachinesUsers[index], i, j, 1, "text", true)
 				if err != nil {
 					panic(err)
 				}
-				fmt.Printf("\ntransition from %d to %d ? %t", i, j, ok)
+				fmt.Printf("\ntransition from %d to %d  with user %s ? %t", i, j, stateMachinesUsers[index], ok)
 			}
 		}
 	}
 
-    // Get all transitions
-	transitions, err := state_machine.GetTransitions(StateMachineA, 1)
+	// get all transitions of state machine A
+	transitions, err := state_machine.GetTransitions(StateMachineA, UserStateMachineA, 1)
+	if err != nil {
+		panic(err)
+	}
 	for _, transition := range transitions {
 		fmt.Printf("\ncan make transition to %s", transition.Name)
 	}
-}
 
-func CheckInProgress(args ...interface{}) (bool, error) {
-	fmt.Printf("\nexecuting check in-progress handler with %+v", args)
-	return true, nil
-}
+	// execute transaction
+	ok, err = state_machine.ExecuteTransition(StateMachineA, UserStateMachineA, 1, 2)
+	if err != nil {
+		panic(err)
+	}
 
-func CheckInDevelopment(args ...interface{}) (bool, error) {
-	fmt.Printf("\nexecuting check in-development handler with %+v", args)
-	return true, nil
+	if !ok {
+		fmt.Println("transition !ok")
+	}
 }
 ```
 
@@ -131,61 +266,64 @@ func CheckInDevelopment(args ...interface{}) (bool, error) {
 ```
 State Machine: A
 
-transition from 1 to 5 ? false
-transition from 1 to 4 ? false
-transition from 1 to 3 ? false
-transition from 1 to 2 ? true
-transition from 1 to 1 ? false
-transition from 2 to 5 ? false
-transition from 2 to 4 ? true
-executing check in-progress handler with [[[1 text true]]]
-transition from 2 to 3 ? true
-transition from 2 to 2 ? false
-transition from 2 to 1 ? false
-transition from 3 to 5 ? false
-transition from 3 to 4 ? false
-transition from 3 to 3 ? false
-transition from 3 to 2 ? false
-transition from 3 to 1 ? false
-transition from 4 to 5 ? false
-transition from 4 to 4 ? false
-transition from 4 to 3 ? false
-transition from 4 to 2 ? false
-transition from 4 to 1 ? false
-transition from 5 to 5 ? false
-transition from 5 to 4 ? false
-transition from 5 to 3 ? false
-transition from 5 to 2 ? false
-transition from 5 to 1 ? false
+transition from 1 to 5  with user operator ? false
+transition from 1 to 4  with user operator ? false
+transition from 1 to 3  with user operator ? false
+check in-progress handler with [[1 text true]]
+transition from 1 to 2  with user operator ? false
+transition from 1 to 1  with user operator ? false
+transition from 2 to 5  with user operator ? false
+transition from 2 to 4  with user operator ? false
+transition from 2 to 3  with user operator ? false
+transition from 2 to 2  with user operator ? false
+transition from 2 to 1  with user operator ? false
+transition from 3 to 5  with user operator ? false
+transition from 3 to 4  with user operator ? false
+transition from 3 to 3  with user operator ? false
+transition from 3 to 2  with user operator ? false
+transition from 3 to 1  with user operator ? false
+transition from 4 to 5  with user operator ? false
+transition from 4 to 4  with user operator ? false
+transition from 4 to 3  with user operator ? false
+transition from 4 to 2  with user operator ? false
+transition from 4 to 1  with user operator ? false
+transition from 5 to 5  with user operator ? false
+transition from 5 to 4  with user operator ? false
+transition from 5 to 3  with user operator ? false
+transition from 5 to 2  with user operator ? false
+transition from 5 to 1  with user operator ? false
+
+
 State Machine: B
 
-transition from 1 to 5 ? false
-transition from 1 to 4 ? false
-transition from 1 to 3 ? false
-transition from 1 to 2 ? true
-transition from 1 to 1 ? false
-transition from 2 to 5 ? false
-transition from 2 to 4 ? true
-executing check in-development handler with [[[1 text true]]]
-transition from 2 to 3 ? true
-transition from 2 to 2 ? false
-transition from 2 to 1 ? false
-transition from 3 to 5 ? false
-transition from 3 to 4 ? false
-transition from 3 to 3 ? false
-transition from 3 to 2 ? false
-transition from 3 to 1 ? false
-transition from 4 to 5 ? false
-transition from 4 to 4 ? false
-transition from 4 to 3 ? false
-transition from 4 to 2 ? false
-transition from 4 to 1 ? false
-transition from 5 to 5 ? false
-transition from 5 to 4 ? false
-transition from 5 to 3 ? false
-transition from 5 to 2 ? false
-transition from 5 to 1 ? false
+transition from 1 to 5  with user worker ? false
+transition from 1 to 4  with user worker ? false
+transition from 1 to 3  with user worker ? false
+check in-development handler with [[1 text true]]
+transition from 1 to 2  with user worker ? false
+transition from 1 to 1  with user worker ? false
+transition from 2 to 5  with user worker ? false
+transition from 2 to 4  with user worker ? false
+transition from 2 to 3  with user worker ? false
+transition from 2 to 2  with user worker ? false
+transition from 2 to 1  with user worker ? false
+transition from 3 to 5  with user worker ? false
+transition from 3 to 4  with user worker ? false
+transition from 3 to 3  with user worker ? false
+transition from 3 to 2  with user worker ? false
+transition from 3 to 1  with user worker ? false
+transition from 4 to 5  with user worker ? false
+transition from 4 to 4  with user worker ? false
+transition from 4 to 3  with user worker ? false
+transition from 4 to 2  with user worker ? false
+transition from 4 to 1  with user worker ? false
+transition from 5 to 5  with user worker ? false
+transition from 5 to 4  with user worker ? false
+transition from 5 to 3  with user worker ? false
+transition from 5 to 2  with user worker ? false
+transition from 5 to 1  with user worker ? false
 can make transition to In progress
+check in-progress handler with [[]]transition !ok
 ```
 
 ## Known issues
