@@ -6,17 +6,29 @@ import (
 )
 
 const (
-	StateMachineA = "A"
-	StateMachineB = "B"
+	StateMachineA     = "A"
+	UserStateMachineA = "operator"
+
+	StateMachineB     = "B"
+	UserStateMachineB = "worker"
 )
 
 func main() {
 	var err error
 
-	// add transition check handlers
+	// add handlers
 	state_machine.
-		AddTransitionCheckHandler("check_in-progress", CheckInProgress).
-		AddTransitionCheckHandler("check_in-development", CheckInDevelopment)
+		// state machine A
+		AddCheckHandler("check_in-progress", CheckInProgress).
+		AddExecuteHandler("execute_in-progress", ExecuteInProgress).
+		AddEventOnSuccessHandler("event_success_in-progress", EventOnSuccessInProgress).
+		AddEventOnErrorHandler("event_error_in-progress", EventOnErrorInProgress).
+
+		// state machine B
+		AddCheckHandler("check_in-development", CheckInDevelopment).
+		AddExecuteHandler("execute_in-development", ExecuteInDevelopment).
+		AddEventOnSuccessHandler("event_success_in-development", EventOnSuccessInDevelopment).
+		AddEventOnErrorHandler("event_error_in-development", EventOnErrorInDevelopment)
 
 	// add state machines
 	if err = state_machine.AddStateMachine(StateMachineA, "/config/state_machine_a.json"); err != nil {
@@ -28,35 +40,39 @@ func main() {
 
 	// check transitions of state machines
 	stateMachines := []string{StateMachineA, StateMachineB}
+	stateMachinesUsers := []string{UserStateMachineA, UserStateMachineB}
 	maxLen := 5
 	ok := false
 
-	for _, stateMachine := range stateMachines {
-		fmt.Printf("\nState Machine: %s\n", stateMachine)
+	for index, stateMachine := range stateMachines {
+		fmt.Printf("\n\n\nState Machine: %s\n", stateMachine)
 		for i := 1; i <= maxLen; i++ {
 			for j := maxLen; j >= 1; j-- {
-				ok, err = state_machine.CheckTransition(stateMachine, i, j, 1, "text", true)
+				ok, err = state_machine.CheckTransition(stateMachine, stateMachinesUsers[index], i, j, 1, "text", true)
 				if err != nil {
 					panic(err)
 				}
-				fmt.Printf("\ntransition from %d to %d ? %t", i, j, ok)
+				fmt.Printf("\ntransition from %d to %d  with user %s ? %t", i, j, stateMachinesUsers[index], ok)
 			}
 		}
 	}
 
-	// Get all transitions
-	transitions, err := state_machine.GetTransitions(StateMachineA, 1)
+	// get all transitions of state machine A
+	transitions, err := state_machine.GetTransitions(StateMachineA, UserStateMachineA, 1)
+	if err != nil {
+		panic(err)
+	}
 	for _, transition := range transitions {
 		fmt.Printf("\ncan make transition to %s", transition.Name)
 	}
-}
 
-func CheckInProgress(args ...interface{}) (bool, error) {
-	fmt.Printf("\nexecuting check in-progress handler with %+v", args)
-	return true, nil
-}
+	// execute transaction
+	ok, err = state_machine.ExecuteTransition(StateMachineA, UserStateMachineA, 1, 2)
+	if err != nil {
+		panic(err)
+	}
 
-func CheckInDevelopment(args ...interface{}) (bool, error) {
-	fmt.Printf("\nexecuting check in-development handler with %+v", args)
-	return true, nil
+	if !ok {
+		fmt.Println("transition !ok")
+	}
 }

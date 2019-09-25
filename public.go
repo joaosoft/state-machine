@@ -1,17 +1,33 @@
 package state_machine
 
-func AddStateMachine(name, file string) error {
-	return stateMachineInstance.Add(name, file)
+func AddCheckHandler(name string, handler CheckHandler) *StateMachine {
+	return stateMachineInstance.AddCheckHandler(name, handler)
 }
 
-func CheckTransition(stateMachine string, from int, to int, args ...interface{}) (bool, error) {
-	return stateMachineInstance.CheckTransition(stateMachine, from, to, args)
+func AddExecuteHandler(name string, handler ExecuteHandler) *StateMachine {
+	return stateMachineInstance.AddExecuteHandler(name, handler)
 }
 
-func GetTransitions(stateMachine string, from int) ([]*Transition, error) {
-	return stateMachineInstance.GetTransitions(stateMachine, from)
+func AddEventOnSuccessHandler(name string, handler EventHandler) *StateMachine {
+	return stateMachineInstance.AddEventOnSuccessHandler(name, handler)
 }
 
-func AddTransitionCheckHandler(name string, handler TransitionCheckHandler) *StateMachine {
-	return stateMachineInstance.AddTransitionCheckHandler(name, handler)
+func AddEventOnErrorHandler(name string, handler EventHandler) *StateMachine {
+	return stateMachineInstance.AddEventOnErrorHandler(name, handler)
+}
+
+func AddStateMachine(stateMachine, file string) error {
+	return stateMachineInstance.Add(stateMachine, file)
+}
+
+func CheckTransition(stateMachine string, user string, from int, to int, args ...interface{}) (bool, error) {
+	return stateMachineInstance.CheckTransition(stateMachine, user, from, to, args...)
+}
+
+func ExecuteTransition(stateMachine string, user string, from int, to int, args ...interface{}) (bool, error) {
+	return stateMachineInstance.ExecuteTransition(stateMachine, user, from, to, args...)
+}
+
+func GetTransitions(stateMachine string, user string, from int) (transitions []*Transition, err error) {
+	return stateMachineInstance.GetTransitions(stateMachine, user, from)
 }

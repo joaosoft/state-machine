@@ -8,9 +8,9 @@ import (
 type StateMachineOption func(stateMachine *StateMachine)
 
 // Reconfigure ...
-func (stateMachine *StateMachine) Reconfigure(options ...StateMachineOption) {
+func (sm *StateMachine) Reconfigure(options ...StateMachineOption) {
 	for _, option := range options {
-		option(stateMachine)
+		option(sm)
 	}
 }
 

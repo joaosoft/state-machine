@@ -1,60 +1,33 @@
 package state_machine
 
 import (
-	"strings"
-
-	"github.com/joaosoft/manager"
+	"errors"
+	"fmt"
 
 	"github.com/joaosoft/logger"
+	"github.com/joaosoft/manager"
 )
 
 var (
 	stateMachineInstance, _ = New()
 )
 
-type StateConfigList []StateConfig
-
-type StateConfig struct {
-	Id          int                `json:"id"`
-	Name        string             `json:"name"`
-	Transitions []TransitionConfig `json:"transitions"`
-}
-
-type TransitionConfig struct {
-	Id      int    `json:"id"`
-	Handler string `json:"handler"`
-}
-
-type StateMap map[int]*State
-
-type TransitionCheckHandler func(args ...interface{}) (bool, error)
-type StateMachine struct {
-	config                  *StateMachineConfig
-	stateMachineMap         map[string]StateMap
-	transitionCheckHandlers map[string]TransitionCheckHandler
-	logger                  logger.ILogger
-}
-
-type State struct {
-	Id          int                 `json:"id"`
-	Name        string              `json:"name"`
-	Transitions map[int]*Transition `json:"transitions"`
-}
-
-type Transition struct {
-	Id      int                    `json:"id"`
-	Name    string                 `json:"name"`
-	Handler TransitionCheckHandler `json:"handler"`
-}
-
 func New(options ...StateMachineOption) (*StateMachine, error) {
 	config, _, err := NewConfig()
 
 	newStateMachine := &StateMachine{
-		stateMachineMap:         make(map[string]StateMap),
-		transitionCheckHandlers: make(map[string]TransitionCheckHandler),
-		logger:                  logger.NewLogDefault("state_machine", logger.WarnLevel),
-		config:                  config.StateMachine,
+		stateMachineMap:     make(map[string]StateMap),
+		userStateMachineMap: make(UserStateMachine),
+		handlerMap: HandlerMap{
+			Check:   make(map[string]CheckHandler),
+			Execute: make(map[string]ExecuteHandler),
+			Events: EventMap{
+				Success: make(map[string]EventHandler),
+				Error:   make(map[string]EventHandler),
+			},
+		},
+		logger: logger.NewLogDefault("state_machine", logger.WarnLevel),
+		config: config.StateMachine,
 	}
 
 	if err != nil {
@@ -70,74 +43,183 @@ func New(options ...StateMachineOption) (*StateMachine, error) {
 	return newStateMachine, nil
 }
 
-func (stateMachine *StateMachine) Add(name, file string) error {
-	config := StateConfigList{}
+func (sm *StateMachine) Add(stateMachine string, file string) error {
+	config := StateMachineCfg{}
 	_, err := manager.NewSimpleConfig(file, &config)
 	if err != nil {
 		return err
 	}
 
+	// load states
 	states := make(StateMap)
-	for _, stateConfig := range config {
+	for _, stateCfg := range config.StateMachine {
 		state := &State{
-			Id:          stateConfig.Id,
-			Name:        stateConfig.Name,
-			Transitions: make(map[int]*Transition),
+			Id:            stateCfg.Id,
+			Name:          stateCfg.Name,
+			TransitionMap: make(TransitionMap),
 		}
 
-		for _, transition := range stateConfig.Transitions {
-			var handler TransitionCheckHandler
-			if len(strings.TrimSpace(transition.Handler)) > 0 {
-				if h, ok := stateMachine.transitionCheckHandlers[transition.Handler]; ok {
-					handler = h
+		for _, transitionCfg := range stateCfg.Transitions {
+			transition := &Transition{
+				Id: transitionCfg.Id,
+			}
+
+			// check
+			for _, name := range transitionCfg.Check {
+				if handler, ok := sm.handlerMap.Check[name]; ok {
+					transition.Handler.Check = append(transition.Handler.Check, handler)
 				}
 			}
-			state.Transitions[transition.Id] = &Transition{
-				Id:      transition.Id,
-				Handler: handler,
+
+			// execute
+			for _, name := range transitionCfg.Execute {
+				if handler, ok := sm.handlerMap.Execute[name]; ok {
+					transition.Handler.Execute = append(transition.Handler.Execute, handler)
+				}
 			}
+
+			// events
+			// -- success
+			for _, name := range transitionCfg.Events.Success {
+				if handler, ok := sm.handlerMap.Events.Success[name]; ok {
+					transition.Handler.Events.Success = append(transition.Handler.Events.Success, handler)
+				}
+			}
+
+			// -- error
+			for _, name := range transitionCfg.Events.Error {
+				if handler, ok := sm.handlerMap.Events.Error[name]; ok {
+					transition.Handler.Events.Error = append(transition.Handler.Events.Error, handler)
+				}
+			}
+
+			state.TransitionMap[transitionCfg.Id] = transition
 		}
 
-		states[stateConfig.Id] = state
+		states[stateCfg.Id] = state
 	}
 
 	// load all transition names
 	for _, state := range states {
-		for key, transition := range state.Transitions {
-			transition.Name = states[key].Name
+		for idTransition, transition := range state.TransitionMap {
+			if s, ok := states[idTransition]; ok {
+				transition.Name = s.Name
+			} else {
+				return errors.New(fmt.Sprintf("state not found %d", idTransition))
+			}
 		}
 	}
 
-	stateMachine.stateMachineMap[name] = states
+	sm.stateMachineMap[stateMachine] = states
+
+	// load users
+	for user, statesCfg := range config.Users {
+		stateMap := make(StateMap)
+
+		for _, stateCfg := range statesCfg {
+			var state *State
+			if s, ok := states[stateCfg.Id]; ok {
+				state = s
+			} else {
+				return errors.New(fmt.Sprintf("state not found %d", stateCfg.Id))
+			}
+
+			userState := &State{
+				Id:            stateCfg.Id,
+				Name:          state.Name,
+				TransitionMap: make(TransitionMap),
+			}
+
+			for _, idTransition := range stateCfg.Transitions {
+				if transition, ok := state.TransitionMap[idTransition]; ok {
+					userState.TransitionMap[idTransition] = transition
+				} else {
+					return errors.New(fmt.Sprintf("transition from %d to %d not found", stateCfg.Id, idTransition))
+				}
+			}
+
+			stateMap[stateCfg.Id] = userState
+		}
+		newStateMachine := make(StateMachineMap)
+		newStateMachine[stateMachine] = stateMap
+		sm.userStateMachineMap[user] = newStateMachine
+	}
 
 	return nil
 }
 
-func (stateMachine *StateMachine) AddTransitionCheckHandler(name string, handler TransitionCheckHandler) *StateMachine {
-	stateMachine.transitionCheckHandlers[name] = handler
-	return stateMachine
+func (sm *StateMachine) AddCheckHandler(name string, handler CheckHandler) *StateMachine {
+	sm.handlerMap.Check[name] = handler
+	return sm
 }
 
-func (stateMachine *StateMachine) CheckTransition(name string, from int, to int, args ...interface{}) (bool, error) {
-	if states, ok := stateMachine.stateMachineMap[name]; ok {
-		if state, ok := states[from]; ok {
-			if transition, ok := state.Transitions[to]; ok {
-				var err error
-				if transition.Handler != nil {
-					ok, err = transition.Handler(args)
+func (sm *StateMachine) AddExecuteHandler(name string, handler ExecuteHandler) *StateMachine {
+	sm.handlerMap.Execute[name] = handler
+	return sm
+}
+
+func (sm *StateMachine) AddEventOnSuccessHandler(name string, handler EventHandler) *StateMachine {
+	sm.handlerMap.Events.Success[name] = handler
+	return sm
+}
+
+func (sm *StateMachine) AddEventOnErrorHandler(name string, handler EventHandler) *StateMachine {
+	sm.handlerMap.Events.Error[name] = handler
+	return sm
+}
+
+func (sm *StateMachine) CheckTransition(stateMachine string, user string, from int, to int, args ...interface{}) (bool, error) {
+	if stateM, ok := sm.userStateMachineMap[user]; ok {
+		if states, ok := stateM[stateMachine]; ok {
+			if state, ok := states[from]; ok {
+				if transition, ok := state.TransitionMap[to]; ok {
+					var err error
+					for _, handler := range transition.Handler.Check {
+						if ok, err = handler(args); !ok || err != nil {
+							return ok, err
+						}
+					}
 				}
-				return ok && err == nil, err
 			}
 		}
 	}
 	return false, nil
 }
 
-func (stateMachine *StateMachine) GetTransitions(name string, from int) (transitions []*Transition, err error) {
-	if states, ok := stateMachine.stateMachineMap[name]; ok {
-		if state, ok := states[from]; ok {
-			for _, transition := range state.Transitions {
-				transitions = append(transitions, transition)
+func (sm *StateMachine) ExecuteTransition(stateMachine string, user string, from int, to int, args ...interface{}) (bool, error) {
+	if stateM, ok := sm.userStateMachineMap[user]; ok {
+		if states, ok := stateM[stateMachine]; ok {
+			if state, ok := states[from]; ok {
+				if transition, ok := state.TransitionMap[to]; ok {
+					var err error
+					for _, handler := range transition.Handler.Check {
+						if ok, err = handler(args); !ok || err != nil {
+							if err != nil {
+								return ok, err
+							}
+							return false, nil
+						}
+					}
+
+					for _, handler := range transition.Handler.Execute {
+						if ok, err = handler(args); err != nil {
+							return ok, err
+						}
+					}
+				}
+			}
+		}
+	}
+	return true, nil
+}
+
+func (sm *StateMachine) GetTransitions(stateMachine string, user string, from int) (transitions []*Transition, err error) {
+	if stateM, ok := sm.userStateMachineMap[user]; ok {
+		if states, ok := stateM[stateMachine]; ok {
+			if state, ok := states[from]; ok {
+				for _, transition := range state.TransitionMap {
+					transitions = append(transitions, transition)
+				}
 			}
 		}
 	}
