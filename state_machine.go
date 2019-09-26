@@ -176,7 +176,17 @@ func (sm *StateMachine) CheckTransition(stateMachine string, user string, from i
 					var err error
 					for _, handler := range transition.Handler.Check {
 						if ok, err = handler(args); !ok || err != nil {
-							return ok, err
+							if err != nil {
+								for _, handler := range transition.Handler.Events.Error {
+									if eventErr := handler(args); eventErr != nil {
+										if eventErr != nil {
+											return ok, eventErr
+										}
+									}
+								}
+								return ok, err
+							}
+							return false, nil
 						}
 					}
 				}
@@ -195,6 +205,13 @@ func (sm *StateMachine) ExecuteTransition(stateMachine string, user string, from
 					for _, handler := range transition.Handler.Check {
 						if ok, err = handler(args); !ok || err != nil {
 							if err != nil {
+								for _, handler := range transition.Handler.Events.Error {
+									if eventErr := handler(args); eventErr != nil {
+										if eventErr != nil {
+											return ok, eventErr
+										}
+									}
+								}
 								return ok, err
 							}
 							return false, nil
@@ -203,7 +220,25 @@ func (sm *StateMachine) ExecuteTransition(stateMachine string, user string, from
 
 					for _, handler := range transition.Handler.Execute {
 						if ok, err = handler(args); err != nil {
-							return ok, err
+							if err != nil {
+								for _, handler := range transition.Handler.Events.Error {
+									if eventErr := handler(args); eventErr != nil {
+										if eventErr != nil {
+											return ok, eventErr
+										}
+									}
+								}
+								return ok, err
+							}
+							return false, nil
+						}
+					}
+
+					for _, handler := range transition.Handler.Events.Success {
+						if eventErr := handler(args); eventErr != nil {
+							if eventErr != nil {
+								return ok, eventErr
+							}
 						}
 					}
 				}
