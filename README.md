@@ -21,7 +21,7 @@ go get github.com/joaosoft/state-machine
 This example is available in the project at [state-machine/examples](https://github.com/joaosoft/state-machine/tree/master/examples)
 
 >### Configuration
-#### State machine A
+#### State machine A (yaml)
 ```yaml
 state_machine:
   -
@@ -99,7 +99,7 @@ users:
       id: 4
 ```
 
-#### State machine B
+#### State machine B (json)
 ```json
 {
   "state_machine": [
