@@ -6,26 +6,6 @@ import (
 	"github.com/joaosoft/logger"
 )
 
-type StateMachineCfg struct {
-	StateMachine []struct {
-		Id          int    `json:"id" yaml:"id"`
-		Name        string `json:"name" yaml:"name"`
-		Transitions []struct {
-			Id      int      `json:"id" yaml:"id"`
-			Check   []string `json:"check" yaml:"check"`
-			Execute []string `json:"execute" yaml:"execute"`
-			Events  struct {
-				Success []string `json:"success" yaml:"success"`
-				Error   []string `json:"error" yaml:"error"`
-			} `json:"events" yaml:"events"`
-		} `json:"transitions" yaml:"transitions"`
-	} `json:"state_machine" yaml:"state_machine"`
-	Users map[string][]struct {
-		Id          int   `json:"id" yaml:"id"`
-		Transitions []int `json:"transitions" yaml:"transitions"`
-	} `json:"users" yaml:"users"`
-}
-
 type StateMap map[int]*State
 
 type CheckHandler func(args ...interface{}) (bool, error)
@@ -44,7 +24,6 @@ type Handlers struct {
 
 type StateMachine struct {
 	config              *StateMachineConfig
-	stateMachineMap     StateMachineMap
 	userStateMachineMap UserStateMachineMap
 	handlers            *Handlers
 	logger              logger.ILogger
@@ -82,7 +61,7 @@ type Events struct {
 type HandlersMap struct {
 	Check   map[string]CheckHandler   `json:"check"`
 	Execute map[string]ExecuteHandler `json:"execute"`
-	Events  *EventMap                  `json:"events"`
+	Events  *EventMap                 `json:"events"`
 }
 
 type EventMap struct {

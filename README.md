@@ -83,14 +83,20 @@ users:
       id: 1
       transitions:
         -
-          2
+          id: 2
+          execute:
+            - "execute_new_to_in-progress"
     -
       id: 2
       transitions:
         -
-          3
+          id: 3
         -
-          4
+          id: 4
+    -
+      id: 3
+    -
+      id: 4
 ```
 
 #### State machine B
@@ -165,11 +171,28 @@ users:
     "worker": [
       {
         "id": 1,
-        "transitions": [2]
+        "transitions": [
+          {
+            "id": 2
+          }
+        ]
       },
       {
         "id": 2,
-        "transitions": [3, 4]
+        "transitions": [
+          {
+            "id": 3
+          },
+          {
+            "id": 4
+          }
+        ]
+      },
+      {
+        "id": 3
+      },
+      {
+        "id": 4
       }
     ]
   }
@@ -280,7 +303,7 @@ State Machine: A
 transition from 1 to 4  with user operator ? false
 transition from 1 to 3  with user operator ? false
 check in-progress handler with [1 text true]
-transition from 1 to 2  with user operator ? false
+
 transition from 1 to 1  with user operator ? false
 check in-progress to denied handler with [1 text true]
 transition from 2 to 4  with user operator ? false

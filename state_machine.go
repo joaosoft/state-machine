@@ -17,7 +17,6 @@ func New(options ...StateMachineOption) (*StateMachine, error) {
 	config, _, err := NewConfig()
 
 	newStateMachine := &StateMachine{
-		stateMachineMap:     make(StateMachineMap),
 		userStateMachineMap: make(UserStateMachineMap),
 		handlers: &Handlers{
 			handlersMap: &HandlersMap{
@@ -67,14 +66,15 @@ func (h *Handlers) initStateMachineHandlers(stateMachine StateMachineType) {
 
 func (sm *StateMachine) validate(stateMachine StateMachineType, user UserType, states ...int) (bool, error) {
 	var ok bool
+	var stateMachineMap StateMachineMap
 	var stateMap StateMap
 
-	if _, ok = sm.userStateMachineMap[user]; !ok {
+	if stateMachineMap, ok = sm.userStateMachineMap[user]; !ok {
 		return false, errors.New(fmt.Sprintf("user [%s] not found", user))
 	}
 
-	if stateMap, ok = sm.stateMachineMap[stateMachine]; !ok {
-		return false, errors.New(fmt.Sprintf("state machine [%s] not found", user))
+	if stateMap, ok = stateMachineMap[stateMachine]; !ok {
+		return false, errors.New(fmt.Sprintf("state machine [%s] not found", stateMachine))
 	} else {
 		for _, state := range states {
 			if _, ok = stateMap[state]; !ok {
@@ -84,6 +84,62 @@ func (sm *StateMachine) validate(stateMachine StateMachineType, user UserType, s
 	}
 
 	return true, nil
+}
+
+func (h *Handlers) getCheckHandler(stateMachine StateMachineType, name string) (CheckHandler, error) {
+	if stateM, ok := h.stateMachineHandlersMap[stateMachine]; ok {
+		if handler, ok := stateM.Check[name]; ok {
+			return handler, nil
+		}
+	}
+
+	if handler, ok := h.handlersMap.Check[name]; ok {
+		return handler, nil
+	} else {
+		return nil, errors.New(fmt.Sprintf("check handler [%s] not found", name))
+	}
+}
+
+func (h *Handlers) getExecuteHandler(stateMachine StateMachineType, name string) (ExecuteHandler, error) {
+	if stateM, ok := h.stateMachineHandlersMap[stateMachine]; ok {
+		if handler, ok := stateM.Execute[name]; ok {
+			return handler, nil
+		}
+	}
+
+	if handler, ok := h.handlersMap.Execute[name]; ok {
+		return handler, nil
+	} else {
+		return nil, errors.New(fmt.Sprintf("execute handler [%s] not found", name))
+	}
+}
+
+func (h *Handlers) getEventSuccessHandler(stateMachine StateMachineType, name string) (EventHandler, error) {
+	if stateM, ok := h.stateMachineHandlersMap[stateMachine]; ok {
+		if handler, ok := stateM.Events.Success[name]; ok {
+			return handler, nil
+		}
+	}
+
+	if handler, ok := h.handlersMap.Events.Success[name]; ok {
+		return handler, nil
+	} else {
+		return nil, errors.New(fmt.Sprintf("event success handler [%s] not found", name))
+	}
+}
+
+func (h *Handlers) getEventErrorHandler(stateMachine StateMachineType, name string) (EventHandler, error) {
+	if stateM, ok := h.stateMachineHandlersMap[stateMachine]; ok {
+		if handler, ok := stateM.Events.Error[name]; ok {
+			return handler, nil
+		}
+	}
+
+	if handler, ok := h.handlersMap.Events.Error[name]; ok {
+		return handler, nil
+	} else {
+		return nil, errors.New(fmt.Sprintf("event error handler [%s] not found", name))
+	}
 }
 
 func (sm *StateMachine) Add(stateMachine StateMachineType, file string) error {
@@ -96,8 +152,11 @@ func (sm *StateMachine) Add(stateMachine StateMachineType, file string) error {
 		return err
 	}
 
-	// load states
+	stateMachineMap := make(StateMachineMap)
 	states := make(StateMap)
+	stateMachineMap[stateMachine] = states
+
+	// load state machine
 	for _, stateCfg := range config.StateMachine {
 
 		state := &State{
@@ -112,80 +171,28 @@ func (sm *StateMachine) Add(stateMachine StateMachineType, file string) error {
 			}
 
 			// check
-			for _, name := range transitionCfg.Check {
-				enc := false
-				if stateM, ok := sm.handlers.stateMachineHandlersMap[stateMachine]; ok {
-					if handler, ok := stateM.Check[name]; ok {
-						enc = true
-						transition.Handler.Check = append(transition.Handler.Check, handler)
-					}
-				}
-
-				if !enc {
-					if handler, ok := sm.handlers.handlersMap.Check[name]; ok {
-						transition.Handler.Check = append(transition.Handler.Check, handler)
-					} else {
-						return errors.New(fmt.Sprintf("check handler [%s] not found", name))
-					}
-				}
+			transition.Handler.Check, err = transitionCfg.getCheckHandlers(stateMachine, sm.handlers)
+			if err != nil {
+				return err
 			}
 
 			// execute
-			for _, name := range transitionCfg.Execute {
-				enc := false
-				if stateM, ok := sm.handlers.stateMachineHandlersMap[stateMachine]; ok {
-					if handler, ok := stateM.Execute[name]; ok {
-						enc = true
-						transition.Handler.Execute = append(transition.Handler.Execute, handler)
-					}
-				}
-
-				if !enc {
-					if handler, ok := sm.handlers.handlersMap.Execute[name]; ok {
-						transition.Handler.Execute = append(transition.Handler.Execute, handler)
-					} else {
-						return errors.New(fmt.Sprintf("execute handler [%s] not found", name))
-					}
-				}
+			transition.Handler.Execute, err = transitionCfg.getExecuteHandlers(stateMachine, sm.handlers)
+			if err != nil {
+				return err
 			}
 
 			// events
 			// -- success
-			for _, name := range transitionCfg.Events.Success {
-				enc := false
-				if stateM, ok := sm.handlers.stateMachineHandlersMap[stateMachine]; ok {
-					if handler, ok := stateM.Events.Success[name]; ok {
-						enc = true
-						transition.Handler.Events.Success = append(transition.Handler.Events.Success, handler)
-					}
-				}
-
-				if !enc {
-					if handler, ok := sm.handlers.handlersMap.Events.Success[name]; ok {
-						transition.Handler.Events.Success = append(transition.Handler.Events.Success, handler)
-					} else {
-						return errors.New(fmt.Sprintf("event success handler [%s] not found", name))
-					}
-				}
+			transition.Handler.Events.Success, err = transitionCfg.getEventSuccessHandlers(stateMachine, sm.handlers)
+			if err != nil {
+				return err
 			}
 
 			// -- error
-			for _, name := range transitionCfg.Events.Error {
-				enc := false
-				if stateM, ok := sm.handlers.stateMachineHandlersMap[stateMachine]; ok {
-					if handler, ok := stateM.Events.Error[name]; ok {
-						enc = true
-						transition.Handler.Events.Error = append(transition.Handler.Events.Error, handler)
-					}
-				}
-
-				if !enc {
-					if handler, ok := sm.handlers.handlersMap.Events.Error[name]; ok {
-						transition.Handler.Events.Error = append(transition.Handler.Events.Error, handler)
-					} else {
-						return errors.New(fmt.Sprintf("event error handler [%s] not found", name))
-					}
-				}
+			transition.Handler.Events.Error, err = transitionCfg.getEventErrorHandlers(stateMachine, sm.handlers)
+			if err != nil {
+				return err
 			}
 
 			state.TransitionMap[transitionCfg.Id] = transition
@@ -194,50 +201,92 @@ func (sm *StateMachine) Add(stateMachine StateMachineType, file string) error {
 		states[stateCfg.Id] = state
 	}
 
-	// load all transition names
-	for _, state := range states {
-		for idTransition, transition := range state.TransitionMap {
-			if s, ok := states[idTransition]; ok {
-				transition.Name = s.Name
-			} else {
-				return errors.New(fmt.Sprintf("state not found %d", idTransition))
-			}
-		}
-	}
-
-	sm.stateMachineMap[stateMachine] = states
-
-	// load users
+	// load users state machine
 	for user, statesCfg := range config.Users {
 		stateMap := make(StateMap)
 
 		for _, stateCfg := range statesCfg {
 			var state *State
-			if s, ok := states[stateCfg.Id]; ok {
-				state = s
-			} else {
+			var ok bool
+
+			// check if state is valid !
+			if state, ok = states[stateCfg.Id]; !ok {
 				return errors.New(fmt.Sprintf("state not found %d", stateCfg.Id))
 			}
 
 			userState := &State{
-				Id:            stateCfg.Id,
+				Id:            state.Id,
 				Name:          state.Name,
 				TransitionMap: make(TransitionMap),
 			}
 
-			for _, idTransition := range stateCfg.Transitions {
-				if transition, ok := state.TransitionMap[idTransition]; ok {
-					userState.TransitionMap[idTransition] = transition
-				} else {
-					return errors.New(fmt.Sprintf("transition from %d to %d not found", stateCfg.Id, idTransition))
+			for _, transitionCfg := range stateCfg.Transitions {
+
+				// check if transition is valid !
+				var stateTransition *State
+				if stateTransition, ok = states[transitionCfg.Id]; !ok {
+					return errors.New(fmt.Sprintf("state not found %d", stateCfg.Id))
 				}
+
+				var transition *Transition
+				if transition, ok = states[stateCfg.Id].TransitionMap[transitionCfg.Id]; !ok {
+					return errors.New(fmt.Sprintf("transition from %d to %d not found", stateCfg.Id, transitionCfg.Id))
+				}
+
+				userTransition := &Transition{
+					Id:   transition.Id,
+					Name: stateTransition.Name,
+					Handler: Handler{
+						Check:   append([]CheckHandler{}, transition.Handler.Check...),
+						Execute: append([]ExecuteHandler{}, transition.Handler.Execute...),
+						Events: Events{
+							Success: append([]EventHandler{}, transition.Handler.Events.Success...),
+							Error:   append([]EventHandler{}, transition.Handler.Events.Error...),
+						},
+					},
+				}
+
+				// add specific handlers for the user
+
+				// check
+				checkHandlers, err := transitionCfg.getCheckHandlers(stateMachine, sm.handlers)
+				if err != nil {
+					return err
+				}
+				transition.Handler.Check = append(transition.Handler.Check, checkHandlers...)
+
+				// execute
+				executeHandlers, err := transitionCfg.getExecuteHandlers(stateMachine, sm.handlers)
+				if err != nil {
+					return err
+				}
+				transition.Handler.Execute = append(transition.Handler.Execute, executeHandlers...)
+
+				// events
+				// -- success
+				eventSuccessHandlers, err := transitionCfg.getEventSuccessHandlers(stateMachine, sm.handlers)
+				if err != nil {
+					return err
+				}
+				transition.Handler.Events.Success = append(transition.Handler.Events.Success, eventSuccessHandlers...)
+
+				// -- error
+				eventErrorHandlers, err := transitionCfg.getEventErrorHandlers(stateMachine, sm.handlers)
+				if err != nil {
+					return err
+				}
+				transition.Handler.Events.Error = append(transition.Handler.Events.Error, eventErrorHandlers...)
+
+				userState.TransitionMap[userTransition.Id] = userTransition
 			}
 
 			stateMap[stateCfg.Id] = userState
 		}
-		newStateMachine := make(StateMachineMap)
-		newStateMachine[stateMachine] = stateMap
-		sm.userStateMachineMap[UserType(user)] = newStateMachine
+
+		if _, ok := sm.userStateMachineMap[UserType(user)]; !ok {
+			sm.userStateMachineMap[UserType(user)] = make(StateMachineMap)
+		}
+		sm.userStateMachineMap[UserType(user)][stateMachine] = stateMap
 	}
 
 	return nil

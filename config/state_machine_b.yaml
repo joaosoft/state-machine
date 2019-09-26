@@ -51,17 +51,22 @@ state_machine:
   -
     id: 4
     name: "Canceled"
+
 users:
   worker:
     -
       id: 1
       transitions:
         -
-          2
+          id: 2
     -
       id: 2
       transitions:
         -
-          3
+          id: 3
         -
-          4
+          id: 4
+    -
+      id: 3
+    -
+      id: 4

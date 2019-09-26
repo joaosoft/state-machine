@@ -68,11 +68,28 @@
     "operator": [
       {
         "id": 1,
-        "transitions": [2]
+        "transitions": [
+          {
+            "id": 2
+          }
+        ]
       },
       {
         "id": 2,
-        "transitions": [3, 4]
+        "transitions": [
+          {
+            "id": 3
+          },
+          {
+            "id": 4
+          }
+        ]
+      },
+      {
+        "id": 3
+      },
+      {
+        "id": 4
       }
     ]
   }
