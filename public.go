@@ -20,14 +20,14 @@ func AddStateMachine(stateMachine, file string) error {
 	return stateMachineInstance.Add(stateMachine, file)
 }
 
-func CheckTransition(stateMachine string, user string, from int, to int, args ...interface{}) (bool, error) {
+func CheckTransition(stateMachine string, user User, from int, to int, args ...interface{}) (bool, error) {
 	return stateMachineInstance.CheckTransition(stateMachine, user, from, to, args...)
 }
 
-func ExecuteTransition(stateMachine string, user string, from int, to int, args ...interface{}) (bool, error) {
+func ExecuteTransition(stateMachine string, user User, from int, to int, args ...interface{}) (bool, error) {
 	return stateMachineInstance.ExecuteTransition(stateMachine, user, from, to, args...)
 }
 
-func GetTransitions(stateMachine string, user string, from int) (transitions []*Transition, err error) {
+func GetTransitions(stateMachine string, user User, from int) (transitions []*Transition, err error) {
 	return stateMachineInstance.GetTransitions(stateMachine, user, from)
 }

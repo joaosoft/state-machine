@@ -6,11 +6,11 @@ import (
 )
 
 const (
-	StateMachineA     = "A"
-	UserStateMachineA = "operator"
+	StateMachineA                        = "A"
+	UserStateMachineA state_machine.User = "operator"
 
-	StateMachineB     = "B"
-	UserStateMachineB = "worker"
+	StateMachineB                        = "B"
+	UserStateMachineB state_machine.User = "worker"
 )
 
 func main() {
@@ -20,9 +20,24 @@ func main() {
 	state_machine.
 		// state machine A
 		AddCheckHandler("check_in-progress", CheckInProgress).
+		AddCheckHandler("check_in-progress_to_approved", ExecuteInProgressToApproved).
+		AddCheckHandler("check_in-progress_to_denied", ExecuteInProgressToDenied).
+		AddCheckHandler("check_in-development_to_done", ExecuteInProgressToDone).
+		AddCheckHandler("check_in-development_to_canceled", ExecuteInProgressToCanceled).
 		AddExecuteHandler("execute_in-progress", ExecuteInProgress).
+		AddExecuteHandler("execute_approved", ExecuteApproved).
+		AddExecuteHandler("execute_denied", ExecuteDenied).
+		AddExecuteHandler("execute_canceled", ExecuteCanceled).
 		AddEventOnSuccessHandler("event_success_in-progress", EventOnSuccessInProgress).
 		AddEventOnErrorHandler("event_error_in-progress", EventOnErrorInProgress).
+		AddEventOnSuccessHandler("event_success_approved", EventOnSuccessApproved).
+		AddEventOnErrorHandler("event_error_approved", EventOnErrorApproved).
+		AddEventOnSuccessHandler("event_success_denied", EventOnSuccessDenied).
+		AddEventOnErrorHandler("event_error_denied", EventOnErrorDenied).
+		AddEventOnSuccessHandler("event_success_done", EventOnSuccessDone).
+		AddEventOnErrorHandler("event_error_done", EventOnErrorDone).
+		AddEventOnSuccessHandler("event_success_canceled", EventOnSuccessCanceled).
+		AddEventOnErrorHandler("event_error_canceled", EventOnErrorCanceled).
 
 		// state machine B
 		AddCheckHandler("check_in-development", CheckInDevelopment).
@@ -40,8 +55,8 @@ func main() {
 
 	// check transitions of state machines
 	stateMachines := []string{StateMachineA, StateMachineB}
-	stateMachinesUsers := []string{UserStateMachineA, UserStateMachineB}
-	maxLen := 5
+	stateMachinesUsers := []state_machine.User{UserStateMachineA, UserStateMachineB}
+	maxLen := 4
 	ok := false
 
 	for index, stateMachine := range stateMachines {

@@ -1,6 +1,8 @@
 package state_machine
 
 import (
+	"sync"
+
 	"github.com/joaosoft/logger"
 )
 
@@ -36,10 +38,11 @@ type StateMachine struct {
 	userStateMachineMap UserStateMachine
 	handlerMap          HandlerMap
 	logger              logger.ILogger
+	mux                 sync.RWMutex
 }
 
 type StateMachineMap map[string]StateMap
-type UserStateMachine map[string]StateMachineMap
+type UserStateMachine map[User]StateMachineMap
 
 type State struct {
 	Id            int           `json:"id"`
@@ -76,3 +79,5 @@ type EventMap struct {
 	Success map[string]EventHandler `json:"success"`
 	Error   map[string]EventHandler `json:"error"`
 }
+
+type User string
