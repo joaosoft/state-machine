@@ -1,19 +1,19 @@
 package state_machine
 
-func AddCheckHandler(name string, handler CheckHandler) *StateMachine {
-	return stateMachineInstance.AddCheckHandler(name, handler)
+func AddCheckHandler(name string, handler CheckHandler, stateMachine ...StateMachineType) *StateMachine {
+	return stateMachineInstance.AddCheckHandler(name, handler, stateMachine...)
 }
 
-func AddExecuteHandler(name string, handler ExecuteHandler) *StateMachine {
-	return stateMachineInstance.AddExecuteHandler(name, handler)
+func AddExecuteHandler(name string, handler ExecuteHandler, stateMachine ...StateMachineType) *StateMachine {
+	return stateMachineInstance.AddExecuteHandler(name, handler, stateMachine...)
 }
 
-func AddEventOnSuccessHandler(name string, handler EventHandler) *StateMachine {
-	return stateMachineInstance.AddEventOnSuccessHandler(name, handler)
+func AddEventOnSuccessHandler(name string, handler EventHandler, stateMachine ...StateMachineType) *StateMachine {
+	return stateMachineInstance.AddEventOnSuccessHandler(name, handler, stateMachine...)
 }
 
-func AddEventOnErrorHandler(name string, handler EventHandler) *StateMachine {
-	return stateMachineInstance.AddEventOnErrorHandler(name, handler)
+func AddEventOnErrorHandler(name string, handler EventHandler, stateMachine ...StateMachineType) *StateMachine {
+	return stateMachineInstance.AddEventOnErrorHandler(name, handler, stateMachine...)
 }
 
 func AddStateMachine(stateMachine StateMachineType, file string) error {

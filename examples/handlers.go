@@ -2,28 +2,26 @@ package main
 
 import "fmt"
 
-func CheckInProgress(args ...interface{}) (bool, error) {
+// ::  state machine A
+// check
+func CheckNewToInProgress(args ...interface{}) (bool, error) {
 	fmt.Printf("\ncheck in-progress handler with %+v", args)
 	return false, nil
 }
 
-func ExecuteInProgress(args ...interface{}) (bool, error) {
+func CheckInProgressToApproved(args ...interface{}) (bool, error) {
+	fmt.Printf("\ncheck in-progress to approved handler with %+v", args)
+	return false, nil
+}
+
+func CheckInProgressToDenied(args ...interface{}) (bool, error) {
+	fmt.Printf("\ncheck in-progress to denied handler with %+v", args)
+	return false, nil
+}
+
+// execute
+func ExecuteNewToInProgress(args ...interface{}) (bool, error) {
 	fmt.Printf("\nexecute in-progress handler with %+v", args)
-	return true, nil
-}
-
-func ExecuteApproved(args ...interface{}) (bool, error) {
-	fmt.Printf("\nexecute approved handler with %+v", args)
-	return true, nil
-}
-
-func ExecuteDenied(args ...interface{}) (bool, error) {
-	fmt.Printf("\nexecute denied handler with %+v", args)
-	return true, nil
-}
-
-func ExecuteCanceled(args ...interface{}) (bool, error) {
-	fmt.Printf("\nexecute canceled handler with %+v", args)
 	return true, nil
 }
 
@@ -37,82 +35,99 @@ func ExecuteInProgressToDenied(args ...interface{}) (bool, error) {
 	return true, nil
 }
 
-func ExecuteInProgressToDone(args ...interface{}) (bool, error) {
-	fmt.Printf("\nexecute in-progress to done handler with %+v", args)
-	return true, nil
-}
-
-func ExecuteInProgressToCanceled(args ...interface{}) (bool, error) {
-	fmt.Printf("\nexecute in-progress to canceled handler with %+v", args)
-	return true, nil
-}
-
-func EventOnSuccessInProgress(args ...interface{}) error {
+// event success
+func EventOnSuccessNewToInProgress(args ...interface{}) error {
 	fmt.Printf("\nsuccess event in-progress handler with %+v", args)
 	return nil
 }
 
-func EventOnErrorInProgress(args ...interface{}) error {
-	fmt.Printf("\nerror event in-progress handler with %+v", args)
-	return nil
-}
-
-func EventOnSuccessApproved(args ...interface{}) error {
+func EventOnSuccessInProgressToApproved(args ...interface{}) error {
 	fmt.Printf("\nsuccess event approved handler with %+v", args)
 	return nil
 }
 
-func EventOnErrorApproved(args ...interface{}) error {
-	fmt.Printf("\nerror event approved handler with %+v", args)
-	return nil
-}
-
-func EventOnSuccessDenied(args ...interface{}) error {
+func EventOnSuccessInProgressToDenied(args ...interface{}) error {
 	fmt.Printf("\nsuccess event denied handler with %+v", args)
 	return nil
 }
 
-func EventOnErrorDenied(args ...interface{}) error {
+// event error
+func EventOnErrorNewToInProgress(args ...interface{}) error {
+	fmt.Printf("\nerror event in-progress handler with %+v", args)
+	return nil
+}
+
+func EventOnErrorInProgressToApproved(args ...interface{}) error {
+	fmt.Printf("\nerror event approved handler with %+v", args)
+	return nil
+}
+
+func EventOnErrorInProgressToDenied(args ...interface{}) error {
 	fmt.Printf("\nerror event denied handler with %+v", args)
 	return nil
 }
 
-func EventOnSuccessDone(args ...interface{}) error {
-	fmt.Printf("\nsuccess event done handler with %+v", args)
-	return nil
-}
-
-func EventOnErrorDone(args ...interface{}) error {
-	fmt.Printf("\nerror event done handler with %+v", args)
-	return nil
-}
-
-func EventOnSuccessCanceled(args ...interface{}) error {
-	fmt.Printf("\nsuccess event canceled handler with %+v", args)
-	return nil
-}
-
-func EventOnErrorCanceled(args ...interface{}) error {
-	fmt.Printf("\nerror event canceled handler with %+v", args)
-	return nil
-}
-
-func CheckInDevelopment(args ...interface{}) (bool, error) {
+// :: state machine B
+// check
+func CheckTodoToInDevelopment(args ...interface{}) (bool, error) {
 	fmt.Printf("\ncheck in-development handler with %+v", args)
 	return true, nil
 }
 
-func ExecuteInDevelopment(args ...interface{}) (bool, error) {
+func CheckInDevelopmentToDone(args ...interface{}) (bool, error) {
+	fmt.Printf("\ncheck in-development to done handler with %+v", args)
+	return true, nil
+}
+
+func CheckInDevelopmentToCanceled(args ...interface{}) (bool, error) {
+	fmt.Printf("\ncheck in-development to canceled handler with %+v", args)
+	return true, nil
+}
+
+// execute
+func ExecuteTodoToInDevelopment(args ...interface{}) (bool, error) {
 	fmt.Printf("\nexecute in-development handler with %+v", args)
 	return true, nil
 }
 
-func EventOnSuccessInDevelopment(args ...interface{}) error {
+func ExecuteInDevelopmentToCanceled(args ...interface{}) (bool, error) {
+	fmt.Printf("\nexecute canceled handler with %+v", args)
+	return true, nil
+}
+
+func ExecuteInDevelopmentToDone(args ...interface{}) (bool, error) {
+	fmt.Printf("\nexecute in-progress to done handler with %+v", args)
+	return true, nil
+}
+
+// event success
+func EventOnSuccessInDevelopmentToDone(args ...interface{}) error {
+	fmt.Printf("\nsuccess event done handler with %+v", args)
+	return nil
+}
+
+func EventOnSuccessInDevelopmentToCanceled(args ...interface{}) error {
+	fmt.Printf("\nsuccess event canceled handler with %+v", args)
+	return nil
+}
+
+func EventOnSuccessTodoToInDevelopment(args ...interface{}) error {
 	fmt.Printf("\nsuccess event in-development handler with %+v", args)
 	return nil
 }
 
-func EventOnErrorInDevelopment(args ...interface{}) error {
+// event error
+func EventOnErrorInDevelopmentToDone(args ...interface{}) error {
+	fmt.Printf("\nerror event done handler with %+v", args)
+	return nil
+}
+
+func EventOnErrorInDevelopmentToCanceled(args ...interface{}) error {
+	fmt.Printf("\nerror event canceled handler with %+v", args)
+	return nil
+}
+
+func EventOnErrorTodoToInDevelopment(args ...interface{}) error {
 	fmt.Printf("\nerror event in-development handler with %+v", args)
 	return nil
 }

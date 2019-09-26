@@ -7,10 +7,10 @@
         {
           "id": 2,
           "check": [
-            "check_in-progress"
+            "check_new_to_in-progress"
           ],
           "execute": [
-            "execute_in-progress"
+            "execute_new_to_in-progress"
           ]
         }
       ]
@@ -25,14 +25,14 @@
             "check_in-progress_to_approved"
           ],
           "execute": [
-            "execute_approved"
+            "execute_in-progress_to_approved"
           ],
           "events": {
             "success": [
-              "event_success_approved"
+              "event_success_in-progress_to_approved"
             ],
             "error": [
-              "event_error_approved"
+              "event_error_in-progress_to_approved"
             ]
           }
         },
@@ -42,14 +42,14 @@
             "check_in-progress_to_denied"
           ],
           "execute": [
-            "execute_denied"
+            "execute_in-progress_to_denied"
           ],
           "events": {
             "success": [
-              "event_success_denied"
+              "event_success_in-progress_to_denied"
             ],
             "error": [
-              "event_error_denied"
+              "event_error_in-progress_to_denied"
             ]
           }
         }

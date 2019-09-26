@@ -19,31 +19,38 @@ func main() {
 	// add handlers
 	state_machine.
 		// state machine A
-		AddCheckHandler("check_in-progress", CheckInProgress).
-		AddCheckHandler("check_in-progress_to_approved", ExecuteInProgressToApproved).
-		AddCheckHandler("check_in-progress_to_denied", ExecuteInProgressToDenied).
-		AddCheckHandler("check_in-development_to_done", ExecuteInProgressToDone).
-		AddCheckHandler("check_in-development_to_canceled", ExecuteInProgressToCanceled).
-		AddExecuteHandler("execute_in-progress", ExecuteInProgress).
-		AddExecuteHandler("execute_approved", ExecuteApproved).
-		AddExecuteHandler("execute_denied", ExecuteDenied).
-		AddExecuteHandler("execute_canceled", ExecuteCanceled).
-		AddEventOnSuccessHandler("event_success_in-progress", EventOnSuccessInProgress).
-		AddEventOnErrorHandler("event_error_in-progress", EventOnErrorInProgress).
-		AddEventOnSuccessHandler("event_success_approved", EventOnSuccessApproved).
-		AddEventOnErrorHandler("event_error_approved", EventOnErrorApproved).
-		AddEventOnSuccessHandler("event_success_denied", EventOnSuccessDenied).
-		AddEventOnErrorHandler("event_error_denied", EventOnErrorDenied).
-		AddEventOnSuccessHandler("event_success_done", EventOnSuccessDone).
-		AddEventOnErrorHandler("event_error_done", EventOnErrorDone).
-		AddEventOnSuccessHandler("event_success_canceled", EventOnSuccessCanceled).
-		AddEventOnErrorHandler("event_error_canceled", EventOnErrorCanceled).
+		AddCheckHandler("check_new_to_in-progress", CheckNewToInProgress, StateMachineA).
+		AddCheckHandler("check_in-progress_to_approved", CheckInProgressToApproved, StateMachineA).
+		AddCheckHandler("check_in-progress_to_denied", CheckInProgressToDenied, StateMachineA).
+		//
+		AddExecuteHandler("execute_new_to_in-progress", ExecuteNewToInProgress, StateMachineA).
+		AddExecuteHandler("execute_in-progress_to_approved", ExecuteInProgressToApproved, StateMachineA).
+		AddExecuteHandler("execute_in-progress_to_denied", ExecuteInProgressToDenied, StateMachineA).
+		//
+		AddEventOnSuccessHandler("event_success_new_to_in-progress", EventOnSuccessNewToInProgress, StateMachineA).
+		AddEventOnSuccessHandler("event_success_in-progress_to_approved", EventOnSuccessInProgressToApproved, StateMachineA).
+		AddEventOnSuccessHandler("event_success_in-progress_to_denied", EventOnSuccessInProgressToDenied, StateMachineA).
+		//
+		AddEventOnErrorHandler("event_error_new_to_in-progress", EventOnErrorNewToInProgress, StateMachineA).
+		AddEventOnErrorHandler("event_error_in-progress_to_approved", EventOnErrorInProgressToApproved, StateMachineA).
+		AddEventOnErrorHandler("event_error_in-progress_to_denied", EventOnErrorInProgressToDenied, StateMachineA).
 
 		// state machine B
-		AddCheckHandler("check_in-development", CheckInDevelopment).
-		AddExecuteHandler("execute_in-development", ExecuteInDevelopment).
-		AddEventOnSuccessHandler("event_success_in-development", EventOnSuccessInDevelopment).
-		AddEventOnErrorHandler("event_error_in-development", EventOnErrorInDevelopment)
+		AddCheckHandler("check_todo_to_in-development", CheckTodoToInDevelopment, StateMachineB).
+		AddCheckHandler("check_in-development_to_done", CheckInDevelopmentToDone, StateMachineB).
+		AddCheckHandler("check_in-development_to_canceled", CheckInDevelopmentToCanceled, StateMachineB).
+		//
+		AddExecuteHandler("execute_todo_to_in-development", ExecuteTodoToInDevelopment, StateMachineB).
+		AddExecuteHandler("execute_in-development_to_canceled", ExecuteInDevelopmentToCanceled, StateMachineB).
+		AddExecuteHandler("execute_in-development_to_done", ExecuteInDevelopmentToDone, StateMachineB).
+		//
+		AddEventOnSuccessHandler("event_success_todo_to_in-development", EventOnSuccessTodoToInDevelopment, StateMachineB).
+		AddEventOnSuccessHandler("event_success_in-development_to_done", EventOnSuccessInDevelopmentToDone, StateMachineB).
+		AddEventOnSuccessHandler("event_success_in-development_to_canceled", EventOnSuccessInDevelopmentToCanceled, StateMachineB).
+		//
+		AddEventOnErrorHandler("event_error_todo_to_in-development", EventOnErrorTodoToInDevelopment, StateMachineB).
+		AddEventOnErrorHandler("event_error_in-development_to_done", EventOnErrorInDevelopmentToDone, StateMachineB).
+		AddEventOnErrorHandler("event_error_in-development_to_canceled", EventOnErrorInDevelopmentToCanceled, StateMachineB)
 
 	// add state machines
 	if err = state_machine.AddStateMachine(StateMachineA, "/config/state_machine_a.yaml"); err != nil {

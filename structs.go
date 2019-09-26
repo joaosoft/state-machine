@@ -32,17 +32,27 @@ type CheckHandler func(args ...interface{}) (bool, error)
 type ExecuteHandler func(args ...interface{}) (bool, error)
 type EventHandler func(args ...interface{}) error
 
+type CheckHandlerMap map[string]CheckHandler
+type ExecuteHandlerMap map[string]ExecuteHandler
+type EventHandlerMap map[string]EventHandler
+type StateMachineHandlersMap map[StateMachineType]*HandlersMap
+
+type Handlers struct {
+	handlersMap             *HandlersMap
+	stateMachineHandlersMap StateMachineHandlersMap
+}
+
 type StateMachine struct {
 	config              *StateMachineConfig
 	stateMachineMap     StateMachineMap
-	userStateMachineMap UserStateMachine
-	handlerMap          HandlerMap
+	userStateMachineMap UserStateMachineMap
+	handlers            *Handlers
 	logger              logger.ILogger
 	mux                 *sync.RWMutex
 }
 
 type StateMachineMap map[StateMachineType]StateMap
-type UserStateMachine map[UserType]StateMachineMap
+type UserStateMachineMap map[UserType]StateMachineMap
 
 type State struct {
 	Id            int           `json:"id"`
@@ -69,10 +79,10 @@ type Events struct {
 	Error   []EventHandler `json:"error"`
 }
 
-type HandlerMap struct {
+type HandlersMap struct {
 	Check   map[string]CheckHandler   `json:"check"`
 	Execute map[string]ExecuteHandler `json:"execute"`
-	Events  EventMap                  `json:"events"`
+	Events  *EventMap                  `json:"events"`
 }
 
 type EventMap struct {

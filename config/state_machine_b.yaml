@@ -7,10 +7,10 @@ state_machine:
         id: 2
         check:
           -
-            "check_in-development"
+            "check_todo_to_in-development"
         execute:
           -
-            "execute_in-development"
+            "execute_todo_to_in-development"
   -
     id: 2
     name: "In development"
@@ -22,14 +22,14 @@ state_machine:
             "check_in-development_to_done"
         execute:
           -
-            "execute_in-development"
+            "execute_in-development_to_done"
         events:
           success:
             -
-              "event_success_in-development"
+              "event_success_in-development_to_done"
           error:
             -
-              "event_error_in-development"
+              "event_error_in-development_to_done"
       -
       id: 4
       check:
@@ -37,14 +37,14 @@ state_machine:
           "check_in-development_to_canceled"
       execute:
         -
-          "execute_canceled"
+          "execute_in-development_to_canceled"
       events:
         success:
           -
-            "event_success_canceled"
+            "event_success_in-development_to_canceled"
         error:
           -
-            "event_error_canceled"
+            "event_error_in-development_to_canceled"
   -
     id: 3
     name: "Done"
