@@ -286,7 +286,7 @@ func main() {
 	}
 
 	// execute transaction
-	ok, err = state_machine.ExecuteTransition(StateMachineA, UserStateMachineA, 1, 2)
+	ok, err = state_machine.ExecuteTransition(StateMachineA, UserStateMachineA, 1, 2, 1, "text", true)
 	if err != nil {
 		panic(err)
 	}
@@ -344,9 +344,9 @@ transition from 4 to 3  with user worker ? false
 transition from 4 to 2  with user worker ? false
 transition from 4 to 1  with user worker ? false
 can make transition to In progress
-check in-progress handler with []
-execute in-progress handler with []
-execute by user in-progress handler with []
+check in-progress handler with [1 text true]
+execute in-progress handler with [1 text true]
+execute by user in-progress handler with [1 text true]
 ```
 
 ## Known issues

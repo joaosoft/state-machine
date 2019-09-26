@@ -90,7 +90,7 @@ func main() {
 	}
 
 	// execute transaction
-	ok, err = state_machine.ExecuteTransition(StateMachineA, UserStateMachineA, 1, 2)
+	ok, err = state_machine.ExecuteTransition(StateMachineA, UserStateMachineA, 1, 2, 1, "text", true)
 	if err != nil {
 		panic(err)
 	}
