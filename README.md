@@ -249,11 +249,11 @@ func main() {
 		AddEventOnErrorHandler("event_error_in-development_to_done", EventOnErrorInDevelopmentToDone, StateMachineB).
 		AddEventOnErrorHandler("event_error_in-development_to_canceled", EventOnErrorInDevelopmentToCanceled, StateMachineB)
 
-	// add state machines
-	if err = state_machine.AddStateMachine(StateMachineA, "/config/state_machine_a.yaml"); err != nil {
+    // add state machines
+	if err = state_machine.AddStateMachine(StateMachineA, "/config/state_machines/state_machine_a.yaml"); err != nil {
 		panic(err)
 	}
-	if err = state_machine.AddStateMachine(StateMachineB, "/config/state_machine_b.json"); err != nil {
+	if err = state_machine.AddStateMachine(StateMachineB, "/config/state_machines/state_machine_b.json"); err != nil {
 		panic(err)
 	}
 
