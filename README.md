@@ -179,11 +179,11 @@ users:
 >### Implementation
 ```go
 const (
-	StateMachineA     = "A"
-	UserStateMachineA = "operator"
+	StateMachineA                        = "A"
+	UserStateMachineA state_machine.User = "operator"
 
-	StateMachineB     = "B"
-	UserStateMachineB = "worker"
+	StateMachineB                        = "B"
+	UserStateMachineB state_machine.User = "worker"
 )
 
 func main() {
@@ -193,9 +193,24 @@ func main() {
 	state_machine.
 		// state machine A
 		AddCheckHandler("check_in-progress", CheckInProgress).
+		AddCheckHandler("check_in-progress_to_approved", ExecuteInProgressToApproved).
+		AddCheckHandler("check_in-progress_to_denied", ExecuteInProgressToDenied).
+		AddCheckHandler("check_in-development_to_done", ExecuteInProgressToDone).
+		AddCheckHandler("check_in-development_to_canceled", ExecuteInProgressToCanceled).
 		AddExecuteHandler("execute_in-progress", ExecuteInProgress).
+		AddExecuteHandler("execute_approved", ExecuteApproved).
+		AddExecuteHandler("execute_denied", ExecuteDenied).
+		AddExecuteHandler("execute_canceled", ExecuteCanceled).
 		AddEventOnSuccessHandler("event_success_in-progress", EventOnSuccessInProgress).
 		AddEventOnErrorHandler("event_error_in-progress", EventOnErrorInProgress).
+		AddEventOnSuccessHandler("event_success_approved", EventOnSuccessApproved).
+		AddEventOnErrorHandler("event_error_approved", EventOnErrorApproved).
+		AddEventOnSuccessHandler("event_success_denied", EventOnSuccessDenied).
+		AddEventOnErrorHandler("event_error_denied", EventOnErrorDenied).
+		AddEventOnSuccessHandler("event_success_done", EventOnSuccessDone).
+		AddEventOnErrorHandler("event_error_done", EventOnErrorDone).
+		AddEventOnSuccessHandler("event_success_canceled", EventOnSuccessCanceled).
+		AddEventOnErrorHandler("event_error_canceled", EventOnErrorCanceled).
 
 		// state machine B
 		AddCheckHandler("check_in-development", CheckInDevelopment).
@@ -213,8 +228,8 @@ func main() {
 
 	// check transitions of state machines
 	stateMachines := []string{StateMachineA, StateMachineB}
-	stateMachinesUsers := []string{UserStateMachineA, UserStateMachineB}
-	maxLen := 5
+	stateMachinesUsers := []state_machine.User{UserStateMachineA, UserStateMachineB}
+	maxLen := 4
 	ok := false
 
 	for index, stateMachine := range stateMachines {
@@ -255,62 +270,48 @@ func main() {
 ```
 State Machine: A
 
-transition from 1 to 5  with user operator ? false
 transition from 1 to 4  with user operator ? false
 transition from 1 to 3  with user operator ? false
 check in-progress handler with [[1 text true]]
-transition from 1 to 2  with user operator ? false
-transition from 1 to 1  with user operator ? false
-transition from 2 to 5  with user operator ? false
+
+
+
 transition from 2 to 4  with user operator ? false
+execute in-progress to approved handler with [[1 text true]]
 transition from 2 to 3  with user operator ? false
 transition from 2 to 2  with user operator ? false
 transition from 2 to 1  with user operator ? false
-transition from 3 to 5  with user operator ? false
 transition from 3 to 4  with user operator ? false
 transition from 3 to 3  with user operator ? false
 transition from 3 to 2  with user operator ? false
 transition from 3 to 1  with user operator ? false
-transition from 4 to 5  with user operator ? false
 transition from 4 to 4  with user operator ? false
 transition from 4 to 3  with user operator ? false
 transition from 4 to 2  with user operator ? false
 transition from 4 to 1  with user operator ? false
-transition from 5 to 5  with user operator ? false
-transition from 5 to 4  with user operator ? false
-transition from 5 to 3  with user operator ? false
-transition from 5 to 2  with user operator ? false
-transition from 5 to 1  with user operator ? false
 
 
 State Machine: B
 
-transition from 1 to 5  with user worker ? false
 transition from 1 to 4  with user worker ? false
 transition from 1 to 3  with user worker ? false
 check in-development handler with [[1 text true]]
 transition from 1 to 2  with user worker ? false
 transition from 1 to 1  with user worker ? false
-transition from 2 to 5  with user worker ? false
+execute in-progress to canceled handler with [[1 text true]]
 transition from 2 to 4  with user worker ? false
+execute in-progress to done handler with [[1 text true]]
 transition from 2 to 3  with user worker ? false
 transition from 2 to 2  with user worker ? false
 transition from 2 to 1  with user worker ? false
-transition from 3 to 5  with user worker ? false
 transition from 3 to 4  with user worker ? false
 transition from 3 to 3  with user worker ? false
 transition from 3 to 2  with user worker ? false
 transition from 3 to 1  with user worker ? false
-transition from 4 to 5  with user worker ? false
 transition from 4 to 4  with user worker ? false
 transition from 4 to 3  with user worker ? false
 transition from 4 to 2  with user worker ? false
 transition from 4 to 1  with user worker ? false
-transition from 5 to 5  with user worker ? false
-transition from 5 to 4  with user worker ? false
-transition from 5 to 3  with user worker ? false
-transition from 5 to 2  with user worker ? false
-transition from 5 to 1  with user worker ? false
 can make transition to In progress
 check in-progress handler with [[]]transition !ok
 ```
