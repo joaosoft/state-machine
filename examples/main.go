@@ -24,6 +24,7 @@ func main() {
 		AddCheckHandler("check_in-progress_to_denied", CheckInProgressToDenied, StateMachineA).
 		//
 		AddExecuteHandler("execute_new_to_in-progress", ExecuteNewToInProgress, StateMachineA).
+		AddExecuteHandler("execute_new_to_in-progress_user", ExecuteNewToInProgressUser, StateMachineA).
 		AddExecuteHandler("execute_in-progress_to_approved", ExecuteInProgressToApproved, StateMachineA).
 		AddExecuteHandler("execute_in-progress_to_denied", ExecuteInProgressToDenied, StateMachineA).
 		//

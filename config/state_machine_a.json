@@ -70,7 +70,10 @@
         "id": 1,
         "transitions": [
           {
-            "id": 2
+            "id": 2,
+            "execute": [
+              "execute_new_to_in-progress_user"
+            ]
           }
         ]
       },

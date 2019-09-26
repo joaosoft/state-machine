@@ -85,7 +85,7 @@ users:
         -
           id: 2
           execute:
-            - "execute_new_to_in-progress"
+            - "execute_new_to_in-progress_user"
     -
       id: 2
       transitions:
@@ -220,6 +220,7 @@ func main() {
 		AddCheckHandler("check_in-progress_to_denied", CheckInProgressToDenied, StateMachineA).
 		//
 		AddExecuteHandler("execute_new_to_in-progress", ExecuteNewToInProgress, StateMachineA).
+		AddExecuteHandler("execute_new_to_in-progress_user", ExecuteNewToInProgressUser, StateMachineA).
 		AddExecuteHandler("execute_in-progress_to_approved", ExecuteInProgressToApproved, StateMachineA).
 		AddExecuteHandler("execute_in-progress_to_denied", ExecuteInProgressToDenied, StateMachineA).
 		//
@@ -303,7 +304,7 @@ State Machine: A
 transition from 1 to 4  with user operator ? false
 transition from 1 to 3  with user operator ? false
 check in-progress handler with [1 text true]
-
+transition from 1 to 2  with user operator ? false
 transition from 1 to 1  with user operator ? false
 check in-progress to denied handler with [1 text true]
 transition from 2 to 4  with user operator ? false
@@ -345,6 +346,7 @@ transition from 4 to 1  with user worker ? false
 can make transition to In progress
 check in-progress handler with []
 execute in-progress handler with []
+execute by user in-progress handler with []
 ```
 
 ## Known issues

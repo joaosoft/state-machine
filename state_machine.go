@@ -253,14 +253,14 @@ func (sm *StateMachine) Add(stateMachine StateMachineType, file string) error {
 				if err != nil {
 					return err
 				}
-				transition.Handler.Check = append(transition.Handler.Check, checkHandlers...)
+				userTransition.Handler.Check = append(userTransition.Handler.Check, checkHandlers...)
 
 				// execute
 				executeHandlers, err := transitionCfg.getExecuteHandlers(stateMachine, sm.handlers)
 				if err != nil {
 					return err
 				}
-				transition.Handler.Execute = append(transition.Handler.Execute, executeHandlers...)
+				userTransition.Handler.Execute = append(userTransition.Handler.Execute, executeHandlers...)
 
 				// events
 				// -- success
@@ -268,14 +268,14 @@ func (sm *StateMachine) Add(stateMachine StateMachineType, file string) error {
 				if err != nil {
 					return err
 				}
-				transition.Handler.Events.Success = append(transition.Handler.Events.Success, eventSuccessHandlers...)
+				userTransition.Handler.Events.Success = append(userTransition.Handler.Events.Success, eventSuccessHandlers...)
 
 				// -- error
 				eventErrorHandlers, err := transitionCfg.getEventErrorHandlers(stateMachine, sm.handlers)
 				if err != nil {
 					return err
 				}
-				transition.Handler.Events.Error = append(transition.Handler.Events.Error, eventErrorHandlers...)
+				userTransition.Handler.Events.Error = append(userTransition.Handler.Events.Error, eventErrorHandlers...)
 
 				userState.TransitionMap[userTransition.Id] = userTransition
 			}

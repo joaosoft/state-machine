@@ -25,6 +25,11 @@ func ExecuteNewToInProgress(args ...interface{}) (bool, error) {
 	return true, nil
 }
 
+func ExecuteNewToInProgressUser(args ...interface{}) (bool, error) {
+	fmt.Printf("\nexecute by user in-progress handler with %+v", args)
+	return true, nil
+}
+
 func ExecuteInProgressToApproved(args ...interface{}) (bool, error) {
 	fmt.Printf("\nexecute in-progress to approved handler with %+v", args)
 	return true, nil
