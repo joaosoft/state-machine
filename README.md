@@ -22,86 +22,75 @@ This example is available in the project at [state-machine/examples](https://git
 
 >### Configuration
 #### State machine A
-```json
-{
-  "state_machine": [
-    {
-      "id": 1,
-      "name": "New",
-      "transitions": [
-        {
-          "id": 2,
-          "check": [
+```yaml
+state_machine:
+  -
+    id: 1
+    name: "New"
+    transitions:
+      -
+        id: 2
+        check:
+          -
             "check_in-progress"
-          ],
-          "execute": [
+        execute:
+          -
             "execute_in-progress"
-          ]
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "name": "In progress",
-      "transitions": [
-        {
-          "id": 3,
-          "check": [
+  -
+    id: 2
+    name: "In progress"
+    transitions:
+      -
+        id: 3
+        check:
+          -
             "check_in-progress_to_approved"
-          ],
-          "execute": [
+        execute:
+          -
             "execute_approved"
-          ],
-          "events": {
-            "success": [
+        events:
+          success:
+            -
               "event_success_approved"
-            ],
-            "error": [
+          error:
+            -
               "event_error_approved"
-            ]
-          }
-        },
-        {
-          "id": 4,
-          "check": [
+      -
+        id: 4
+        check:
+          -
             "check_in-progress_to_denied"
-          ],
-          "execute": [
+        execute:
+          -
             "execute_denied"
-          ],
-          "events": {
-            "success": [
+        events:
+          success:
+            -
               "event_success_denied"
-            ],
-            "error": [
+          error:
+            -
               "event_error_denied"
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "name": "Approved"
-    },
-    {
-      "id": 4,
-      "name": "Denied"
-    }
-  ],
-  "users": {
-    "operator": [
-      {
-        "id": 1,
-        "transitions": [2]
-      },
-      {
-        "id": 2,
-        "transitions": [3, 4]
-      }
-    ]
-  }
-}
+  -
+    id: 3
+    name: "Approved"
+  -
+    id: 4
+    name: "Denied"
+
+users:
+  operator:
+    -
+      id: 1
+      transitions:
+        -
+          2
+    -
+      id: 2
+      transitions:
+        -
+          3
+        -
+          4
 ```
 
 #### State machine B
@@ -215,7 +204,7 @@ func main() {
 		AddEventOnErrorHandler("event_error_in-development", EventOnErrorInDevelopment)
 
 	// add state machines
-	if err = state_machine.AddStateMachine(StateMachineA, "/config/state_machine_a.json"); err != nil {
+	if err = state_machine.AddStateMachine(StateMachineA, "/config/state_machine_a.yaml"); err != nil {
 		panic(err)
 	}
 	if err = state_machine.AddStateMachine(StateMachineB, "/config/state_machine_b.json"); err != nil {
