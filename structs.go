@@ -38,7 +38,7 @@ type StateMachine struct {
 	userStateMachineMap UserStateMachine
 	handlerMap          HandlerMap
 	logger              logger.ILogger
-	mux                 sync.RWMutex
+	mux                 *sync.RWMutex
 }
 
 type StateMachineMap map[string]StateMap

@@ -29,7 +29,7 @@ func New(options ...StateMachineOption) (*StateMachine, error) {
 		},
 		logger: logger.NewLogDefault("state_machine", logger.WarnLevel),
 		config: config.StateMachine,
-		mux:    sync.RWMutex{},
+		mux:    &sync.RWMutex{},
 	}
 
 	if err != nil {
