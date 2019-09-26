@@ -6,22 +6,22 @@ import (
 
 type StateMachineCfg struct {
 	StateMachine []struct {
-		Id          int    `json:"id"`
-		Name        string `json:"name"`
+		Id          int    `json:"id" yaml:"id"`
+		Name        string `json:"name" yaml:"name"`
 		Transitions []struct {
-			Id      int      `json:"id"`
-			Check   []string `json:"check"`
-			Execute []string `json:"execute"`
+			Id      int      `json:"id" yaml:"id"`
+			Check   []string `json:"check" yaml:"check"`
+			Execute []string `json:"execute" yaml:"execute"`
 			Events  struct {
-				Success []string `json:"success"`
-				Error   []string `json:"error"`
-			} `json:"events"`
-		} `json:"transitions"`
-	} `json:"state_machine"`
+				Success []string `json:"success" yaml:"success"`
+				Error   []string `json:"error" yaml:"error"`
+			} `json:"events" yaml:"events"`
+		} `json:"transitions" yaml:"transitions"`
+	} `json:"state_machine" yaml:"state_machine"`
 	Users map[string][]struct {
-		Id          int   `json:"id"`
-		Transitions []int `json:"transitions"`
-	} `json:"users"`
+		Id          int   `json:"id" yaml:"id"`
+		Transitions []int `json:"transitions" yaml:"transitions"`
+	} `json:"users" yaml:"users"`
 }
 
 type StateMap map[int]*State

@@ -31,7 +31,7 @@ func main() {
 		AddEventOnErrorHandler("event_error_in-development", EventOnErrorInDevelopment)
 
 	// add state machines
-	if err = state_machine.AddStateMachine(StateMachineA, "/config/state_machine_a.json"); err != nil {
+	if err = state_machine.AddStateMachine(StateMachineA, "/config/state_machine_a.yaml"); err != nil {
 		panic(err)
 	}
 	if err = state_machine.AddStateMachine(StateMachineB, "/config/state_machine_b.json"); err != nil {

@@ -1,0 +1,67 @@
+state_machine:
+  -
+    id: 1
+    name: "Todo"
+    transitions:
+      -
+        id: 2
+        check:
+          -
+            "check_in-development"
+        execute:
+          -
+            "execute_in-development"
+  -
+    id: 2
+    name: "In development"
+    transitions:
+      -
+        id: 3
+        check:
+          -
+            "check_in-development_to_done"
+        execute:
+          -
+            "execute_in-development"
+        events:
+          success:
+            -
+              "event_success_in-development"
+          error:
+            -
+              "event_error_in-development"
+      -
+      id: 4
+      check:
+        -
+          "check_in-development_to_canceled"
+      execute:
+        -
+          "execute_canceled"
+      events:
+        success:
+          -
+            "event_success_canceled"
+        error:
+          -
+            "event_error_canceled"
+  -
+    id: 3
+    name: "Done"
+  -
+    id: 4
+    name: "Canceled"
+users:
+  worker:
+    -
+      id: 1
+      transitions:
+        -
+          2
+    -
+      id: 2
+      transitions:
+        -
+          3
+        -
+          4

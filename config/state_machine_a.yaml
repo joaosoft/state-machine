@@ -1,0 +1,68 @@
+state_machine:
+  -
+    id: 1
+    name: "New"
+    transitions:
+      -
+        id: 2
+        check:
+          -
+            "check_in-progress"
+        execute:
+          -
+            "execute_in-progress"
+  -
+    id: 2
+    name: "In progress"
+    transitions:
+      -
+        id: 3
+        check:
+          -
+            "check_in-progress_to_approved"
+        execute:
+          -
+            "execute_approved"
+        events:
+          success:
+            -
+              "event_success_approved"
+          error:
+            -
+              "event_error_approved"
+      -
+        id: 4
+        check:
+          -
+            "check_in-progress_to_denied"
+        execute:
+          -
+            "execute_denied"
+        events:
+          success:
+            -
+              "event_success_denied"
+          error:
+            -
+              "event_error_denied"
+  -
+    id: 3
+    name: "Approved"
+  -
+    id: 4
+    name: "Denied"
+
+users:
+  operator:
+    -
+      id: 1
+      transitions:
+        -
+          2
+    -
+      id: 2
+      transitions:
+        -
+          3
+        -
+          4
