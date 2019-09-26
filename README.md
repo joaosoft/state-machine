@@ -249,7 +249,7 @@ func main() {
 		AddEventOnErrorHandler("event_error_in-development_to_done", EventOnErrorInDevelopmentToDone, StateMachineB).
 		AddEventOnErrorHandler("event_error_in-development_to_canceled", EventOnErrorInDevelopmentToCanceled, StateMachineB)
 
-    // add state machines
+	// add state machines
 	if err = state_machine.AddStateMachine(StateMachineA, "/config/state_machines/state_machine_a.yaml"); err != nil {
 		panic(err)
 	}
