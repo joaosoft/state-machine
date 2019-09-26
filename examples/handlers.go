@@ -6,17 +6,17 @@ import "fmt"
 // check
 func CheckNewToInProgress(args ...interface{}) (bool, error) {
 	fmt.Printf("\ncheck in-progress handler with %+v", args)
-	return false, nil
+	return true, nil
 }
 
 func CheckInProgressToApproved(args ...interface{}) (bool, error) {
 	fmt.Printf("\ncheck in-progress to approved handler with %+v", args)
-	return false, nil
+	return true, nil
 }
 
 func CheckInProgressToDenied(args ...interface{}) (bool, error) {
 	fmt.Printf("\ncheck in-progress to denied handler with %+v", args)
-	return false, nil
+	return true, nil
 }
 
 // execute

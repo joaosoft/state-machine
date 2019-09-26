@@ -59,6 +59,12 @@ func newHandlersMaps() *HandlersMap {
 	}
 }
 
+func (h *Handlers) initStateMachineHandlers(stateMachine StateMachineType) {
+	if _, ok := h.stateMachineHandlersMap[stateMachine]; !ok {
+		h.stateMachineHandlersMap[stateMachine] = newHandlersMaps()
+	}
+}
+
 func (sm *StateMachine) validate(stateMachine StateMachineType, user UserType, states ...int) (bool, error) {
 	var ok bool
 	var stateMap StateMap
@@ -243,9 +249,7 @@ func (sm *StateMachine) AddCheckHandler(name string, handler CheckHandler, state
 
 	if len(stateMachine) > 0 {
 		for _, smName := range stateMachine {
-			if _, ok := sm.handlers.stateMachineHandlersMap[smName]; !ok {
-				sm.handlers.stateMachineHandlersMap[smName] = newHandlersMaps()
-			}
+			sm.handlers.initStateMachineHandlers(smName)
 			sm.handlers.stateMachineHandlersMap[smName].Check[name] = handler
 		}
 	} else {
@@ -261,9 +265,7 @@ func (sm *StateMachine) AddExecuteHandler(name string, handler ExecuteHandler, s
 
 	if len(stateMachine) > 0 {
 		for _, smName := range stateMachine {
-			if _, ok := sm.handlers.stateMachineHandlersMap[smName]; !ok {
-				sm.handlers.stateMachineHandlersMap[smName] = newHandlersMaps()
-			}
+			sm.handlers.initStateMachineHandlers(smName)
 			sm.handlers.stateMachineHandlersMap[smName].Execute[name] = handler
 		}
 	} else {
@@ -279,9 +281,7 @@ func (sm *StateMachine) AddEventOnSuccessHandler(name string, handler EventHandl
 
 	if len(stateMachine) > 0 {
 		for _, smName := range stateMachine {
-			if _, ok := sm.handlers.stateMachineHandlersMap[smName]; !ok {
-				sm.handlers.stateMachineHandlersMap[smName] = newHandlersMaps()
-			}
+			sm.handlers.initStateMachineHandlers(smName)
 			sm.handlers.stateMachineHandlersMap[smName].Events.Success[name] = handler
 		}
 	} else {
@@ -297,9 +297,7 @@ func (sm *StateMachine) AddEventOnErrorHandler(name string, handler EventHandler
 
 	if len(stateMachine) > 0 {
 		for _, smName := range stateMachine {
-			if _, ok := sm.handlers.stateMachineHandlersMap[smName]; !ok {
-				sm.handlers.stateMachineHandlersMap[smName] = newHandlersMaps()
-			}
+			sm.handlers.initStateMachineHandlers(smName)
 			sm.handlers.stateMachineHandlersMap[smName].Events.Error[name] = handler
 		}
 	} else {

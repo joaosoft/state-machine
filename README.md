@@ -32,10 +32,10 @@ state_machine:
         id: 2
         check:
           -
-            "check_in-progress"
+            "check_new_to_in-progress"
         execute:
           -
-            "execute_in-progress"
+            "execute_new_to_in-progress"
   -
     id: 2
     name: "In progress"
@@ -47,14 +47,14 @@ state_machine:
             "check_in-progress_to_approved"
         execute:
           -
-            "execute_approved"
+            "execute_in-progress_to_approved"
         events:
           success:
             -
-              "event_success_approved"
+              "event_success_in-progress_to_approved"
           error:
             -
-              "event_error_approved"
+              "event_error_in-progress_to_approved"
       -
         id: 4
         check:
@@ -62,14 +62,14 @@ state_machine:
             "check_in-progress_to_denied"
         execute:
           -
-            "execute_denied"
+            "execute_in-progress_to_denied"
         events:
           success:
             -
-              "event_success_denied"
+              "event_success_in-progress_to_denied"
           error:
             -
-              "event_error_denied"
+              "event_error_in-progress_to_denied"
   -
     id: 3
     name: "Approved"
@@ -104,10 +104,10 @@ users:
         {
           "id": 2,
           "check": [
-            "check_in-development"
+            "check_todo_to_in-development"
           ],
           "execute": [
-            "execute_in-development"
+            "execute_todo_to_in-development"
           ]
         }
       ]
@@ -122,14 +122,14 @@ users:
             "check_in-development_to_done"
           ],
           "execute": [
-            "execute_in-development"
+            "execute_in-development_to_done"
           ],
           "events": {
             "success": [
-              "event_success_in-development"
+              "event_success_in-development_to_done"
             ],
             "error": [
-              "event_error_in-development"
+              "event_error_in-development_to_done"
             ]
           }
         },
@@ -139,14 +139,14 @@ users:
             "check_in-development_to_canceled"
           ],
           "execute": [
-            "execute_canceled"
+            "execute_in-development_to_canceled"
           ],
           "events": {
             "success": [
-              "event_success_canceled"
+              "event_success_in-development_to_canceled"
             ],
             "error": [
-              "event_error_canceled"
+              "event_error_in-development_to_canceled"
             ]
           }
         }
@@ -192,31 +192,38 @@ func main() {
 	// add handlers
 	state_machine.
 		// state machine A
-		AddCheckHandler("check_in-progress", CheckInProgress).
-		AddCheckHandler("check_in-progress_to_approved", ExecuteInProgressToApproved).
-		AddCheckHandler("check_in-progress_to_denied", ExecuteInProgressToDenied).
-		AddCheckHandler("check_in-development_to_done", ExecuteInProgressToDone).
-		AddCheckHandler("check_in-development_to_canceled", ExecuteInProgressToCanceled).
-		AddExecuteHandler("execute_in-progress", ExecuteInProgress).
-		AddExecuteHandler("execute_approved", ExecuteApproved).
-		AddExecuteHandler("execute_denied", ExecuteDenied).
-		AddExecuteHandler("execute_canceled", ExecuteCanceled).
-		AddEventOnSuccessHandler("event_success_in-progress", EventOnSuccessInProgress).
-		AddEventOnErrorHandler("event_error_in-progress", EventOnErrorInProgress).
-		AddEventOnSuccessHandler("event_success_approved", EventOnSuccessApproved).
-		AddEventOnErrorHandler("event_error_approved", EventOnErrorApproved).
-		AddEventOnSuccessHandler("event_success_denied", EventOnSuccessDenied).
-		AddEventOnErrorHandler("event_error_denied", EventOnErrorDenied).
-		AddEventOnSuccessHandler("event_success_done", EventOnSuccessDone).
-		AddEventOnErrorHandler("event_error_done", EventOnErrorDone).
-		AddEventOnSuccessHandler("event_success_canceled", EventOnSuccessCanceled).
-		AddEventOnErrorHandler("event_error_canceled", EventOnErrorCanceled).
+		AddCheckHandler("check_new_to_in-progress", CheckNewToInProgress, StateMachineA).
+		AddCheckHandler("check_in-progress_to_approved", CheckInProgressToApproved, StateMachineA).
+		AddCheckHandler("check_in-progress_to_denied", CheckInProgressToDenied, StateMachineA).
+		//
+		AddExecuteHandler("execute_new_to_in-progress", ExecuteNewToInProgress, StateMachineA).
+		AddExecuteHandler("execute_in-progress_to_approved", ExecuteInProgressToApproved, StateMachineA).
+		AddExecuteHandler("execute_in-progress_to_denied", ExecuteInProgressToDenied, StateMachineA).
+		//
+		AddEventOnSuccessHandler("event_success_new_to_in-progress", EventOnSuccessNewToInProgress, StateMachineA).
+		AddEventOnSuccessHandler("event_success_in-progress_to_approved", EventOnSuccessInProgressToApproved, StateMachineA).
+		AddEventOnSuccessHandler("event_success_in-progress_to_denied", EventOnSuccessInProgressToDenied, StateMachineA).
+		//
+		AddEventOnErrorHandler("event_error_new_to_in-progress", EventOnErrorNewToInProgress, StateMachineA).
+		AddEventOnErrorHandler("event_error_in-progress_to_approved", EventOnErrorInProgressToApproved, StateMachineA).
+		AddEventOnErrorHandler("event_error_in-progress_to_denied", EventOnErrorInProgressToDenied, StateMachineA).
 
 		// state machine B
-		AddCheckHandler("check_in-development", CheckInDevelopment).
-		AddExecuteHandler("execute_in-development", ExecuteInDevelopment).
-		AddEventOnSuccessHandler("event_success_in-development", EventOnSuccessInDevelopment).
-		AddEventOnErrorHandler("event_error_in-development", EventOnErrorInDevelopment)
+		AddCheckHandler("check_todo_to_in-development", CheckTodoToInDevelopment, StateMachineB).
+		AddCheckHandler("check_in-development_to_done", CheckInDevelopmentToDone, StateMachineB).
+		AddCheckHandler("check_in-development_to_canceled", CheckInDevelopmentToCanceled, StateMachineB).
+		//
+		AddExecuteHandler("execute_todo_to_in-development", ExecuteTodoToInDevelopment, StateMachineB).
+		AddExecuteHandler("execute_in-development_to_canceled", ExecuteInDevelopmentToCanceled, StateMachineB).
+		AddExecuteHandler("execute_in-development_to_done", ExecuteInDevelopmentToDone, StateMachineB).
+		//
+		AddEventOnSuccessHandler("event_success_todo_to_in-development", EventOnSuccessTodoToInDevelopment, StateMachineB).
+		AddEventOnSuccessHandler("event_success_in-development_to_done", EventOnSuccessInDevelopmentToDone, StateMachineB).
+		AddEventOnSuccessHandler("event_success_in-development_to_canceled", EventOnSuccessInDevelopmentToCanceled, StateMachineB).
+		//
+		AddEventOnErrorHandler("event_error_todo_to_in-development", EventOnErrorTodoToInDevelopment, StateMachineB).
+		AddEventOnErrorHandler("event_error_in-development_to_done", EventOnErrorInDevelopmentToDone, StateMachineB).
+		AddEventOnErrorHandler("event_error_in-development_to_canceled", EventOnErrorInDevelopmentToCanceled, StateMachineB)
 
 	// add state machines
 	if err = state_machine.AddStateMachine(StateMachineA, "/config/state_machine_a.yaml"); err != nil {
@@ -272,12 +279,12 @@ State Machine: A
 
 transition from 1 to 4  with user operator ? false
 transition from 1 to 3  with user operator ? false
-check in-progress handler with [[1 text true]]
-
-
-
+check in-progress handler with [1 text true]
+transition from 1 to 2  with user operator ? false
+transition from 1 to 1  with user operator ? false
+check in-progress to denied handler with [1 text true]
 transition from 2 to 4  with user operator ? false
-execute in-progress to approved handler with [[1 text true]]
+check in-progress to approved handler with [1 text true]
 transition from 2 to 3  with user operator ? false
 transition from 2 to 2  with user operator ? false
 transition from 2 to 1  with user operator ? false
@@ -295,12 +302,12 @@ State Machine: B
 
 transition from 1 to 4  with user worker ? false
 transition from 1 to 3  with user worker ? false
-check in-development handler with [[1 text true]]
+check in-development handler with [1 text true]
 transition from 1 to 2  with user worker ? false
 transition from 1 to 1  with user worker ? false
-execute in-progress to canceled handler with [[1 text true]]
+check in-development to canceled handler with [1 text true]
 transition from 2 to 4  with user worker ? false
-execute in-progress to done handler with [[1 text true]]
+check in-development to done handler with [1 text true]
 transition from 2 to 3  with user worker ? false
 transition from 2 to 2  with user worker ? false
 transition from 2 to 1  with user worker ? false
@@ -313,7 +320,8 @@ transition from 4 to 3  with user worker ? false
 transition from 4 to 2  with user worker ? false
 transition from 4 to 1  with user worker ? false
 can make transition to In progress
-check in-progress handler with [[]]transition !ok
+check in-progress handler with []
+execute in-progress handler with []
 ```
 
 ## Known issues
