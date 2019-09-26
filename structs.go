@@ -41,8 +41,8 @@ type StateMachine struct {
 	mux                 *sync.RWMutex
 }
 
-type StateMachineMap map[string]StateMap
-type UserStateMachine map[User]StateMachineMap
+type StateMachineMap map[StateMachineType]StateMap
+type UserStateMachine map[UserType]StateMachineMap
 
 type State struct {
 	Id            int           `json:"id"`
@@ -80,4 +80,5 @@ type EventMap struct {
 	Error   map[string]EventHandler `json:"error"`
 }
 
-type User string
+type UserType string
+type StateMachineType string

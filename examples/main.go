@@ -6,11 +6,11 @@ import (
 )
 
 const (
-	StateMachineA                        = "A"
-	UserStateMachineA state_machine.User = "operator"
+	StateMachineA     state_machine.StateMachineType = "A"
+	UserStateMachineA state_machine.UserType         = "operator"
 
-	StateMachineB                        = "B"
-	UserStateMachineB state_machine.User = "worker"
+	StateMachineB     state_machine.StateMachineType = "B"
+	UserStateMachineB state_machine.UserType         = "worker"
 )
 
 func main() {
@@ -54,8 +54,8 @@ func main() {
 	}
 
 	// check transitions of state machines
-	stateMachines := []string{StateMachineA, StateMachineB}
-	stateMachinesUsers := []state_machine.User{UserStateMachineA, UserStateMachineB}
+	stateMachines := []state_machine.StateMachineType{StateMachineA, StateMachineB}
+	stateMachinesUsers := []state_machine.UserType{UserStateMachineA, UserStateMachineB}
 	maxLen := 4
 	ok := false
 

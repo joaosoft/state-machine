@@ -17,7 +17,7 @@ func New(options ...StateMachineOption) (*StateMachine, error) {
 	config, _, err := NewConfig()
 
 	newStateMachine := &StateMachine{
-		stateMachineMap:     make(map[string]StateMap),
+		stateMachineMap:     make(map[StateMachineType]StateMap),
 		userStateMachineMap: make(UserStateMachine),
 		handlerMap: HandlerMap{
 			Check:   make(map[string]CheckHandler),
@@ -45,7 +45,7 @@ func New(options ...StateMachineOption) (*StateMachine, error) {
 	return newStateMachine, nil
 }
 
-func (sm *StateMachine) validate(stateMachine string, user User, states ...int) (bool, error) {
+func (sm *StateMachine) validate(stateMachine StateMachineType, user UserType, states ...int) (bool, error) {
 	var ok bool
 	var stateMap StateMap
 
@@ -66,7 +66,7 @@ func (sm *StateMachine) validate(stateMachine string, user User, states ...int) 
 	return true, nil
 }
 
-func (sm *StateMachine) Add(stateMachine string, file string) error {
+func (sm *StateMachine) Add(stateMachine StateMachineType, file string) error {
 	sm.mux.Lock()
 	defer sm.mux.Unlock()
 
@@ -176,7 +176,7 @@ func (sm *StateMachine) Add(stateMachine string, file string) error {
 		}
 		newStateMachine := make(StateMachineMap)
 		newStateMachine[stateMachine] = stateMap
-		sm.userStateMachineMap[User(user)] = newStateMachine
+		sm.userStateMachineMap[UserType(user)] = newStateMachine
 	}
 
 	return nil
@@ -214,7 +214,7 @@ func (sm *StateMachine) AddEventOnErrorHandler(name string, handler EventHandler
 	return sm
 }
 
-func (sm *StateMachine) CheckTransition(stateMachine string, user User, from int, to int, args ...interface{}) (bool, error) {
+func (sm *StateMachine) CheckTransition(stateMachine StateMachineType, user UserType, from int, to int, args ...interface{}) (bool, error) {
 	sm.mux.RLock()
 	defer sm.mux.RUnlock()
 
@@ -258,7 +258,7 @@ func (sm *StateMachine) CheckTransition(stateMachine string, user User, from int
 	return false, nil
 }
 
-func (sm *StateMachine) ExecuteTransition(stateMachine string, user User, from int, to int, args ...interface{}) (bool, error) {
+func (sm *StateMachine) ExecuteTransition(stateMachine StateMachineType, user UserType, from int, to int, args ...interface{}) (bool, error) {
 	sm.mux.RLock()
 	defer sm.mux.RUnlock()
 
@@ -325,7 +325,7 @@ func (sm *StateMachine) ExecuteTransition(stateMachine string, user User, from i
 	return true, nil
 }
 
-func (sm *StateMachine) GetTransitions(stateMachine string, user User, from int) (transitions []*Transition, err error) {
+func (sm *StateMachine) GetTransitions(stateMachine StateMachineType, user UserType, from int) (transitions []*Transition, err error) {
 	sm.mux.RLock()
 	defer sm.mux.RUnlock()
 
