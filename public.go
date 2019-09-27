@@ -1,6 +1,17 @@
 package state_machine
 
+type ManualHandlerTag string
+
+// manual handlers
+func AddManualHandler(tag ManualHandlerTag, handler ManualHandler, stateMachine ...StateMachineType) *stateMachine {
+	return stateMachineInstance.addManualHandler(tag, handler, stateMachine...)
+}
+
 // handlers
+func AddLoadHandler(name string, handler LoadHandler, stateMachine ...StateMachineType) *stateMachine {
+	return stateMachineInstance.addHandler(name, handler, stateMachine...)
+}
+
 func AddCheckHandler(name string, handler CheckHandler, stateMachine ...StateMachineType) *stateMachine {
 	return stateMachineInstance.addHandler(name, handler, stateMachine...)
 }
@@ -35,7 +46,16 @@ func NewGetTransitions() *newGetTransitions {
 	return stateMachineInstance.newGetTransitions()
 }
 
-// state machine
+// manual handlers
+func (sm *stateMachine) AddManualHandler(tag ManualHandlerTag, handler ManualHandler, stateMachine ...StateMachineType) *stateMachine {
+	return sm.addManualHandler(tag, handler, stateMachine...)
+}
+
+// state machine handlers
+func (sm *stateMachine) AddLoadHandler(name string, handler LoadHandler, stateMachine ...StateMachineType) *stateMachine {
+	return sm.addHandler(name, handler, stateMachine...)
+}
+
 func (sm *stateMachine) AddCheckHandler(name string, handler CheckHandler, stateMachine ...StateMachineType) *stateMachine {
 	return sm.addHandler(name, handler, stateMachine...)
 }

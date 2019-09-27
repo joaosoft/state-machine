@@ -8,30 +8,36 @@ type newCheckTransition struct {
 func (sm *stateMachine) newCheckTransition() *newCheckTransition {
 	return &newCheckTransition{
 		stateMachine: sm,
-		ctx: &Context{},
+		ctx:          &Context{},
 	}
 }
 
-func (nt *newCheckTransition) User(name UserType) *newCheckTransition {
-	nt.ctx.User = name
-	return nt
+func (ct *newCheckTransition) User(name UserType) *newCheckTransition {
+	ct.ctx.User = name
+	return ct
 }
 
-func (nt *newCheckTransition) StateMachine(name StateMachineType) *newCheckTransition {
-	nt.ctx.StateMachine = name
-	return nt
+func (ct *newCheckTransition) StateMachine(name StateMachineType) *newCheckTransition {
+	ct.ctx.StateMachine = name
+	return ct
 }
 
-func (nt *newCheckTransition) From(idStatus int) *newCheckTransition {
-	nt.ctx.From = idStatus
-	return nt
+func (ct *newCheckTransition) From(idStatus int) *newCheckTransition {
+	ct.ctx.From = idStatus
+	return ct
 }
 
-func (nt *newCheckTransition) To(idStatus int) *newCheckTransition {
-	nt.ctx.To = idStatus
-	return nt
+func (ct *newCheckTransition) To(idStatus int) *newCheckTransition {
+	ct.ctx.To = idStatus
+	return ct
 }
 
-func (nt *newCheckTransition) Execute(args ...interface{}) (bool, error) {
-	return nt.stateMachine.checkTransition(nt.ctx, args...)
+func (ct *newCheckTransition) Resource(id int) *newCheckTransition {
+	ct.ctx.Resource = id
+	return ct
+}
+
+func (ct *newCheckTransition) Execute(args ...interface{}) (bool, error) {
+	ct.ctx.Args = args
+	return ct.stateMachine.checkTransition(ct.ctx)
 }

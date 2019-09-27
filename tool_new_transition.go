@@ -32,6 +32,12 @@ func (nt *newTransition) To(idStatus int) *newTransition {
 	return nt
 }
 
+func (nt *newTransition) Resource(id int) *newTransition {
+	nt.ctx.Resource = id
+	return nt
+}
+
 func (nt *newTransition) Execute(args ...interface{}) (bool, error) {
-	return nt.stateMachine.executeTransition(nt.ctx, args...)
+	nt.ctx.Args = args
+	return nt.stateMachine.executeTransition(nt.ctx)
 }

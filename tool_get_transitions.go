@@ -12,21 +12,21 @@ func (sm *stateMachine) newGetTransitions() *newGetTransitions {
 	}
 }
 
-func (nt *newGetTransitions) User(name UserType) *newGetTransitions {
-	nt.ctx.User = name
-	return nt
+func (gt *newGetTransitions) User(name UserType) *newGetTransitions {
+	gt.ctx.User = name
+	return gt
 }
 
-func (nt *newGetTransitions) StateMachine(name StateMachineType) *newGetTransitions {
-	nt.ctx.StateMachine = name
-	return nt
+func (gt *newGetTransitions) StateMachine(name StateMachineType) *newGetTransitions {
+	gt.ctx.StateMachine = name
+	return gt
 }
 
-func (nt *newGetTransitions) From(idStatus int) *newGetTransitions {
-	nt.ctx.From = idStatus
-	return nt
+func (gt *newGetTransitions) From(idStatus int) *newGetTransitions {
+	gt.ctx.From = idStatus
+	return gt
 }
 
-func (nt *newGetTransitions) Execute() ([]*Transition, error) {
-	return nt.stateMachine.getTransitions(nt.ctx)
+func (gt *newGetTransitions) Execute() ([]*Transition, error) {
+	return gt.stateMachine.getTransitions(gt.ctx)
 }

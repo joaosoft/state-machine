@@ -225,6 +225,7 @@ func init() {
 		AddEventOnErrorHandler("event_error_in-progress_to_denied", eventOnErrorInProgressToDenied, StateMachineA).
 
 		// state machine B
+		AddManualHandler(state_machine.ManualInit, loadFromState, StateMachineB).
 		AddCheckHandler("check_todo_to_in-development", checkTodoToInDevelopment, StateMachineB).
 		AddCheckHandler("check_in-development_to_done", checkInDevelopmentToDone, StateMachineB).
 		AddCheckHandler("check_in-development_to_canceled", checkInDevelopmentToCanceled, StateMachineB).
@@ -299,11 +300,25 @@ func main() {
 		fmt.Printf("\ncan make transition to %s", transition.Name)
 	}
 
-	// execute transaction
+	// execute transaction - state machine A
 	ok, err = state_machine.NewTransition().
 		User(UserStateMachineA).
 		StateMachine(StateMachineA).
 		From(1).
+		To(2).
+		Execute(1, "text", true)
+	if err != nil {
+		panic(err)
+	}
+
+	if !ok {
+		fmt.Println("transition !ok")
+	}
+
+	// execute transaction - state machine B
+	ok, err = state_machine.NewTransition().
+		User(UserStateMachineB).
+		StateMachine(StateMachineB).
 		To(2).
 		Execute(1, "text", true)
 	if err != nil {
@@ -343,24 +358,41 @@ transition from 4 to 1  with user operator ? false
 
 State Machine: B
 
+load 'from' state handler with [1 text true]
 transition from 1 to 4  with user worker ? false
+load 'from' state handler with [1 text true]
 transition from 1 to 3  with user worker ? false
+load 'from' state handler with [1 text true]
 check in-development handler with [1 text true]
 transition from 1 to 2  with user worker ? true
+load 'from' state handler with [1 text true]
 transition from 1 to 1  with user worker ? false
-check in-development to canceled handler with [1 text true]
-transition from 2 to 4  with user worker ? true
-check in-development to done handler with [1 text true]
-transition from 2 to 3  with user worker ? true
-transition from 2 to 2  with user worker ? false
+load 'from' state handler with [1 text true]
+transition from 2 to 4  with user worker ? false
+load 'from' state handler with [1 text true]
+transition from 2 to 3  with user worker ? false
+load 'from' state handler with [1 text true]
+check in-development handler with [1 text true]
+transition from 2 to 2  with user worker ? true
+load 'from' state handler with [1 text true]
 transition from 2 to 1  with user worker ? false
+load 'from' state handler with [1 text true]
 transition from 3 to 4  with user worker ? false
+load 'from' state handler with [1 text true]
 transition from 3 to 3  with user worker ? false
-transition from 3 to 2  with user worker ? false
+load 'from' state handler with [1 text true]
+check in-development handler with [1 text true]
+transition from 3 to 2  with user worker ? true
+load 'from' state handler with [1 text true]
 transition from 3 to 1  with user worker ? false
+load 'from' state handler with [1 text true]
 transition from 4 to 4  with user worker ? false
+load 'from' state handler with [1 text true]
 transition from 4 to 3  with user worker ? false
-transition from 4 to 2  with user worker ? false
+load 'from' state handler with [1 text true]
+check in-development handler with [1 text true]
+transition from 4 to 2  with user worker ? true
+load 'from' state handler with [1 text true]
 transition from 4 to 1  with user worker ? false
 can make transition to In progress
 check in-progress handler with [1 text true]
@@ -368,6 +400,10 @@ execute in-progress handler with [1 text true]
 by user: execute in-progress handler with [1 text true]
 state machine: A, transition handler with [1 text true]
 by user: success event in-progress handler with [1 text true]
+load 'from' state handler with [1 text true]
+check in-development handler with [1 text true]
+execute in-development handler with [1 text true]
+state machine: B, transition handler with [1 text true]
 ```
 
 ## Known issues

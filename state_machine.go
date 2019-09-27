@@ -19,8 +19,9 @@ func new(options ...StateMachineOption) (*stateMachine, error) {
 	newStateMachine := &stateMachine{
 		stateMachineMap:     make(StateMachineMap),
 		userStateMachineMap: make(UserStateMachineMap),
-		handlers: &Handlers{
+		handlers: &handlers{
 			handlersMap: &HandlersMap{
+				Manual:  make(ManualHandlerMap),
 				Check:   make(CheckHandlerMap),
 				Execute: make(ExecuteHandlerMap),
 				Events: &EventMap{
@@ -98,6 +99,12 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 		for _, transitionCfg := range stateCfg.Transitions {
 			transition := &Transition{
 				Id: transitionCfg.Id,
+			}
+
+			// load
+			transition.Handler.Load, err = transitionCfg.getLoadHandlers(stateMachine, sm.handlers)
+			if err != nil {
+				return err
 			}
 
 			// check
@@ -182,6 +189,13 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 
 				// add specific handlers for the user
 
+				// load
+				loadHandlers, err := transitionCfg.getLoadHandlers(stateMachine, sm.handlers)
+				if err != nil {
+					return err
+				}
+				userTransition.Handler.Load = append(userTransition.Handler.Load, loadHandlers...)
+
 				// check
 				checkHandlers, err := transitionCfg.getCheckHandlers(stateMachine, sm.handlers)
 				if err != nil {
@@ -245,6 +259,28 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 	return nil
 }
 
+func (sm *stateMachine) addManualHandler(tag ManualHandlerTag, handler ManualHandler, stateMachine ...StateMachineType) *stateMachine {
+	sm.mux.Lock()
+	defer sm.mux.Unlock()
+
+	if len(stateMachine) > 0 {
+		for _, stateMachine := range stateMachine {
+			sm.handlers.initStateMachineHandlers(stateMachine)
+			if _, ok := sm.handlers.stateMachineHandlersMap[stateMachine].Manual[tag]; !ok {
+				sm.handlers.stateMachineHandlersMap[stateMachine].Manual[tag] = make(ManualHandlerList, 0)
+			}
+			sm.handlers.stateMachineHandlersMap[stateMachine].Manual[tag] = append(sm.handlers.stateMachineHandlersMap[stateMachine].Manual[tag], handler)
+		}
+	} else {
+		if _, ok := sm.handlers.handlersMap.Manual[tag]; !ok {
+			sm.handlers.handlersMap.Manual[tag] = make(ManualHandlerList, 0)
+		}
+		sm.handlers.handlersMap.Manual[tag] = append(sm.handlers.handlersMap.Manual[tag], handler)
+	}
+
+	return sm
+}
+
 func (sm *stateMachine) addHandler(name string, handler interface{}, stateMachine ...StateMachineType) *stateMachine {
 	sm.mux.Lock()
 	defer sm.mux.Unlock()
@@ -254,6 +290,8 @@ func (sm *stateMachine) addHandler(name string, handler interface{}, stateMachin
 			sm.handlers.initStateMachineHandlers(stateMachine)
 
 			switch h := handler.(type) {
+			case LoadHandler:
+				sm.handlers.stateMachineHandlersMap[stateMachine].Load[name] = h
 			case CheckHandler:
 				sm.handlers.stateMachineHandlersMap[stateMachine].Check[name] = h
 			case ExecuteHandler:
@@ -266,6 +304,8 @@ func (sm *stateMachine) addHandler(name string, handler interface{}, stateMachin
 		}
 	} else {
 		switch h := handler.(type) {
+		case LoadHandler:
+			sm.handlers.handlersMap.Load[name] = h
 		case CheckHandler:
 			sm.handlers.handlersMap.Check[name] = h
 		case ExecuteHandler:
@@ -280,9 +320,14 @@ func (sm *stateMachine) addHandler(name string, handler interface{}, stateMachin
 	return sm
 }
 
-func (sm *stateMachine) checkTransition(ctx *Context, args ...interface{}) (allowed bool, err error) {
+func (sm *stateMachine) checkTransition(ctx *Context) (bool, error) {
 	sm.mux.RLock()
 	defer sm.mux.RUnlock()
+
+	// manual - init
+	if err := sm.handlers.RunManual(ManualInit, ctx); err != nil {
+		return false, err
+	}
 
 	if ok, err := sm.validate(ctx); err != nil {
 		return ok, err
@@ -308,13 +353,29 @@ func (sm *stateMachine) checkTransition(ctx *Context, args ...interface{}) (allo
 		return false, nil
 	}
 
+	// load
+	err := transition.Handler.Load.Run(ctx)
+	if err != nil {
+		return false, err
+	}
+
 	// check
-	return transition.Handler.Check.Run(ctx, args...)
+	allowed, err := transition.Handler.Check.Run(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	return allowed, nil
 }
 
-func (sm *stateMachine) executeTransition(ctx *Context, args ...interface{}) (bool, error) {
+func (sm *stateMachine) executeTransition(ctx *Context) (bool, error) {
 	sm.mux.RLock()
 	defer sm.mux.RUnlock()
+
+	// manual - init
+	if err := sm.handlers.RunManual(ManualInit, ctx); err != nil {
+		return false, err
+	}
 
 	if ok, err := sm.validate(ctx, ctx.From, ctx.To); err != nil {
 		return ok, err
@@ -344,7 +405,7 @@ func (sm *stateMachine) executeTransition(ctx *Context, args ...interface{}) (bo
 		return false, nil
 	}
 
-	return transition.Handler.Run(ctx, states.transitionHandler, args...)
+	return transition.Handler.Run(ctx, states.transitionHandler, sm.handlers)
 }
 
 func (sm *stateMachine) getTransitions(ctx *Context) (transitions []*Transition, err error) {

@@ -36,6 +36,7 @@ func init() {
 		AddEventOnErrorHandler("event_error_in-progress_to_denied", eventOnErrorInProgressToDenied, StateMachineA).
 
 		// state machine B
+		AddManualHandler(state_machine.ManualInit, loadFromState, StateMachineB).
 		AddCheckHandler("check_todo_to_in-development", checkTodoToInDevelopment, StateMachineB).
 		AddCheckHandler("check_in-development_to_done", checkInDevelopmentToDone, StateMachineB).
 		AddCheckHandler("check_in-development_to_canceled", checkInDevelopmentToCanceled, StateMachineB).
@@ -110,11 +111,25 @@ func main() {
 		fmt.Printf("\ncan make transition to %s", transition.Name)
 	}
 
-	// execute transaction
+	// execute transaction - state machine A
 	ok, err = state_machine.NewTransition().
 		User(UserStateMachineA).
 		StateMachine(StateMachineA).
 		From(1).
+		To(2).
+		Execute(1, "text", true)
+	if err != nil {
+		panic(err)
+	}
+
+	if !ok {
+		fmt.Println("transition !ok")
+	}
+
+	// execute transaction - state machine B
+	ok, err = state_machine.NewTransition().
+		User(UserStateMachineB).
+		StateMachine(StateMachineB).
 		To(2).
 		Execute(1, "text", true)
 	if err != nil {
