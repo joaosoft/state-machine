@@ -78,6 +78,38 @@ func (h *Handlers) getEventErrorHandler(stateMachine StateMachineType, name stri
 	}
 }
 
+func (h *Handler) Run(ctx *Context, transitionHandler TransitionHandler, args ...interface{}) (bool, error) {
+	// check
+	allowed, err := h.Check.Run(ctx, args...)
+	if err != nil {
+		h.Events.Error.Run(ctx, err, args...)
+		return false, err
+	}
+
+	if !allowed {
+		return false, nil
+	}
+
+	err = h.Execute.Run(ctx, args...)
+	if err != nil {
+		h.Events.Error.Run(ctx, err, args...)
+		return false, err
+	}
+	// transition handler
+	if transitionHandler != nil {
+		err = transitionHandler(ctx, args...)
+		if err != nil {
+			h.Events.Error.Run(ctx, err, args...)
+			return false, err
+		}
+	}
+
+	// on success
+	h.Events.Success.Run(ctx, args...)
+
+	return true, nil
+}
+
 func (h CheckHandlerList) Run(ctx *Context, args ...interface{}) (bool, error) {
 	for _, handler := range h {
 		if ok, err := handler(ctx, args...); !ok || err != nil {
@@ -107,34 +139,4 @@ func (h EventErrorHandlerList) Run(ctx *Context, err error, args ...interface{})
 		handler(ctx, err, args...)
 	}
 	return nil
-}
-
-func (h *Handler) Run(ctx *Context, transitionHandler TransitionHandler, args ...interface{}) (bool, error) {
-	// check
-	allowed, err := h.Check.Run(ctx, args...)
-	if err != nil {
-		h.Events.Error.Run(ctx, err, args...)
-		return false, err
-	}
-
-	if !allowed {
-		return false, nil
-	}
-
-	err = h.Execute.Run(ctx, args...)
-	if err != nil {
-		h.Events.Error.Run(ctx, err, args...)
-		return false, err
-	}
-	// transition handler
-	err = transitionHandler(ctx, args...)
-	if err != nil {
-		h.Events.Error.Run(ctx, err, args...)
-		return false, err
-	}
-
-	// on success
-	h.Events.Success.Run(ctx, args...)
-
-	return true, nil
 }

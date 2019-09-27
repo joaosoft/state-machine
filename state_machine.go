@@ -54,7 +54,7 @@ func (sm *stateMachine) validate(ctx *Context, states ...int) (bool, error) {
 	var stateMachineData *StateMachineData
 
 	if stateMachineMap, ok = sm.userStateMachineMap[ctx.User]; !ok {
-		return false, errors.New(fmt.Sprintf("User [%s] not found", ctx.User))
+		return false, errors.New(fmt.Sprintf("user [%s] not found", ctx.User))
 	}
 
 	if stateMachineData, ok = stateMachineMap[ctx.StateMachine]; !ok {
@@ -180,7 +180,7 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 					},
 				}
 
-				// add specific handlers for the User
+				// add specific handlers for the user
 
 				// check
 				checkHandlers, err := transitionCfg.getCheckHandlers(stateMachine, sm.handlers)
@@ -217,7 +217,7 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 			stateMap[stateCfg.Id] = userState
 
 		}
-		// add missing User transition states
+		// add missing user transition states
 		for idState, added := range transitionStates {
 			if !added {
 				var stateTransition *State
