@@ -82,6 +82,7 @@ func (h *Handler) Run(ctx *Context, transitionHandler TransitionHandler, args ..
 	// check
 	allowed, err := h.Check.Run(ctx, args...)
 	if err != nil {
+		// on error
 		h.Events.Error.Run(ctx, err, args...)
 		return false, err
 	}
@@ -90,8 +91,10 @@ func (h *Handler) Run(ctx *Context, transitionHandler TransitionHandler, args ..
 		return false, nil
 	}
 
+	// execute
 	err = h.Execute.Run(ctx, args...)
 	if err != nil {
+		// on error
 		h.Events.Error.Run(ctx, err, args...)
 		return false, err
 	}
@@ -99,6 +102,7 @@ func (h *Handler) Run(ctx *Context, transitionHandler TransitionHandler, args ..
 	if transitionHandler != nil {
 		err = transitionHandler(ctx, args...)
 		if err != nil {
+			// on error
 			h.Events.Error.Run(ctx, err, args...)
 			return false, err
 		}
