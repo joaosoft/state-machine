@@ -86,6 +86,9 @@ users:
           id: 2
           execute:
             - "execute_new_to_in-progress_user"
+          events:
+            success:
+              - "event_success_new_to_in-progress_user"
     -
       id: 2
       transitions:
@@ -210,10 +213,11 @@ func main() {
 		AddCheckHandler("check_in-progress_to_denied", CheckInProgressToDenied, StateMachineA).
 		//
 		AddExecuteHandler("execute_new_to_in-progress", ExecuteNewToInProgress, StateMachineA).
-		AddExecuteHandler("execute_new_to_in-progress_user", ExecuteNewToInProgressUser, StateMachineA).
+		AddExecuteHandler("execute_new_to_in-progress_user", ExecuteNewToInProgressByUser, StateMachineA).
 		AddExecuteHandler("execute_in-progress_to_approved", ExecuteInProgressToApproved, StateMachineA).
 		AddExecuteHandler("execute_in-progress_to_denied", ExecuteInProgressToDenied, StateMachineA).
 		//
+		AddEventOnSuccessHandler("event_success_new_to_in-progress_user", EventOnSuccessNewToInProgressByUser, StateMachineA).
 		AddEventOnSuccessHandler("event_success_new_to_in-progress", EventOnSuccessNewToInProgress, StateMachineA).
 		AddEventOnSuccessHandler("event_success_in-progress_to_approved", EventOnSuccessInProgressToApproved, StateMachineA).
 		AddEventOnSuccessHandler("event_success_in-progress_to_denied", EventOnSuccessInProgressToDenied, StateMachineA).
@@ -240,10 +244,21 @@ func main() {
 		AddEventOnErrorHandler("event_error_in-development_to_canceled", EventOnErrorInDevelopmentToCanceled, StateMachineB)
 
 	// add state machines
-	if err = state_machine.AddStateMachine(StateMachineA, "/config/state_machines/state_machine_a.yaml"); err != nil {
+	// A
+	if err = state_machine.NewStateMachine().
+		Key(StateMachineA).
+		File("/config/state_machines/state_machine_a.yaml").
+		TransitionHandler(StateMachineATransitionHandler).
+		Load(); err != nil {
 		panic(err)
 	}
-	if err = state_machine.AddStateMachine(StateMachineB, "/config/state_machines/state_machine_b.json"); err != nil {
+
+	// B
+	if err = state_machine.NewStateMachine().
+		Key(StateMachineB).
+		File("/config/state_machines/state_machine_b.json").
+		TransitionHandler(StateMachineBTransitionHandler).
+		Load(); err != nil {
 		panic(err)
 	}
 
@@ -257,7 +272,12 @@ func main() {
 		fmt.Printf("\n\n\nState Machine: %s\n", stateMachine)
 		for i := 1; i <= maxLen; i++ {
 			for j := maxLen; j >= 1; j-- {
-				ok, err = state_machine.CheckTransition(stateMachine, stateMachinesUsers[index], i, j, 1, "text", true)
+				ok, err = state_machine.NewCheckTransition().
+					User(stateMachinesUsers[index]).
+					StateMachine(stateMachine).
+					From(i).
+					To(j).
+					Execute(1, "text", true)
 				if err != nil {
 					panic(err)
 				}
@@ -267,7 +287,11 @@ func main() {
 	}
 
 	// get all transitions of state machine A
-	transitions, err := state_machine.GetTransitions(StateMachineA, UserStateMachineA, 1)
+	transitions, err := state_machine.NewGetTransitions().
+		User(UserStateMachineA).
+		StateMachine(StateMachineA).
+		From(1).
+		Execute()
 	if err != nil {
 		panic(err)
 	}
@@ -276,7 +300,12 @@ func main() {
 	}
 
 	// execute transaction
-	ok, err = state_machine.ExecuteTransition(StateMachineA, UserStateMachineA, 1, 2, 1, "text", true)
+	ok, err = state_machine.NewTransition().
+		User(UserStateMachineA).
+		StateMachine(StateMachineA).
+		From(1).
+		To(2).
+		Execute(1, "text", true)
 	if err != nil {
 		panic(err)
 	}
@@ -294,12 +323,12 @@ State Machine: A
 transition from 1 to 4  with user operator ? false
 transition from 1 to 3  with user operator ? false
 check in-progress handler with [1 text true]
-transition from 1 to 2  with user operator ? false
+transition from 1 to 2  with user operator ? true
 transition from 1 to 1  with user operator ? false
 check in-progress to denied handler with [1 text true]
-transition from 2 to 4  with user operator ? false
+transition from 2 to 4  with user operator ? true
 check in-progress to approved handler with [1 text true]
-transition from 2 to 3  with user operator ? false
+transition from 2 to 3  with user operator ? true
 transition from 2 to 2  with user operator ? false
 transition from 2 to 1  with user operator ? false
 transition from 3 to 4  with user operator ? false
@@ -317,12 +346,12 @@ State Machine: B
 transition from 1 to 4  with user worker ? false
 transition from 1 to 3  with user worker ? false
 check in-development handler with [1 text true]
-transition from 1 to 2  with user worker ? false
+transition from 1 to 2  with user worker ? true
 transition from 1 to 1  with user worker ? false
 check in-development to canceled handler with [1 text true]
-transition from 2 to 4  with user worker ? false
+transition from 2 to 4  with user worker ? true
 check in-development to done handler with [1 text true]
-transition from 2 to 3  with user worker ? false
+transition from 2 to 3  with user worker ? true
 transition from 2 to 2  with user worker ? false
 transition from 2 to 1  with user worker ? false
 transition from 3 to 4  with user worker ? false
@@ -336,7 +365,9 @@ transition from 4 to 1  with user worker ? false
 can make transition to In progress
 check in-progress handler with [1 text true]
 execute in-progress handler with [1 text true]
-execute by user in-progress handler with [1 text true]
+by user: execute in-progress handler with [1 text true]
+state machine: A, transition handler with [1 text true]
+by user: success event in-progress handler with [1 text true]
 ```
 
 ## Known issues
