@@ -10,21 +10,22 @@ import (
 )
 
 var (
-	stateMachineInstance, _ = New()
+	stateMachineInstance, _ = new()
 )
 
-func New(options ...StateMachineOption) (*StateMachine, error) {
+func new(options ...StateMachineOption) (*stateMachine, error) {
 	config, _, err := NewConfig()
 
-	newStateMachine := &StateMachine{
+	newStateMachine := &stateMachine{
+		stateMachineMap:     make(StateMachineMap),
 		userStateMachineMap: make(UserStateMachineMap),
 		handlers: &Handlers{
 			handlersMap: &HandlersMap{
 				Check:   make(CheckHandlerMap),
 				Execute: make(ExecuteHandlerMap),
 				Events: &EventMap{
-					Success: make(EventHandlerMap),
-					Error:   make(EventHandlerMap),
+					Success: make(EventSuccessHandlerMap),
+					Error:   make(EventErrorHandlerMap),
 				},
 			},
 			stateMachineHandlersMap: make(StateMachineHandlersMap),
@@ -38,7 +39,7 @@ func New(options ...StateMachineOption) (*StateMachine, error) {
 		newStateMachine.logger.Error(err.Error())
 	} else if config.StateMachine != nil {
 		level, _ := logger.ParseLevel(config.StateMachine.Log.Level)
-		newStateMachine.logger.Debugf("setting log level to %s", level)
+		newStateMachine.logger.Debugf("setting log level To %s", level)
 		newStateMachine.logger.Reconfigure(logger.WithLevel(level))
 	}
 
@@ -47,37 +48,20 @@ func New(options ...StateMachineOption) (*StateMachine, error) {
 	return newStateMachine, nil
 }
 
-func newHandlersMaps() *HandlersMap {
-	return &HandlersMap{
-		Check:   make(CheckHandlerMap),
-		Execute: make(ExecuteHandlerMap),
-		Events: &EventMap{
-			Success: make(EventHandlerMap),
-			Error:   make(EventHandlerMap),
-		},
-	}
-}
-
-func (h *Handlers) initStateMachineHandlers(stateMachine StateMachineType) {
-	if _, ok := h.stateMachineHandlersMap[stateMachine]; !ok {
-		h.stateMachineHandlersMap[stateMachine] = newHandlersMaps()
-	}
-}
-
-func (sm *StateMachine) validate(stateMachine StateMachineType, user UserType, states ...int) (bool, error) {
+func (sm *stateMachine) validate(ctx *Context, states ...int) (bool, error) {
 	var ok bool
 	var stateMachineMap StateMachineMap
-	var stateMap StateMap
+	var stateMachineData *StateMachineData
 
-	if stateMachineMap, ok = sm.userStateMachineMap[user]; !ok {
-		return false, errors.New(fmt.Sprintf("user [%s] not found", user))
+	if stateMachineMap, ok = sm.userStateMachineMap[ctx.User]; !ok {
+		return false, errors.New(fmt.Sprintf("User [%s] not found", ctx.User))
 	}
 
-	if stateMap, ok = stateMachineMap[stateMachine]; !ok {
-		return false, errors.New(fmt.Sprintf("state machine [%s] not found", stateMachine))
+	if stateMachineData, ok = stateMachineMap[ctx.StateMachine]; !ok {
+		return false, errors.New(fmt.Sprintf("state machine [%s] not found", ctx.StateMachine))
 	} else {
 		for _, state := range states {
-			if _, ok = stateMap[state]; !ok {
+			if _, ok = stateMachineData.stateMap[state]; !ok {
 				return false, errors.New(fmt.Sprintf("state [%d] not found", state))
 			}
 		}
@@ -86,7 +70,7 @@ func (sm *StateMachine) validate(stateMachine StateMachineType, user UserType, s
 	return true, nil
 }
 
-func (sm *StateMachine) Add(stateMachine StateMachineType, file string) error {
+func (sm *stateMachine) add(stateMachine StateMachineType, file string, transitionHandler TransitionHandler) error {
 	sm.mux.Lock()
 	defer sm.mux.Unlock()
 
@@ -96,9 +80,11 @@ func (sm *StateMachine) Add(stateMachine StateMachineType, file string) error {
 		return err
 	}
 
-	stateMachineMap := make(StateMachineMap)
 	states := make(StateMap)
-	stateMachineMap[stateMachine] = states
+	sm.stateMachineMap[stateMachine] = &StateMachineData{
+		stateMap:          states,
+		transitionHandler: transitionHandler,
+	}
 
 	// load state machine
 	for _, stateCfg := range config.StateMachine {
@@ -178,7 +164,7 @@ func (sm *StateMachine) Add(stateMachine StateMachineType, file string) error {
 
 				var transition *Transition
 				if transition, ok = states[stateCfg.Id].TransitionMap[transitionCfg.Id]; !ok {
-					return errors.New(fmt.Sprintf("transition from %d to %d not found", stateCfg.Id, transitionCfg.Id))
+					return errors.New(fmt.Sprintf("transition From %d To %d not found", stateCfg.Id, transitionCfg.Id))
 				}
 
 				userTransition := &Transition{
@@ -188,13 +174,13 @@ func (sm *StateMachine) Add(stateMachine StateMachineType, file string) error {
 						Check:   append([]CheckHandler{}, transition.Handler.Check...),
 						Execute: append([]ExecuteHandler{}, transition.Handler.Execute...),
 						Events: Events{
-							Success: append([]EventHandler{}, transition.Handler.Events.Success...),
-							Error:   append([]EventHandler{}, transition.Handler.Events.Error...),
+							Success: append([]EventSuccessHandler{}, transition.Handler.Events.Success...),
+							Error:   append([]EventErrorHandler{}, transition.Handler.Events.Error...),
 						},
 					},
 				}
 
-				// add specific handlers for the user
+				// add specific handlers for the User
 
 				// check
 				checkHandlers, err := transitionCfg.getCheckHandlers(stateMachine, sm.handlers)
@@ -231,7 +217,7 @@ func (sm *StateMachine) Add(stateMachine StateMachineType, file string) error {
 			stateMap[stateCfg.Id] = userState
 
 		}
-		// add missing user transition states
+		// add missing User transition states
 		for idState, added := range transitionStates {
 			if !added {
 				var stateTransition *State
@@ -250,198 +236,128 @@ func (sm *StateMachine) Add(stateMachine StateMachineType, file string) error {
 		if _, ok := sm.userStateMachineMap[UserType(user)]; !ok {
 			sm.userStateMachineMap[UserType(user)] = make(StateMachineMap)
 		}
-		sm.userStateMachineMap[UserType(user)][stateMachine] = stateMap
+		sm.userStateMachineMap[UserType(user)][stateMachine] = &StateMachineData{
+			stateMap:          stateMap,
+			transitionHandler: transitionHandler,
+		}
 	}
 
 	return nil
 }
 
-func (sm *StateMachine) AddCheckHandler(name string, handler CheckHandler, stateMachine ...StateMachineType) *StateMachine {
+func (sm *stateMachine) addHandler(name string, handler interface{}, stateMachine ...StateMachineType) *stateMachine {
 	sm.mux.Lock()
 	defer sm.mux.Unlock()
 
 	if len(stateMachine) > 0 {
-		for _, smName := range stateMachine {
-			sm.handlers.initStateMachineHandlers(smName)
-			sm.handlers.stateMachineHandlersMap[smName].Check[name] = handler
+		for _, stateMachine := range stateMachine {
+			sm.handlers.initStateMachineHandlers(stateMachine)
+
+			switch h := handler.(type) {
+			case CheckHandler:
+				sm.handlers.stateMachineHandlersMap[stateMachine].Check[name] = h
+			case ExecuteHandler:
+				sm.handlers.stateMachineHandlersMap[stateMachine].Execute[name] = h
+			case EventSuccessHandler:
+				sm.handlers.stateMachineHandlersMap[stateMachine].Events.Success[name] = h
+			case EventErrorHandler:
+				sm.handlers.stateMachineHandlersMap[stateMachine].Events.Error[name] = h
+			}
 		}
 	} else {
-		sm.handlers.handlersMap.Check[name] = handler
+		switch h := handler.(type) {
+		case CheckHandler:
+			sm.handlers.handlersMap.Check[name] = h
+		case ExecuteHandler:
+			sm.handlers.handlersMap.Execute[name] = h
+		case EventSuccessHandler:
+			sm.handlers.handlersMap.Events.Success[name] = h
+		case EventErrorHandler:
+			sm.handlers.handlersMap.Events.Error[name] = h
+		}
 	}
 
 	return sm
 }
 
-func (sm *StateMachine) AddExecuteHandler(name string, handler ExecuteHandler, stateMachine ...StateMachineType) *StateMachine {
-	sm.mux.Lock()
-	defer sm.mux.Unlock()
-
-	if len(stateMachine) > 0 {
-		for _, smName := range stateMachine {
-			sm.handlers.initStateMachineHandlers(smName)
-			sm.handlers.stateMachineHandlersMap[smName].Execute[name] = handler
-		}
-	} else {
-		sm.handlers.handlersMap.Execute[name] = handler
-	}
-
-	return sm
-}
-
-func (sm *StateMachine) AddEventOnSuccessHandler(name string, handler EventHandler, stateMachine ...StateMachineType) *StateMachine {
-	sm.mux.Lock()
-	defer sm.mux.Unlock()
-
-	if len(stateMachine) > 0 {
-		for _, smName := range stateMachine {
-			sm.handlers.initStateMachineHandlers(smName)
-			sm.handlers.stateMachineHandlersMap[smName].Events.Success[name] = handler
-		}
-	} else {
-		sm.handlers.handlersMap.Events.Success[name] = handler
-	}
-
-	return sm
-}
-
-func (sm *StateMachine) AddEventOnErrorHandler(name string, handler EventHandler, stateMachine ...StateMachineType) *StateMachine {
-	sm.mux.Lock()
-	defer sm.mux.Unlock()
-
-	if len(stateMachine) > 0 {
-		for _, smName := range stateMachine {
-			sm.handlers.initStateMachineHandlers(smName)
-			sm.handlers.stateMachineHandlersMap[smName].Events.Error[name] = handler
-		}
-	} else {
-		sm.handlers.handlersMap.Events.Error[name] = handler
-	}
-
-	return sm
-}
-
-func (sm *StateMachine) CheckTransition(stateMachine StateMachineType, user UserType, from int, to int, args ...interface{}) (bool, error) {
+func (sm *stateMachine) checkTransition(ctx *Context, args ...interface{}) (allowed bool, err error) {
 	sm.mux.RLock()
 	defer sm.mux.RUnlock()
 
-	if ok, err := sm.validate(stateMachine, user, from, to); err != nil {
+	if ok, err := sm.validate(ctx); err != nil {
 		return ok, err
 	}
 
-	if stateM, ok := sm.userStateMachineMap[user]; ok {
-		if stateMap, ok := stateM[stateMachine]; ok {
-			if state, ok := stateMap[from]; ok {
-				if transition, ok := state.TransitionMap[to]; ok {
-					var err error
-					for _, handler := range transition.Handler.Check {
-						if ok, err = handler(args...); !ok || err != nil {
-							if err != nil {
-								for _, handler := range transition.Handler.Events.Error {
-									if eventErr := handler(args...); eventErr != nil {
-										if eventErr != nil {
-											return ok, eventErr
-										}
-									}
-								}
-								return ok, err
-							}
-							return false, nil
-						}
-					}
-				} else {
-					return false, nil
-				}
-			} else {
-				return false, nil
-			}
-		} else {
-			return false, nil
-		}
-	} else {
+	stateM, ok := sm.userStateMachineMap[ctx.User]
+	if !ok {
 		return false, nil
 	}
 
-	return false, nil
+	stateMachineData, ok := stateM[ctx.StateMachine]
+	if !ok {
+		return false, nil
+	}
+
+	state, ok := stateMachineData.stateMap[ctx.From]
+	if !ok {
+		return false, nil
+	}
+
+	transition, ok := state.TransitionMap[ctx.To]
+	if !ok {
+		return false, nil
+	}
+
+	// check
+	return transition.Handler.Check.Run(ctx, args...)
 }
 
-func (sm *StateMachine) ExecuteTransition(stateMachine StateMachineType, user UserType, from int, to int, args ...interface{}) (bool, error) {
+func (sm *stateMachine) executeTransition(ctx *Context, args ...interface{}) (bool, error) {
 	sm.mux.RLock()
 	defer sm.mux.RUnlock()
 
-	if ok, err := sm.validate(stateMachine, user, from, to); err != nil {
+	if ok, err := sm.validate(ctx, ctx.From, ctx.To); err != nil {
 		return ok, err
 	}
 
-	if stateM, ok := sm.userStateMachineMap[user]; ok {
-		if stateMap, ok := stateM[stateMachine]; ok {
-			if state, ok := stateMap[from]; ok {
-				if transition, ok := state.TransitionMap[to]; ok {
-					var err error
-					for _, handler := range transition.Handler.Check {
-						if ok, err = handler(args...); !ok || err != nil {
-							if err != nil {
-								for _, handler := range transition.Handler.Events.Error {
-									if eventErr := handler(args...); eventErr != nil {
-										if eventErr != nil {
-											return ok, eventErr
-										}
-									}
-								}
-								return ok, err
-							}
-							return false, nil
-						}
-					}
-
-					for _, handler := range transition.Handler.Execute {
-						if ok, err = handler(args...); err != nil {
-							if err != nil {
-								for _, handler := range transition.Handler.Events.Error {
-									if eventErr := handler(args...); eventErr != nil {
-										if eventErr != nil {
-											return ok, eventErr
-										}
-									}
-								}
-								return ok, err
-							}
-							return false, nil
-						}
-					}
-
-					for _, handler := range transition.Handler.Events.Success {
-						if eventErr := handler(args...); eventErr != nil {
-							if eventErr != nil {
-								return ok, eventErr
-							}
-						}
-					}
-				} else {
-					return false, nil
-				}
-			} else {
-				return false, nil
-			}
-		} else {
-			return false, nil
-		}
-	} else {
+	// user
+	userStateMachine, ok := sm.userStateMachineMap[ctx.User]
+	if !ok {
 		return false, nil
 	}
-	return true, nil
+
+	// state machine
+	states, ok := userStateMachine[ctx.StateMachine]
+	if !ok {
+		return false, nil
+	}
+
+	// from
+	state, ok := states.stateMap[ctx.From]
+	if !ok {
+		return false, nil
+	}
+
+	// to
+	transition, ok := state.TransitionMap[ctx.To]
+	if !ok {
+		return false, nil
+	}
+
+	return transition.Handler.Run(ctx, states.transitionHandler, args...)
 }
 
-func (sm *StateMachine) GetTransitions(stateMachine StateMachineType, user UserType, from int) (transitions []*Transition, err error) {
+func (sm *stateMachine) getTransitions(ctx *Context) (transitions []*Transition, err error) {
 	sm.mux.RLock()
 	defer sm.mux.RUnlock()
 
-	if _, err := sm.validate(stateMachine, user, from); err != nil {
+	if _, err := sm.validate(ctx, ctx.From); err != nil {
 		return nil, err
 	}
 
-	if stateM, ok := sm.userStateMachineMap[user]; ok {
-		if stateMap, ok := stateM[stateMachine]; ok {
-			if state, ok := stateMap[from]; ok {
+	if userStateMachine, ok := sm.userStateMachineMap[ctx.User]; ok {
+		if stateMachineData, ok := userStateMachine[ctx.StateMachine]; ok {
+			if state, ok := stateMachineData.stateMap[ctx.From]; ok {
 				for _, transition := range state.TransitionMap {
 					transitions = append(transitions, transition)
 				}

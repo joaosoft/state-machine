@@ -46,7 +46,7 @@ func (t TransitionCfg) getExecuteHandlers(stateMachine StateMachineType, handler
 	return executeHandlers, nil
 }
 
-func (t TransitionCfg) getEventSuccessHandlers(stateMachine StateMachineType, handlers *Handlers) (eventSuccessHandlers []EventHandler, err error) {
+func (t TransitionCfg) getEventSuccessHandlers(stateMachine StateMachineType, handlers *Handlers) (eventSuccessHandlers []EventSuccessHandler, err error) {
 	for _, name := range t.Events.Success {
 		handler, err := handlers.getEventSuccessHandler(stateMachine, name)
 		if err != nil {
@@ -58,7 +58,7 @@ func (t TransitionCfg) getEventSuccessHandlers(stateMachine StateMachineType, ha
 	return eventSuccessHandlers, nil
 }
 
-func (t TransitionCfg) getEventErrorHandlers(stateMachine StateMachineType, handlers *Handlers) (eventErrorHandlers []EventHandler, err error) {
+func (t TransitionCfg) getEventErrorHandlers(stateMachine StateMachineType, handlers *Handlers) (eventErrorHandlers []EventErrorHandler, err error) {
 	for _, name := range t.Events.Error {
 		handler, err := handlers.getEventErrorHandler(stateMachine, name)
 		if err != nil {

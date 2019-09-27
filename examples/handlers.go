@@ -1,138 +1,145 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	state_machine "state-machine"
+)
 
 // ::  state machine A
 // check
-func CheckNewToInProgress(args ...interface{}) (bool, error) {
+func CheckNewToInProgress(ctx *state_machine.Context, args ...interface{}) (bool, error) {
 	fmt.Printf("\ncheck in-progress handler with %+v", args)
 	return true, nil
 }
 
-func CheckInProgressToApproved(args ...interface{}) (bool, error) {
+func CheckInProgressToApproved(ctx *state_machine.Context, args ...interface{}) (bool, error) {
 	fmt.Printf("\ncheck in-progress to approved handler with %+v", args)
 	return true, nil
 }
 
-func CheckInProgressToDenied(args ...interface{}) (bool, error) {
+func CheckInProgressToDenied(ctx *state_machine.Context, args ...interface{}) (bool, error) {
 	fmt.Printf("\ncheck in-progress to denied handler with %+v", args)
 	return true, nil
 }
 
 // execute
-func ExecuteNewToInProgress(args ...interface{}) (bool, error) {
+func ExecuteNewToInProgress(ctx *state_machine.Context, args ...interface{}) error {
 	fmt.Printf("\nexecute in-progress handler with %+v", args)
-	return true, nil
+	return nil
 }
 
-func ExecuteNewToInProgressUser(args ...interface{}) (bool, error) {
-	fmt.Printf("\nexecute by user in-progress handler with %+v", args)
-	return true, nil
+func ExecuteNewToInProgressByUser(ctx *state_machine.Context, args ...interface{}) error {
+	fmt.Printf("\nby user: execute in-progress handler with %+v", args)
+	return nil
 }
 
-func ExecuteInProgressToApproved(args ...interface{}) (bool, error) {
+func ExecuteInProgressToApproved(ctx *state_machine.Context, args ...interface{}) error {
 	fmt.Printf("\nexecute in-progress to approved handler with %+v", args)
-	return true, nil
+	return nil
 }
 
-func ExecuteInProgressToDenied(args ...interface{}) (bool, error) {
+func ExecuteInProgressToDenied(ctx *state_machine.Context, args ...interface{}) error {
 	fmt.Printf("\nexecute in-progress to denied handler with %+v", args)
-	return true, nil
+	return nil
 }
 
 // event success
-func EventOnSuccessNewToInProgress(args ...interface{}) error {
+func EventOnSuccessNewToInProgress(ctx *state_machine.Context, args ...interface{}) {
 	fmt.Printf("\nsuccess event in-progress handler with %+v", args)
-	return nil
 }
 
-func EventOnSuccessInProgressToApproved(args ...interface{}) error {
+func EventOnSuccessNewToInProgressByUser(ctx *state_machine.Context, args ...interface{}) {
+	fmt.Printf("\nby user: success event in-progress handler with %+v", args)
+}
+
+func EventOnSuccessInProgressToApproved(ctx *state_machine.Context, args ...interface{}) {
 	fmt.Printf("\nsuccess event approved handler with %+v", args)
-	return nil
 }
 
-func EventOnSuccessInProgressToDenied(args ...interface{}) error {
+func EventOnSuccessInProgressToDenied(ctx *state_machine.Context, args ...interface{}) {
 	fmt.Printf("\nsuccess event denied handler with %+v", args)
-	return nil
 }
 
 // event error
-func EventOnErrorNewToInProgress(args ...interface{}) error {
-	fmt.Printf("\nerror event in-progress handler with %+v", args)
-	return nil
+func EventOnErrorNewToInProgress(ctx *state_machine.Context, err error, args ...interface{}) {
+	fmt.Printf("\nerror %s, event in-progress handler with %+v", err, args)
 }
 
-func EventOnErrorInProgressToApproved(args ...interface{}) error {
-	fmt.Printf("\nerror event approved handler with %+v", args)
-	return nil
+func EventOnErrorInProgressToApproved(ctx *state_machine.Context, err error, args ...interface{}) {
+	fmt.Printf("\nerror %s, event approved handler with %+v", err, args)
 }
 
-func EventOnErrorInProgressToDenied(args ...interface{}) error {
-	fmt.Printf("\nerror event denied handler with %+v", args)
+func EventOnErrorInProgressToDenied(ctx *state_machine.Context, err error, args ...interface{}) {
+	fmt.Printf("\nerror %s, event denied handler with %+v", err, args)
+}
+
+// transition handler
+func StateMachineATransitionHandler(ctx *state_machine.Context, args ...interface{}) error {
+	fmt.Printf("\nstate machine: %s, transition handler with %+v", ctx.StateMachine, args)
 	return nil
 }
 
 // :: state machine B
 // check
-func CheckTodoToInDevelopment(args ...interface{}) (bool, error) {
+func CheckTodoToInDevelopment(ctx *state_machine.Context, args ...interface{}) (bool, error) {
 	fmt.Printf("\ncheck in-development handler with %+v", args)
 	return true, nil
 }
 
-func CheckInDevelopmentToDone(args ...interface{}) (bool, error) {
+func CheckInDevelopmentToDone(ctx *state_machine.Context, args ...interface{}) (bool, error) {
 	fmt.Printf("\ncheck in-development to done handler with %+v", args)
 	return true, nil
 }
 
-func CheckInDevelopmentToCanceled(args ...interface{}) (bool, error) {
+func CheckInDevelopmentToCanceled(ctx *state_machine.Context, args ...interface{}) (bool, error) {
 	fmt.Printf("\ncheck in-development to canceled handler with %+v", args)
 	return true, nil
 }
 
 // execute
-func ExecuteTodoToInDevelopment(args ...interface{}) (bool, error) {
+func ExecuteTodoToInDevelopment(ctx *state_machine.Context, args ...interface{}) error {
 	fmt.Printf("\nexecute in-development handler with %+v", args)
-	return true, nil
+	return nil
 }
 
-func ExecuteInDevelopmentToCanceled(args ...interface{}) (bool, error) {
+func ExecuteInDevelopmentToCanceled(ctx *state_machine.Context, args ...interface{}) error {
 	fmt.Printf("\nexecute canceled handler with %+v", args)
-	return true, nil
+	return nil
 }
 
-func ExecuteInDevelopmentToDone(args ...interface{}) (bool, error) {
+func ExecuteInDevelopmentToDone(ctx *state_machine.Context, args ...interface{}) error {
 	fmt.Printf("\nexecute in-progress to done handler with %+v", args)
-	return true, nil
+	return nil
 }
 
 // event success
-func EventOnSuccessInDevelopmentToDone(args ...interface{}) error {
+func EventOnSuccessInDevelopmentToDone(ctx *state_machine.Context, args ...interface{}) {
 	fmt.Printf("\nsuccess event done handler with %+v", args)
-	return nil
 }
 
-func EventOnSuccessInDevelopmentToCanceled(args ...interface{}) error {
+func EventOnSuccessInDevelopmentToCanceled(ctx *state_machine.Context, args ...interface{}) {
 	fmt.Printf("\nsuccess event canceled handler with %+v", args)
-	return nil
 }
 
-func EventOnSuccessTodoToInDevelopment(args ...interface{}) error {
+func EventOnSuccessTodoToInDevelopment(ctx *state_machine.Context, args ...interface{}) {
 	fmt.Printf("\nsuccess event in-development handler with %+v", args)
-	return nil
 }
 
 // event error
-func EventOnErrorInDevelopmentToDone(args ...interface{}) error {
-	fmt.Printf("\nerror event done handler with %+v", args)
-	return nil
+func EventOnErrorInDevelopmentToDone(ctx *state_machine.Context, err error, args ...interface{}) {
+	fmt.Printf("\nerror %s, event done handler with %+v", err, args)
 }
 
-func EventOnErrorInDevelopmentToCanceled(args ...interface{}) error {
-	fmt.Printf("\nerror event canceled handler with %+v", args)
-	return nil
+func EventOnErrorInDevelopmentToCanceled(ctx *state_machine.Context, err error, args ...interface{}) {
+	fmt.Printf("\nerror %s, event canceled handler with %+v", err, args)
 }
 
-func EventOnErrorTodoToInDevelopment(args ...interface{}) error {
-	fmt.Printf("\nerror event in-development handler with %+v", args)
+func EventOnErrorTodoToInDevelopment(ctx *state_machine.Context, err error, args ...interface{}) {
+	fmt.Printf("\nerror %s, event in-development handler with %+v", err, args)
+}
+
+// transition handler
+func StateMachineBTransitionHandler(ctx *state_machine.Context, args ...interface{}) error {
+	fmt.Printf("\nstate machine: %s, transition handler with %+v", ctx.StateMachine, args)
 	return nil
 }

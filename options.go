@@ -5,10 +5,10 @@ import (
 )
 
 // StateMachineOption ...
-type StateMachineOption func(stateMachine *StateMachine)
+type StateMachineOption func(stateMachine *stateMachine)
 
 // Reconfigure ...
-func (sm *StateMachine) Reconfigure(options ...StateMachineOption) {
+func (sm *stateMachine) Reconfigure(options ...StateMachineOption) {
 	for _, option := range options {
 		option(sm)
 	}
@@ -16,14 +16,14 @@ func (sm *StateMachine) Reconfigure(options ...StateMachineOption) {
 
 // WithLogger ...
 func WithLogger(logger logger.ILogger) StateMachineOption {
-	return func(stateMachine *StateMachine) {
+	return func(stateMachine *stateMachine) {
 		stateMachine.logger = logger
 	}
 }
 
 // WithLogLevel ...
 func WithLogLevel(level logger.Level) StateMachineOption {
-	return func(stateMachine *StateMachine) {
+	return func(stateMachine *stateMachine) {
 		stateMachine.logger.SetLevel(level)
 	}
 }

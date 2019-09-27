@@ -8,13 +8,24 @@ import (
 
 type StateMap map[int]*State
 
-type CheckHandler func(args ...interface{}) (bool, error)
-type ExecuteHandler func(args ...interface{}) (bool, error)
-type EventHandler func(args ...interface{}) error
+type Context struct {
+	User         UserType
+	StateMachine StateMachineType
+	From         int
+	To           int
+	resource     interface{}
+}
+
+type CheckHandler func(ctx *Context, args ...interface{}) (bool, error)
+type ExecuteHandler func(ctx *Context, args ...interface{}) error
+type EventSuccessHandler func(ctx *Context, args ...interface{})
+type EventErrorHandler func(ctx *Context, err error, args ...interface{})
+type TransitionHandler func(ctx *Context, args ...interface{}) error
 
 type CheckHandlerMap map[string]CheckHandler
 type ExecuteHandlerMap map[string]ExecuteHandler
-type EventHandlerMap map[string]EventHandler
+type EventSuccessHandlerMap map[string]EventSuccessHandler
+type EventErrorHandlerMap map[string]EventErrorHandler
 type StateMachineHandlersMap map[StateMachineType]*HandlersMap
 
 type Handlers struct {
@@ -22,15 +33,20 @@ type Handlers struct {
 	stateMachineHandlersMap StateMachineHandlersMap
 }
 
-type StateMachine struct {
+type stateMachine struct {
 	config              *StateMachineConfig
+	stateMachineMap     StateMachineMap
 	userStateMachineMap UserStateMachineMap
 	handlers            *Handlers
 	logger              logger.ILogger
 	mux                 *sync.RWMutex
 }
 
-type StateMachineMap map[StateMachineType]StateMap
+type StateMachineMap map[StateMachineType]*StateMachineData
+type StateMachineData struct {
+	stateMap          StateMap
+	transitionHandler TransitionHandler
+}
 type UserStateMachineMap map[UserType]StateMachineMap
 
 type State struct {
@@ -48,15 +64,20 @@ type Transition struct {
 }
 
 type Handler struct {
-	Check   []CheckHandler   `json:"check"`
-	Execute []ExecuteHandler `json:"execute"`
-	Events  Events           `json:"events"`
+	Check   CheckHandlerList   `json:"check"`
+	Execute ExecuteHandlerList `json:"execute"`
+	Events  Events             `json:"events"`
 }
 
 type Events struct {
-	Success []EventHandler `json:"success"`
-	Error   []EventHandler `json:"error"`
+	Success EventSuccessHandlerList `json:"success"`
+	Error   EventErrorHandlerList   `json:"error"`
 }
+
+type CheckHandlerList []CheckHandler
+type ExecuteHandlerList []ExecuteHandler
+type EventSuccessHandlerList []EventSuccessHandler
+type EventErrorHandlerList []EventErrorHandler
 
 type HandlersMap struct {
 	Check   map[string]CheckHandler   `json:"check"`
@@ -65,8 +86,8 @@ type HandlersMap struct {
 }
 
 type EventMap struct {
-	Success map[string]EventHandler `json:"success"`
-	Error   map[string]EventHandler `json:"error"`
+	Success map[string]EventSuccessHandler `json:"success"`
+	Error   map[string]EventErrorHandler   `json:"error"`
 }
 
 type UserType string

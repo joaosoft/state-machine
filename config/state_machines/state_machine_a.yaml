@@ -61,6 +61,9 @@ users:
           id: 2
           execute:
             - "execute_new_to_in-progress_user"
+          events:
+            success:
+              - "event_success_new_to_in-progress_user"
     -
       id: 2
       transitions:
