@@ -13,50 +13,48 @@ const (
 	UserStateMachineB state_machine.UserType         = "worker"
 )
 
-func main() {
-	var err error
-
+func init() {
 	// add handlers
 	state_machine.
 		// state machine A
-		AddCheckHandler("check_new_to_in-progress", CheckNewToInProgress, StateMachineA).
-		AddCheckHandler("check_in-progress_to_approved", CheckInProgressToApproved, StateMachineA).
-		AddCheckHandler("check_in-progress_to_denied", CheckInProgressToDenied, StateMachineA).
+		AddCheckHandler("check_new_to_in-progress", checkNewToInProgress, StateMachineA).
+		AddCheckHandler("check_in-progress_to_approved", checkInProgressToApproved, StateMachineA).
+		AddCheckHandler("check_in-progress_to_denied", checkInProgressToDenied, StateMachineA).
 		//
-		AddExecuteHandler("execute_new_to_in-progress", ExecuteNewToInProgress, StateMachineA).
-		AddExecuteHandler("execute_new_to_in-progress_user", ExecuteNewToInProgressByUser, StateMachineA).
-		AddExecuteHandler("execute_in-progress_to_approved", ExecuteInProgressToApproved, StateMachineA).
-		AddExecuteHandler("execute_in-progress_to_denied", ExecuteInProgressToDenied, StateMachineA).
+		AddExecuteHandler("execute_new_to_in-progress", executeNewToInProgress, StateMachineA).
+		AddExecuteHandler("execute_new_to_in-progress_user", executeNewToInProgressByUser, StateMachineA).
+		AddExecuteHandler("execute_in-progress_to_approved", executeInProgressToApproved, StateMachineA).
+		AddExecuteHandler("execute_in-progress_to_denied", executeInProgressToDenied, StateMachineA).
 		//
-		AddEventOnSuccessHandler("event_success_new_to_in-progress_user", EventOnSuccessNewToInProgressByUser, StateMachineA).
-		AddEventOnSuccessHandler("event_success_new_to_in-progress", EventOnSuccessNewToInProgress, StateMachineA).
-		AddEventOnSuccessHandler("event_success_in-progress_to_approved", EventOnSuccessInProgressToApproved, StateMachineA).
-		AddEventOnSuccessHandler("event_success_in-progress_to_denied", EventOnSuccessInProgressToDenied, StateMachineA).
+		AddEventOnSuccessHandler("event_success_new_to_in-progress_user", eventOnSuccessNewToInProgressByUser, StateMachineA).
+		AddEventOnSuccessHandler("event_success_new_to_in-progress", eventOnSuccessNewToInProgress, StateMachineA).
+		AddEventOnSuccessHandler("event_success_in-progress_to_approved", eventOnSuccessInProgressToApproved, StateMachineA).
+		AddEventOnSuccessHandler("event_success_in-progress_to_denied", eventOnSuccessInProgressToDenied, StateMachineA).
 		//
-		AddEventOnErrorHandler("event_error_new_to_in-progress", EventOnErrorNewToInProgress, StateMachineA).
-		AddEventOnErrorHandler("event_error_in-progress_to_approved", EventOnErrorInProgressToApproved, StateMachineA).
-		AddEventOnErrorHandler("event_error_in-progress_to_denied", EventOnErrorInProgressToDenied, StateMachineA).
+		AddEventOnErrorHandler("event_error_new_to_in-progress", eventOnErrorNewToInProgress, StateMachineA).
+		AddEventOnErrorHandler("event_error_in-progress_to_approved", eventOnErrorInProgressToApproved, StateMachineA).
+		AddEventOnErrorHandler("event_error_in-progress_to_denied", eventOnErrorInProgressToDenied, StateMachineA).
 
 		// state machine B
-		AddCheckHandler("check_todo_to_in-development", CheckTodoToInDevelopment, StateMachineB).
-		AddCheckHandler("check_in-development_to_done", CheckInDevelopmentToDone, StateMachineB).
-		AddCheckHandler("check_in-development_to_canceled", CheckInDevelopmentToCanceled, StateMachineB).
+		AddCheckHandler("check_todo_to_in-development", checkTodoToInDevelopment, StateMachineB).
+		AddCheckHandler("check_in-development_to_done", checkInDevelopmentToDone, StateMachineB).
+		AddCheckHandler("check_in-development_to_canceled", checkInDevelopmentToCanceled, StateMachineB).
 		//
-		AddExecuteHandler("execute_todo_to_in-development", ExecuteTodoToInDevelopment, StateMachineB).
-		AddExecuteHandler("execute_in-development_to_canceled", ExecuteInDevelopmentToCanceled, StateMachineB).
-		AddExecuteHandler("execute_in-development_to_done", ExecuteInDevelopmentToDone, StateMachineB).
+		AddExecuteHandler("execute_todo_to_in-development", executeTodoToInDevelopment, StateMachineB).
+		AddExecuteHandler("execute_in-development_to_canceled", executeInDevelopmentToCanceled, StateMachineB).
+		AddExecuteHandler("execute_in-development_to_done", executeInDevelopmentToDone, StateMachineB).
 		//
-		AddEventOnSuccessHandler("event_success_todo_to_in-development", EventOnSuccessTodoToInDevelopment, StateMachineB).
-		AddEventOnSuccessHandler("event_success_in-development_to_done", EventOnSuccessInDevelopmentToDone, StateMachineB).
-		AddEventOnSuccessHandler("event_success_in-development_to_canceled", EventOnSuccessInDevelopmentToCanceled, StateMachineB).
+		AddEventOnSuccessHandler("event_success_todo_to_in-development", eventOnSuccessTodoToInDevelopment, StateMachineB).
+		AddEventOnSuccessHandler("event_success_in-development_to_done", eventOnSuccessInDevelopmentToDone, StateMachineB).
+		AddEventOnSuccessHandler("event_success_in-development_to_canceled", eventOnSuccessInDevelopmentToCanceled, StateMachineB).
 		//
-		AddEventOnErrorHandler("event_error_todo_to_in-development", EventOnErrorTodoToInDevelopment, StateMachineB).
-		AddEventOnErrorHandler("event_error_in-development_to_done", EventOnErrorInDevelopmentToDone, StateMachineB).
-		AddEventOnErrorHandler("event_error_in-development_to_canceled", EventOnErrorInDevelopmentToCanceled, StateMachineB)
+		AddEventOnErrorHandler("event_error_todo_to_in-development", eventOnErrorTodoToInDevelopment, StateMachineB).
+		AddEventOnErrorHandler("event_error_in-development_to_done", eventOnErrorInDevelopmentToDone, StateMachineB).
+		AddEventOnErrorHandler("event_error_in-development_to_canceled", eventOnErrorInDevelopmentToCanceled, StateMachineB)
 
 	// add state machines
 	// A
-	if err = state_machine.NewStateMachine().
+	if err := state_machine.NewStateMachine().
 		Key(StateMachineA).
 		File("/config/state_machines/state_machine_a.yaml").
 		TransitionHandler(StateMachineATransitionHandler).
@@ -65,25 +63,27 @@ func main() {
 	}
 
 	// B
-	if err = state_machine.NewStateMachine().
+	if err := state_machine.NewStateMachine().
 		Key(StateMachineB).
 		File("/config/state_machines/state_machine_b.json").
 		TransitionHandler(StateMachineBTransitionHandler).
 		Load(); err != nil {
 		panic(err)
 	}
+}
 
-	// check transitions of state machines
+func main() {
 	stateMachines := []state_machine.StateMachineType{StateMachineA, StateMachineB}
 	stateMachinesUsers := []state_machine.UserType{UserStateMachineA, UserStateMachineB}
 	maxLen := 4
 	ok := false
 
+	// check transitions of state machines
 	for index, stateMachine := range stateMachines {
 		fmt.Printf("\n\n\nState Machine: %s\n", stateMachine)
 		for i := 1; i <= maxLen; i++ {
 			for j := maxLen; j >= 1; j-- {
-				ok, err = state_machine.NewCheckTransition().
+				ok, err := state_machine.NewCheckTransition().
 					User(stateMachinesUsers[index]).
 					StateMachine(stateMachine).
 					From(i).
