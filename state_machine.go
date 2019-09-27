@@ -149,6 +149,7 @@ func (sm *StateMachine) Add(stateMachine StateMachineType, file string) error {
 	for user, statesCfg := range config.Users {
 		stateMap := make(StateMap)
 
+		transitionStates := make(map[int]bool)
 		for _, stateCfg := range statesCfg {
 			var state *State
 			var ok bool
@@ -164,7 +165,10 @@ func (sm *StateMachine) Add(stateMachine StateMachineType, file string) error {
 				TransitionMap: make(TransitionMap),
 			}
 
+			transitionStates[stateCfg.Id] = true
+
 			for _, transitionCfg := range stateCfg.Transitions {
+				transitionStates[transitionCfg.Id] = false
 
 				// check if transition is valid !
 				var stateTransition *State
@@ -225,6 +229,22 @@ func (sm *StateMachine) Add(stateMachine StateMachineType, file string) error {
 			}
 
 			stateMap[stateCfg.Id] = userState
+
+		}
+		// add missing user transition states
+		for idState, added := range transitionStates {
+			if !added {
+				var stateTransition *State
+				var ok bool
+				if stateTransition, ok = states[idState]; !ok {
+					return errors.New(fmt.Sprintf("state not found %d", idState))
+				}
+				stateMap[idState] = &State{
+					Id:            idState,
+					Name:          stateTransition.Name,
+					TransitionMap: make(TransitionMap),
+				}
+			}
 		}
 
 		if _, ok := sm.userStateMachineMap[UserType(user)]; !ok {

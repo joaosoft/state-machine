@@ -93,10 +93,6 @@ users:
           id: 3
         -
           id: 4
-    -
-      id: 3
-    -
-      id: 4
 ```
 
 #### State machine B (json)
@@ -187,12 +183,6 @@ users:
             "id": 4
           }
         ]
-      },
-      {
-        "id": 3
-      },
-      {
-        "id": 4
       }
     ]
   }
