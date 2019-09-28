@@ -49,84 +49,86 @@ go get github.com/joaosoft/state-machine
 This example is available in the project at [state-machine/examples](https://github.com/joaosoft/state-machine/tree/master/examples)
 
 >### Configuration
-#### State machine A (yaml)
-```yaml
-state_machine:
-  -
-    id: 1
-    name: "New"
-    transitions:
+<details>
+    <summary>State machine A (yaml)</summary>
+    ```yaml
+    state_machine:
+      -
+        id: 1
+        name: "New"
+        transitions:
+          -
+            id: 2
+            load:
+              - "load_dummy"
+            check:
+              -
+                "check_new_to_in-progress"
+            execute:
+              -
+                "execute_new_to_in-progress"
       -
         id: 2
-        load:
-          - "load_dummy"
-        check:
+        name: "In progress"
+        transitions:
           -
-            "check_new_to_in-progress"
-        execute:
+            id: 3
+            check:
+              -
+                "check_in-progress_to_approved"
+            execute:
+              -
+                "execute_in-progress_to_approved"
+            events:
+              success:
+                -
+                  "event_success_in-progress_to_approved"
+              error:
+                -
+                  "event_error_in-progress_to_approved"
           -
-            "execute_new_to_in-progress"
-  -
-    id: 2
-    name: "In progress"
-    transitions:
+            id: 4
+            check:
+              -
+                "check_in-progress_to_denied"
+            execute:
+              -
+                "execute_in-progress_to_denied"
+            events:
+              success:
+                -
+                  "event_success_in-progress_to_denied"
+              error:
+                -
+                  "event_error_in-progress_to_denied"
       -
         id: 3
-        check:
-          -
-            "check_in-progress_to_approved"
-        execute:
-          -
-            "execute_in-progress_to_approved"
-        events:
-          success:
-            -
-              "event_success_in-progress_to_approved"
-          error:
-            -
-              "event_error_in-progress_to_approved"
+        name: "Approved"
       -
         id: 4
-        check:
-          -
-            "check_in-progress_to_denied"
-        execute:
-          -
-            "execute_in-progress_to_denied"
-        events:
-          success:
-            -
-              "event_success_in-progress_to_denied"
-          error:
-            -
-              "event_error_in-progress_to_denied"
-  -
-    id: 3
-    name: "Approved"
-  -
-    id: 4
-    name: "Denied"
+        name: "Denied"
 
-users:
-  operator:
-    -
-      id: 1
-      transitions:
+    users:
+      operator:
+        -
+          id: 1
+          transitions:
+            -
+              id: 2
+              execute:
+                - "execute_new_to_in-progress_user"
+              events:
+                success:
+                  - "event_success_new_to_in-progress_user"
         -
           id: 2
-          execute:
-            - "execute_new_to_in-progress_user"
-          events:
-            success:
-              - "event_success_new_to_in-progress_user"
-    -
-      id: 2
-      transitions:
-        -
-          id: 3
-        -
-          id: 4
-```
+          transitions:
+            -
+              id: 3
+            -
+              id: 4
+    ```
+</details>
 
 #### State machine B (json)
 ```json
