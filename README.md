@@ -24,14 +24,14 @@ A simple state machine.
 
 ## With manual handler types
 
-### Check Transition
+### Check Transition (method NewCheckTransition)
 * BeforeCheck, before check
 
-### Execute Transition
-* BeforeExecute, before transition
-* AfterExecute, after transition
-* OnSuccess, on transition success
-* OnError, on transition error
+### Execute Transition (method NewTransition)
+* BeforeExecute, before execute
+* AfterExecute, after execute
+* OnSuccess, on success
+* OnError, on error
 
 ## Dependecy Management 
 >### Dep
