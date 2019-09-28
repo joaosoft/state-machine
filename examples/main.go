@@ -17,6 +17,7 @@ func init() {
 	// :: add handlers
 
 	// state machine A
+	fmt.Println(":: State Machine: A - Adding handlers")
 	state_machine.NewAddHandlers(StateMachineA).
 		Load("load_dummy", loadDummy).
 		//
@@ -39,6 +40,7 @@ func init() {
 		EventError("event_error_in-progress_to_denied", eventOnErrorInProgressToDenied)
 
 	// state machine B
+	fmt.Println(":: State Machine: B - Adding handlers")
 	state_machine.NewAddHandlers(StateMachineB).
 		Manual(beforeExecuteLoadFromState, state_machine.BeforeCheck, state_machine.BeforeExecute).
 		//
@@ -61,6 +63,7 @@ func init() {
 	// :: add state machines
 
 	// A
+	fmt.Println(":: State Machine: A - Adding state machine")
 	if err := state_machine.NewStateMachine().
 		Key(StateMachineA).
 		File("/config/state_machines/state_machine_a.yaml").
@@ -70,6 +73,7 @@ func init() {
 	}
 
 	// B
+	fmt.Println(":: State Machine: B - Adding state machine")
 	if err := state_machine.NewStateMachine().
 		Key(StateMachineB).
 		File("/config/state_machines/state_machine_b.json").
@@ -85,9 +89,23 @@ func main() {
 	maxLen := 4
 	ok := false
 
+	// get all transitions of state machine A
+	fmt.Println("\n:: State Machine: A - get all transition from 1 to 2")
+	transitions, err := state_machine.NewGetTransitions().
+		User(UserStateMachineA).
+		StateMachine(StateMachineA).
+		From(1).
+		Execute()
+	if err != nil {
+		panic(err)
+	}
+	for _, transition := range transitions {
+		fmt.Printf("can make transition to %s\n", transition.Name)
+	}
+
 	// check transitions of state machines
 	for index, stateMachine := range stateMachines {
-		fmt.Printf("\n\n\nState Machine: %s\n", stateMachine)
+		fmt.Printf("\n:: State Machine: %s - check transitions\n", stateMachine)
 		for i := 1; i <= maxLen; i++ {
 			for j := maxLen; j >= 1; j-- {
 				ok, err := state_machine.NewCheckTransition().
@@ -99,29 +117,16 @@ func main() {
 				if err != nil {
 					panic(err)
 				}
-				fmt.Printf("\ntransition from %d to %d  with user %s ? %t", i, j, stateMachinesUsers[index], ok)
+				fmt.Printf("transition from %d to %d  with user %s ? %t\n", i, j, stateMachinesUsers[index], ok)
 			}
 		}
 	}
 
-	// get all transitions of state machine A
-	transitions, err := state_machine.NewGetTransitions().
-		User(UserStateMachineA).
-		StateMachine(StateMachineA).
-		From(1).
-		Execute()
-	if err != nil {
-		panic(err)
-	}
-	for _, transition := range transitions {
-		fmt.Printf("\ncan make transition to %s", transition.Name)
-	}
-
-	// execute transaction - state machine A - from state 1 to state 2
+	// check transaction - state machine B - from the state loaded by method 'beforeExecuteLoadFromState' to state 2
+	fmt.Println("\n:: State Machine: B - check transition from state 1 (loaded) to state 2")
 	ok, err = state_machine.NewTransition().
-		User(UserStateMachineA).
-		StateMachine(StateMachineA).
-		From(1).
+		User(UserStateMachineB).
+		StateMachine(StateMachineB).
 		To(2).
 		Execute(1, "text", true)
 	if err != nil {
@@ -133,6 +138,7 @@ func main() {
 	}
 
 	// execute transaction - state machine B - from the state loaded by method 'beforeExecuteLoadFromState' to state 2
+	fmt.Println("\n:: State Machine: B - making transition from state 1 (loaded) to state 2")
 	ok, err = state_machine.NewTransition().
 		User(UserStateMachineB).
 		StateMachine(StateMachineB).
