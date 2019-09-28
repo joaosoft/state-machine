@@ -463,3 +463,6 @@ Facebook: https://www.facebook.com/joaosoft
 LinkedIn: https://www.linkedin.com/in/jo%C3%A3o-ribeiro-b2775438/
 
 ##### If you have something to add, please let me know joaosoft@gmail.com
+
+## License
+Released under the [MIT License](http://opensource.org/licenses/MIT).
