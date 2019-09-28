@@ -136,7 +136,6 @@ This example is available in the project at [state-machine/examples](https://git
 <details>
     <summary>View file</summary>
     
-    ```json
     {
       "state_machine": [
         {
@@ -227,7 +226,6 @@ This example is available in the project at [state-machine/examples](https://git
         ]
       }
     }
-    ```
 </details>
 
 >### Implementation
