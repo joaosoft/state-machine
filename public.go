@@ -1,6 +1,6 @@
 package state_machine
 
-type manualHandlerTag string
+type manualHandlerKey int
 
 func NewAddHandlers(stateMachine StateMachineType) *addHandler {
 	return stateMachineInstance.newAddHandler(stateMachine)
@@ -23,8 +23,8 @@ func NewGetTransitions() *newGetTransitions {
 }
 
 // manual handlers
-func (sm *stateMachine) AddManualHandler(tag manualHandlerTag, handler ManualHandler, stateMachine ...StateMachineType) *stateMachine {
-	return sm.addManualHandler(tag, handler, stateMachine...)
+func (sm *stateMachine) AddManualHandler(tags []manualHandlerKey, handler ManualHandler, stateMachine ...StateMachineType) *stateMachine {
+	return sm.addManualHandler(tags, handler, stateMachine...)
 }
 
 // state machine handlers

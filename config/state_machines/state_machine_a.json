@@ -6,6 +6,9 @@
       "transitions": [
         {
           "id": 2,
+          "load": [
+            "load_dummy-progress"
+          ],
           "check": [
             "check_new_to_in-progress"
           ],

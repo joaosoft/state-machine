@@ -5,6 +5,8 @@ state_machine:
     transitions:
       -
         id: 2
+        load:
+          - "load_dummy"
         check:
           -
             "check_new_to_in-progress"

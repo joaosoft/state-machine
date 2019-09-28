@@ -259,23 +259,27 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 	return nil
 }
 
-func (sm *stateMachine) addManualHandler(tag manualHandlerTag, handler ManualHandler, stateMachine ...StateMachineType) *stateMachine {
+func (sm *stateMachine) addManualHandler(tags []manualHandlerKey, handler ManualHandler, stateMachine ...StateMachineType) *stateMachine {
 	sm.mux.Lock()
 	defer sm.mux.Unlock()
 
 	if len(stateMachine) > 0 {
 		for _, stateMachine := range stateMachine {
 			sm.handlers.initStateMachineHandlers(stateMachine)
-			if _, ok := sm.handlers.stateMachineHandlersMap[stateMachine].manual[tag]; !ok {
-				sm.handlers.stateMachineHandlersMap[stateMachine].manual[tag] = make(manualHandlerList, 0)
+			for _, tag := range tags {
+				if _, ok := sm.handlers.stateMachineHandlersMap[stateMachine].manual[tag]; !ok {
+					sm.handlers.stateMachineHandlersMap[stateMachine].manual[tag] = make(manualHandlerList, 0)
+				}
+				sm.handlers.stateMachineHandlersMap[stateMachine].manual[tag] = append(sm.handlers.stateMachineHandlersMap[stateMachine].manual[tag], handler)
 			}
-			sm.handlers.stateMachineHandlersMap[stateMachine].manual[tag] = append(sm.handlers.stateMachineHandlersMap[stateMachine].manual[tag], handler)
 		}
 	} else {
-		if _, ok := sm.handlers.handlersMap.manual[tag]; !ok {
-			sm.handlers.handlersMap.manual[tag] = make(manualHandlerList, 0)
+		for _, tag := range tags {
+			if _, ok := sm.handlers.handlersMap.manual[tag]; !ok {
+				sm.handlers.handlersMap.manual[tag] = make(manualHandlerList, 0)
+			}
+			sm.handlers.handlersMap.manual[tag] = append(sm.handlers.handlersMap.manual[tag], handler)
 		}
-		sm.handlers.handlersMap.manual[tag] = append(sm.handlers.handlersMap.manual[tag], handler)
 	}
 
 	return sm
@@ -324,12 +328,18 @@ func (sm *stateMachine) checkTransition(ctx *Context) (bool, error) {
 	sm.mux.RLock()
 	defer sm.mux.RUnlock()
 
-	// manual - init
-	if err := sm.handlers.RunManual(ManualInit, ctx); err != nil {
+	// manual - before
+	if err := sm.handlers.RunManual(BeforeCheck, ctx); err != nil {
+		if err := sm.handlers.RunManual(OnError, ctx); err != nil {
+			sm.logger.Error(err)
+		}
 		return false, err
 	}
 
 	if ok, err := sm.validate(ctx); err != nil {
+		if err := sm.handlers.RunManual(OnError, ctx); err != nil {
+			sm.logger.Error(err)
+		}
 		return ok, err
 	}
 
@@ -356,12 +366,18 @@ func (sm *stateMachine) checkTransition(ctx *Context) (bool, error) {
 	// load
 	err := transition.handler.load.Run(ctx)
 	if err != nil {
+		if err := sm.handlers.RunManual(OnError, ctx); err != nil {
+			sm.logger.Error(err)
+		}
 		return false, err
 	}
 
 	// check
 	allowed, err := transition.handler.check.Run(ctx)
 	if err != nil {
+		if err := sm.handlers.RunManual(OnError, ctx); err != nil {
+			sm.logger.Error(err)
+		}
 		return false, err
 	}
 
@@ -372,12 +388,18 @@ func (sm *stateMachine) executeTransition(ctx *Context) (bool, error) {
 	sm.mux.RLock()
 	defer sm.mux.RUnlock()
 
-	// manual - init
-	if err := sm.handlers.RunManual(ManualInit, ctx); err != nil {
+	// manual - before
+	if err := sm.handlers.RunManual(BeforeExecute, ctx); err != nil {
+		if err := sm.handlers.RunManual(OnError, ctx); err != nil {
+			sm.logger.Error(err)
+		}
 		return false, err
 	}
 
 	if ok, err := sm.validate(ctx, ctx.From, ctx.To); err != nil {
+		if err := sm.handlers.RunManual(OnError, ctx); err != nil {
+			sm.logger.Error(err)
+		}
 		return ok, err
 	}
 
@@ -405,7 +427,28 @@ func (sm *stateMachine) executeTransition(ctx *Context) (bool, error) {
 		return false, nil
 	}
 
-	return transition.handler.Run(ctx, states.transitionHandler, sm.handlers)
+	if allowed, err := transition.handler.Run(ctx, states.transitionHandler, sm.logger); !allowed || err != nil {
+		if err != nil {
+			if err := sm.handlers.RunManual(OnError, ctx); err != nil {
+				sm.logger.Error(err)
+			}
+		}
+		return allowed, err
+	}
+
+	// manual - after
+	if err := sm.handlers.RunManual(AfterExecute, ctx); err != nil {
+		if err := sm.handlers.RunManual(OnError, ctx); err != nil {
+			sm.logger.Error(err)
+		}
+		return false, err
+	}
+
+	if err := sm.handlers.RunManual(OnSuccess, ctx); err != nil {
+		sm.logger.Error(err)
+	}
+
+	return true, nil
 }
 
 func (sm *stateMachine) getTransitions(ctx *Context) (transitions []*Transition, err error) {

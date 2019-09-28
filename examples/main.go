@@ -18,6 +18,8 @@ func init() {
 
 	// state machine A
 	state_machine.NewAddHandlers(StateMachineA).
+		Load("load_dummy", loadDummy).
+		//
 		Check("check_new_to_in-progress", checkNewToInProgress).
 		Check("check_in-progress_to_approved", checkInProgressToApproved).
 		Check("check_in-progress_to_denied", checkInProgressToDenied).
@@ -38,7 +40,7 @@ func init() {
 
 	// state machine B
 	state_machine.NewAddHandlers(StateMachineB).
-		Manual(state_machine.ManualInit, loadFromState).
+		Manual(beforeExecuteLoadFromState, state_machine.BeforeCheck, state_machine.BeforeExecute).
 		//
 		Check("check_todo_to_in-development", checkTodoToInDevelopment).
 		Check("check_in-development_to_done", checkInDevelopmentToDone).
@@ -130,7 +132,7 @@ func main() {
 		fmt.Println("transition !ok")
 	}
 
-	// execute transaction - state machine B - from the state loaded by method 'loadFromState' to state 2
+	// execute transaction - state machine B - from the state loaded by method 'beforeExecuteLoadFromState' to state 2
 	ok, err = state_machine.NewTransition().
 		User(UserStateMachineB).
 		StateMachine(StateMachineB).

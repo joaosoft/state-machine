@@ -22,11 +22,11 @@ type ManualHandler func(ctx *Context) error
 type LoadHandler func(ctx *Context) error
 type CheckHandler func(ctx *Context) (bool, error)
 type ExecuteHandler func(ctx *Context) error
-type EventSuccessHandler func(ctx *Context)
-type EventErrorHandler func(ctx *Context, err error)
+type EventSuccessHandler func(ctx *Context) error
+type EventErrorHandler func(ctx *Context, err error) error
 type TransitionHandler func(ctx *Context) error
 
-type manualHandlerMap map[manualHandlerTag]manualHandlerList
+type manualHandlerMap map[manualHandlerKey]manualHandlerList
 type manualHandlerList []ManualHandler
 
 type loadHandlerMap map[string]LoadHandler

@@ -5,6 +5,34 @@ A simple state machine.
 
 ###### If i miss something or you have something interesting, please be part of this project. Let me know! My contact is at the end.
 
+## With support for
+* Users
+* State Machines
+* Transitions
+* Handlers
+
+## With configuration options
+* WithLogger
+* WithLogLevel
+
+## With methods
+* NewAddHandlers, to add handlers
+* NewStateMachine, to add a new state machine
+* NewCheckTransition, to check a transition
+* NewTransition, to make a transition
+* NewGetTransitions, to get the allowed transitions from the current state
+
+## With manual handler types
+
+### Check Transition
+* BeforeCheck, before check
+
+### Execute Transition
+* BeforeExecute, before transition
+* AfterExecute, after transition
+* OnSuccess, on transition success
+* OnError, on transition error
+
 ## Dependecy Management 
 >### Dep
 
@@ -207,6 +235,8 @@ func init() {
 
 	// state machine A
 	state_machine.NewAddHandlers(StateMachineA).
+		Load("load_dummy", loadDummy).
+		//
 		Check("check_new_to_in-progress", checkNewToInProgress).
 		Check("check_in-progress_to_approved", checkInProgressToApproved).
 		Check("check_in-progress_to_denied", checkInProgressToDenied).
@@ -227,7 +257,7 @@ func init() {
 
 	// state machine B
 	state_machine.NewAddHandlers(StateMachineB).
-		Manual(state_machine.ManualInit, loadFromState).
+		Manual(beforeExecuteLoadFromState, state_machine.BeforeCheck, state_machine.BeforeExecute).
 		//
 		Check("check_todo_to_in-development", checkTodoToInDevelopment).
 		Check("check_in-development_to_done", checkInDevelopmentToDone).
@@ -319,7 +349,7 @@ func main() {
 		fmt.Println("transition !ok")
 	}
 
-	// execute transaction - state machine B - from the state loaded by method 'loadFromState' to state 2
+	// execute transaction - state machine B - from the state loaded by method 'beforeExecuteLoadFromState' to state 2
 	ok, err = state_machine.NewTransition().
 		User(UserStateMachineB).
 		StateMachine(StateMachineB).
@@ -342,9 +372,9 @@ State Machine: A
 transition from 1 to 4  with user operator ? false
 transition from 1 to 3  with user operator ? false
 check in-progress handler with [1 text true]
-transition from 1 to 2  with user operator ? true
-transition from 1 to 1  with user operator ? false
-check in-progress to denied handler with [1 text true]
+
+
+
 transition from 2 to 4  with user operator ? true
 check in-progress to approved handler with [1 text true]
 transition from 2 to 3  with user operator ? true

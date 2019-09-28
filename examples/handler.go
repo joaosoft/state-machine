@@ -6,6 +6,12 @@ import (
 )
 
 // ::  state machine A
+// load
+func loadDummy(ctx *state_machine.Context) error {
+	fmt.Printf("\nload dummy handler with %+v", ctx.Args)
+	return nil
+}
+
 // check
 func checkNewToInProgress(ctx *state_machine.Context) (bool, error) {
 	fmt.Printf("\ncheck in-progress handler with %+v", ctx.Args)
@@ -44,33 +50,40 @@ func executeInProgressToDenied(ctx *state_machine.Context) error {
 }
 
 // event success
-func eventOnSuccessNewToInProgress(ctx *state_machine.Context) {
+func eventOnSuccessNewToInProgress(ctx *state_machine.Context) error {
 	fmt.Printf("\nsuccess event in-progress handler with %+v", ctx.Args)
+	return nil
 }
 
-func eventOnSuccessNewToInProgressByUser(ctx *state_machine.Context) {
+func eventOnSuccessNewToInProgressByUser(ctx *state_machine.Context) error {
 	fmt.Printf("\nby user: success event in-progress handler with %+v", ctx.Args)
+	return nil
 }
 
-func eventOnSuccessInProgressToApproved(ctx *state_machine.Context) {
+func eventOnSuccessInProgressToApproved(ctx *state_machine.Context) error {
 	fmt.Printf("\nsuccess event approved handler with %+v", ctx.Args)
+	return nil
 }
 
-func eventOnSuccessInProgressToDenied(ctx *state_machine.Context) {
+func eventOnSuccessInProgressToDenied(ctx *state_machine.Context) error {
 	fmt.Printf("\nsuccess event denied handler with %+v", ctx.Args)
+	return nil
 }
 
 // event error
-func eventOnErrorNewToInProgress(ctx *state_machine.Context, err error) {
+func eventOnErrorNewToInProgress(ctx *state_machine.Context, err error) error {
 	fmt.Printf("\nerror %s, event in-progress handler with %+v", err, ctx.Args)
+	return nil
 }
 
-func eventOnErrorInProgressToApproved(ctx *state_machine.Context, err error) {
+func eventOnErrorInProgressToApproved(ctx *state_machine.Context, err error) error {
 	fmt.Printf("\nerror %s, event approved handler with %+v", err, ctx.Args)
+	return nil
 }
 
-func eventOnErrorInProgressToDenied(ctx *state_machine.Context, err error) {
+func eventOnErrorInProgressToDenied(ctx *state_machine.Context, err error) error {
 	fmt.Printf("\nerror %s, event denied handler with %+v", err, ctx.Args)
+	return nil
 }
 
 // transition handler
@@ -81,7 +94,7 @@ func StateMachineATransitionHandler(ctx *state_machine.Context) error {
 
 // :: state machine B
 // manual - init
-func loadFromState(ctx *state_machine.Context) error {
+func beforeExecuteLoadFromState(ctx *state_machine.Context) error {
 	fmt.Printf("\nload 'from' state handler with %+v", ctx.Args)
 	ctx.From = 1
 	return nil
@@ -120,29 +133,35 @@ func executeInDevelopmentToDone(ctx *state_machine.Context) error {
 }
 
 // event success
-func eventOnSuccessInDevelopmentToDone(ctx *state_machine.Context) {
+func eventOnSuccessInDevelopmentToDone(ctx *state_machine.Context) error {
 	fmt.Printf("\nsuccess event done handler with %+v", ctx.Args)
+	return nil
 }
 
-func eventOnSuccessInDevelopmentToCanceled(ctx *state_machine.Context) {
+func eventOnSuccessInDevelopmentToCanceled(ctx *state_machine.Context) error {
 	fmt.Printf("\nsuccess event canceled handler with %+v", ctx.Args)
+	return nil
 }
 
-func eventOnSuccessTodoToInDevelopment(ctx *state_machine.Context) {
+func eventOnSuccessTodoToInDevelopment(ctx *state_machine.Context) error {
 	fmt.Printf("\nsuccess event in-development handler with %+v", ctx.Args)
+	return nil
 }
 
 // event error
-func eventOnErrorInDevelopmentToDone(ctx *state_machine.Context, err error) {
+func eventOnErrorInDevelopmentToDone(ctx *state_machine.Context, err error) error {
 	fmt.Printf("\nerror %s, event done handler with %+v", err, ctx.Args)
+	return nil
 }
 
-func eventOnErrorInDevelopmentToCanceled(ctx *state_machine.Context, err error) {
+func eventOnErrorInDevelopmentToCanceled(ctx *state_machine.Context, err error) error {
 	fmt.Printf("\nerror %s, event canceled handler with %+v", err, ctx.Args)
+	return nil
 }
 
-func eventOnErrorTodoToInDevelopment(ctx *state_machine.Context, err error) {
+func eventOnErrorTodoToInDevelopment(ctx *state_machine.Context, err error) error {
 	fmt.Printf("\nerror %s, event in-development handler with %+v", err, ctx.Args)
+	return nil
 }
 
 // transition handler

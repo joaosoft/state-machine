@@ -12,8 +12,8 @@ func (sm *stateMachine) newAddHandler(stateMachine ...StateMachineType) *addHand
 	}
 }
 
-func (ah *addHandler) Manual(tag manualHandlerTag, handler ManualHandler) *addHandler {
-	ah.stateMachine.AddManualHandler(tag, handler, ah.stateMachines...)
+func (ah *addHandler) Manual(handler ManualHandler, tag manualHandlerKey, tags ...manualHandlerKey) *addHandler {
+	ah.stateMachine.AddManualHandler(append(tags, tag), handler, ah.stateMachines...)
 	return ah
 }
 

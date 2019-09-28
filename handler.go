@@ -3,6 +3,7 @@ package state_machine
 import (
 	"errors"
 	"fmt"
+	"github.com/joaosoft/logger"
 )
 
 func newHandlersMaps() *handlersMap {
@@ -24,7 +25,7 @@ func (h *handlers) initStateMachineHandlers(stateMachine StateMachineType) {
 	}
 }
 
-func (h *handlers) RunManual(tag manualHandlerTag, ctx *Context) error {
+func (h *handlers) RunManual(tag manualHandlerKey, ctx *Context) error {
 	if err := h.handlersMap.manual.Run(tag, ctx); err != nil {
 		return err
 	}
@@ -105,20 +106,23 @@ func (h *handlers) getEventErrorHandler(stateMachine StateMachineType, name stri
 	}
 }
 
-func (h *handler) Run(ctx *Context, transitionHandler TransitionHandler, handlers *handlers) (bool, error) {
+func (h *handler) Run(ctx *Context, transitionHandler TransitionHandler, logger logger.ILogger) (bool, error) {
+	var err error
 
-	// manual - before
-	if err := handlers.RunManual(ManualBefore, ctx); err != nil {
+	// load
+	err = h.load.Run(ctx)
+	if err != nil {
 		// on error
-		h.events.error.Run(ctx, err)
+		h.events.error.Run(ctx, err, logger)
 		return false, err
 	}
 
 	// check
-	allowed, err := h.check.Run(ctx)
+	var allowed bool
+	allowed, err = h.check.Run(ctx)
 	if err != nil {
 		// on error
-		h.events.error.Run(ctx, err)
+		h.events.error.Run(ctx, err, logger)
 		return false, err
 	}
 
@@ -130,7 +134,7 @@ func (h *handler) Run(ctx *Context, transitionHandler TransitionHandler, handler
 	err = h.execute.Run(ctx)
 	if err != nil {
 		// on error
-		h.events.error.Run(ctx, err)
+		h.events.error.Run(ctx, err, logger)
 		return false, err
 	}
 
@@ -139,20 +143,13 @@ func (h *handler) Run(ctx *Context, transitionHandler TransitionHandler, handler
 		err = transitionHandler(ctx)
 		if err != nil {
 			// on error
-			h.events.error.Run(ctx, err)
+			h.events.error.Run(ctx, err, logger)
 			return false, err
 		}
 	}
 
 	// on success
-	h.events.success.Run(ctx)
-
-	// manual - after
-	if err := handlers.RunManual(ManualAfter, ctx); err != nil {
-		// on error
-		h.events.error.Run(ctx, err)
-		return false, err
-	}
+	h.events.success.Run(ctx, logger)
 
 	return true, nil
 }
@@ -184,20 +181,25 @@ func (h executeHandlerList) Run(ctx *Context) error {
 	return nil
 }
 
-func (h eventSuccessHandlerList) Run(ctx *Context) {
+func (h eventSuccessHandlerList) Run(ctx *Context, logger logger.ILogger) {
+	var err error
 	for _, handler := range h {
-		handler(ctx)
+		if err = handler(ctx); err != nil {
+			logger.Error(err)
+		}
 	}
 }
 
-func (h eventErrorHandlerList) Run(ctx *Context, err error) error {
+func (h eventErrorHandlerList) Run(ctx *Context, err error, logger logger.ILogger) {
+	var eventErr error
 	for _, handler := range h {
-		handler(ctx, err)
+		if eventErr = handler(ctx, err); err != nil {
+			logger.Error(eventErr)
+		}
 	}
-	return nil
 }
 
-func (m manualHandlerMap) Run(tag manualHandlerTag, ctx *Context) error {
+func (m manualHandlerMap) Run(tag manualHandlerKey, ctx *Context) error {
 	if list, ok := m[tag]; ok {
 		for _, handler := range list {
 			if err := handler(ctx); err != nil {
