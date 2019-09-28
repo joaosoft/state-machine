@@ -4,7 +4,7 @@ import (
 	"os"
 )
 
-func GetEnv() string {
+func getEnv() string {
 	env := os.Getenv("env")
 	if env == "" {
 		env = "local"

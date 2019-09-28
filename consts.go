@@ -1,7 +1,7 @@
 package state_machine
 
 const (
-	ManualInit   ManualHandlerTag = "init" // do not run events
-	ManualBefore ManualHandlerTag = "before"
-	ManualAfter  ManualHandlerTag = "after"
+	ManualInit   manualHandlerTag = "init" // do not run events
+	ManualBefore manualHandlerTag = "before"
+	ManualAfter  manualHandlerTag = "after"
 )

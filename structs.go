@@ -6,7 +6,7 @@ import (
 	"github.com/joaosoft/logger"
 )
 
-type StateMap map[int]*State
+type stateMap map[int]*state
 
 type Context struct {
 	User         UserType
@@ -26,80 +26,80 @@ type EventSuccessHandler func(ctx *Context)
 type EventErrorHandler func(ctx *Context, err error)
 type TransitionHandler func(ctx *Context) error
 
-type ManualHandlerMap map[ManualHandlerTag]ManualHandlerList
-type ManualHandlerList []ManualHandler
+type manualHandlerMap map[manualHandlerTag]manualHandlerList
+type manualHandlerList []ManualHandler
 
-type LoadHandlerMap map[string]LoadHandler
-type CheckHandlerMap map[string]CheckHandler
-type ExecuteHandlerMap map[string]ExecuteHandler
-type EventSuccessHandlerMap map[string]EventSuccessHandler
-type EventErrorHandlerMap map[string]EventErrorHandler
-type StateMachineHandlersMap map[StateMachineType]*HandlersMap
+type loadHandlerMap map[string]LoadHandler
+type checkHandlerMap map[string]CheckHandler
+type executeHandlerMap map[string]ExecuteHandler
+type eventSuccessHandlerMap map[string]EventSuccessHandler
+type eventErrorHandlerMap map[string]EventErrorHandler
+type stateMachineHandlersMap map[StateMachineType]*handlersMap
 
 type handlers struct {
-	handlersMap             *HandlersMap
-	stateMachineHandlersMap StateMachineHandlersMap
+	handlersMap             *handlersMap
+	stateMachineHandlersMap stateMachineHandlersMap
 }
 
 type stateMachine struct {
-	config              *StateMachineConfig
-	stateMachineMap     StateMachineMap
-	userStateMachineMap UserStateMachineMap
+	config              *stateMachineConfig
+	stateMachineMap     stateMachineMap
+	userStateMachineMap userStateMachineMap
 	handlers            *handlers
 	logger              logger.ILogger
 	mux                 *sync.RWMutex
 }
 
-type StateMachineMap map[StateMachineType]*StateMachineData
-type StateMachineData struct {
-	stateMap          StateMap
+type stateMachineMap map[StateMachineType]*stateMachineData
+type stateMachineData struct {
+	stateMap          stateMap
 	transitionHandler TransitionHandler
 }
-type UserStateMachineMap map[UserType]StateMachineMap
+type userStateMachineMap map[UserType]stateMachineMap
 
-type State struct {
-	Id            int
-	Name          string
-	TransitionMap TransitionMap
+type state struct {
+	id            int
+	name          string
+	transitionMap transitionMap
 }
 
-type TransitionMap map[int]*Transition
+type transitionMap map[int]*Transition
 
 type Transition struct {
-	Id      int     `json:"id"`
-	Name    string  `json:"name"`
-	Handler Handler `json:"-"`
+	Id      int    `json:"id"`
+	Name    string `json:"name"`
+	handler handler
 }
 
-type Handler struct {
-	Load    LoadHandlerList
-	Check   CheckHandlerList
-	Execute ExecuteHandlerList
-	Events  Events
+type handler struct {
+	load    loadHandlerList
+	check   checkHandlerList
+	execute executeHandlerList
+	events  events
 }
 
-type Events struct {
-	Success EventSuccessHandlerList
-	Error   EventErrorHandlerList
+type events struct {
+	success eventSuccessHandlerList
+	error   eventErrorHandlerList
 }
 
-type LoadHandlerList []LoadHandler
-type CheckHandlerList []CheckHandler
-type ExecuteHandlerList []ExecuteHandler
-type EventSuccessHandlerList []EventSuccessHandler
-type EventErrorHandlerList []EventErrorHandler
+type loadHandlerList []LoadHandler
+type checkHandlerList []CheckHandler
+type executeHandlerList []ExecuteHandler
+type eventSuccessHandlerList []EventSuccessHandler
+type eventErrorHandlerList []EventErrorHandler
 
-type HandlersMap struct {
-	Manual  ManualHandlerMap
-	Load    LoadHandlerMap
-	Check   CheckHandlerMap
-	Execute ExecuteHandlerMap
-	Events  *EventMap
+type handlersMap struct {
+	manual  manualHandlerMap
+	Load    loadHandlerMap
+	check   checkHandlerMap
+	execute executeHandlerMap
+	events  *eventMap
 }
 
-type EventMap struct {
-	Success EventSuccessHandlerMap
-	Error   EventErrorHandlerMap
+type eventMap struct {
+	success eventSuccessHandlerMap
+	error   eventErrorHandlerMap
 }
 
 type UserType string

@@ -5,15 +5,15 @@ import (
 	"fmt"
 )
 
-func newHandlersMaps() *HandlersMap {
-	return &HandlersMap{
-		Manual:  make(ManualHandlerMap),
-		Load:    make(LoadHandlerMap),
-		Check:   make(CheckHandlerMap),
-		Execute: make(ExecuteHandlerMap),
-		Events: &EventMap{
-			Success: make(EventSuccessHandlerMap),
-			Error:   make(EventErrorHandlerMap),
+func newHandlersMaps() *handlersMap {
+	return &handlersMap{
+		manual:  make(manualHandlerMap),
+		Load:    make(loadHandlerMap),
+		check:   make(checkHandlerMap),
+		execute: make(executeHandlerMap),
+		events: &eventMap{
+			success: make(eventSuccessHandlerMap),
+			error:   make(eventErrorHandlerMap),
 		},
 	}
 }
@@ -24,12 +24,12 @@ func (h *handlers) initStateMachineHandlers(stateMachine StateMachineType) {
 	}
 }
 
-func (h *handlers) RunManual(tag ManualHandlerTag, ctx *Context) error {
-	if err := h.handlersMap.Manual.Run(tag, ctx); err != nil {
+func (h *handlers) RunManual(tag manualHandlerTag, ctx *Context) error {
+	if err := h.handlersMap.manual.Run(tag, ctx); err != nil {
 		return err
 	}
 
-	if err := h.stateMachineHandlersMap[ctx.StateMachine].Manual.Run(tag, ctx); err != nil {
+	if err := h.stateMachineHandlersMap[ctx.StateMachine].manual.Run(tag, ctx); err != nil {
 		return err
 	}
 
@@ -51,12 +51,12 @@ func (h *handlers) getLoadHandler(stateMachine StateMachineType, name string) (L
 
 func (h *handlers) getCheckHandler(stateMachine StateMachineType, name string) (CheckHandler, error) {
 	if stateM, ok := h.stateMachineHandlersMap[stateMachine]; ok {
-		if handler, ok := stateM.Check[name]; ok {
+		if handler, ok := stateM.check[name]; ok {
 			return handler, nil
 		}
 	}
 
-	if handler, ok := h.handlersMap.Check[name]; ok {
+	if handler, ok := h.handlersMap.check[name]; ok {
 		return handler, nil
 	} else {
 		return nil, errors.New(fmt.Sprintf("check handler [%s] not found", name))
@@ -65,12 +65,12 @@ func (h *handlers) getCheckHandler(stateMachine StateMachineType, name string) (
 
 func (h *handlers) getExecuteHandler(stateMachine StateMachineType, name string) (ExecuteHandler, error) {
 	if stateM, ok := h.stateMachineHandlersMap[stateMachine]; ok {
-		if handler, ok := stateM.Execute[name]; ok {
+		if handler, ok := stateM.execute[name]; ok {
 			return handler, nil
 		}
 	}
 
-	if handler, ok := h.handlersMap.Execute[name]; ok {
+	if handler, ok := h.handlersMap.execute[name]; ok {
 		return handler, nil
 	} else {
 		return nil, errors.New(fmt.Sprintf("execute handler [%s] not found", name))
@@ -79,12 +79,12 @@ func (h *handlers) getExecuteHandler(stateMachine StateMachineType, name string)
 
 func (h *handlers) getEventSuccessHandler(stateMachine StateMachineType, name string) (EventSuccessHandler, error) {
 	if stateM, ok := h.stateMachineHandlersMap[stateMachine]; ok {
-		if handler, ok := stateM.Events.Success[name]; ok {
+		if handler, ok := stateM.events.success[name]; ok {
 			return handler, nil
 		}
 	}
 
-	if handler, ok := h.handlersMap.Events.Success[name]; ok {
+	if handler, ok := h.handlersMap.events.success[name]; ok {
 		return handler, nil
 	} else {
 		return nil, errors.New(fmt.Sprintf("event success handler [%s] not found", name))
@@ -93,32 +93,32 @@ func (h *handlers) getEventSuccessHandler(stateMachine StateMachineType, name st
 
 func (h *handlers) getEventErrorHandler(stateMachine StateMachineType, name string) (EventErrorHandler, error) {
 	if stateM, ok := h.stateMachineHandlersMap[stateMachine]; ok {
-		if handler, ok := stateM.Events.Error[name]; ok {
+		if handler, ok := stateM.events.error[name]; ok {
 			return handler, nil
 		}
 	}
 
-	if handler, ok := h.handlersMap.Events.Error[name]; ok {
+	if handler, ok := h.handlersMap.events.error[name]; ok {
 		return handler, nil
 	} else {
 		return nil, errors.New(fmt.Sprintf("event error handler [%s] not found", name))
 	}
 }
 
-func (h *Handler) Run(ctx *Context, transitionHandler TransitionHandler, handlers *handlers) (bool, error) {
+func (h *handler) Run(ctx *Context, transitionHandler TransitionHandler, handlers *handlers) (bool, error) {
 
 	// manual - before
 	if err := handlers.RunManual(ManualBefore, ctx); err != nil {
 		// on error
-		h.Events.Error.Run(ctx, err)
+		h.events.error.Run(ctx, err)
 		return false, err
 	}
 
 	// check
-	allowed, err := h.Check.Run(ctx)
+	allowed, err := h.check.Run(ctx)
 	if err != nil {
 		// on error
-		h.Events.Error.Run(ctx, err)
+		h.events.error.Run(ctx, err)
 		return false, err
 	}
 
@@ -127,10 +127,10 @@ func (h *Handler) Run(ctx *Context, transitionHandler TransitionHandler, handler
 	}
 
 	// execute
-	err = h.Execute.Run(ctx)
+	err = h.execute.Run(ctx)
 	if err != nil {
 		// on error
-		h.Events.Error.Run(ctx, err)
+		h.events.error.Run(ctx, err)
 		return false, err
 	}
 
@@ -139,25 +139,25 @@ func (h *Handler) Run(ctx *Context, transitionHandler TransitionHandler, handler
 		err = transitionHandler(ctx)
 		if err != nil {
 			// on error
-			h.Events.Error.Run(ctx, err)
+			h.events.error.Run(ctx, err)
 			return false, err
 		}
 	}
 
 	// on success
-	h.Events.Success.Run(ctx)
+	h.events.success.Run(ctx)
 
 	// manual - after
 	if err := handlers.RunManual(ManualAfter, ctx); err != nil {
 		// on error
-		h.Events.Error.Run(ctx, err)
+		h.events.error.Run(ctx, err)
 		return false, err
 	}
 
 	return true, nil
 }
 
-func (h LoadHandlerList) Run(ctx *Context) error {
+func (h loadHandlerList) Run(ctx *Context) error {
 	for _, handler := range h {
 		if err := handler(ctx); err != nil {
 			return err
@@ -166,7 +166,7 @@ func (h LoadHandlerList) Run(ctx *Context) error {
 	return nil
 }
 
-func (h CheckHandlerList) Run(ctx *Context) (bool, error) {
+func (h checkHandlerList) Run(ctx *Context) (bool, error) {
 	for _, handler := range h {
 		if ok, err := handler(ctx); !ok || err != nil {
 			return false, err
@@ -175,7 +175,7 @@ func (h CheckHandlerList) Run(ctx *Context) (bool, error) {
 	return true, nil
 }
 
-func (h ExecuteHandlerList) Run(ctx *Context) error {
+func (h executeHandlerList) Run(ctx *Context) error {
 	for _, handler := range h {
 		if err := handler(ctx); err != nil {
 			return err
@@ -184,20 +184,20 @@ func (h ExecuteHandlerList) Run(ctx *Context) error {
 	return nil
 }
 
-func (h EventSuccessHandlerList) Run(ctx *Context) {
+func (h eventSuccessHandlerList) Run(ctx *Context) {
 	for _, handler := range h {
 		handler(ctx)
 	}
 }
 
-func (h EventErrorHandlerList) Run(ctx *Context, err error) error {
+func (h eventErrorHandlerList) Run(ctx *Context, err error) error {
 	for _, handler := range h {
 		handler(ctx, err)
 	}
 	return nil
 }
 
-func (m ManualHandlerMap) Run(tag ManualHandlerTag, ctx *Context) error {
+func (m manualHandlerMap) Run(tag manualHandlerTag, ctx *Context) error {
 	if list, ok := m[tag]; ok {
 		for _, handler := range list {
 			if err := handler(ctx); err != nil {

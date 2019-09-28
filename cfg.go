@@ -1,18 +1,18 @@
 package state_machine
 
-type StateMachineCfg struct {
+type stateMachineCfg struct {
 	StateMachine []struct {
 		Id          int             `json:"id" yaml:"id"`
 		Name        string          `json:"name" yaml:"name"`
-		Transitions []TransitionCfg `json:"transitions" yaml:"transitions"`
+		Transitions []transitionCfg `json:"transitions" yaml:"transitions"`
 	} `json:"state_machine" yaml:"state_machine"`
 	Users map[string][]struct {
 		Id          int             `json:"id" yaml:"id"`
-		Transitions []TransitionCfg `json:"transitions" yaml:"transitions"`
+		Transitions []transitionCfg `json:"transitions" yaml:"transitions"`
 	} `json:"users" yaml:"users"`
 }
 
-type TransitionCfg struct {
+type transitionCfg struct {
 	Id      int      `json:"id" yaml:"id"`
 	Load    []string `json:"load" yaml:"load"`
 	Check   []string `json:"check" yaml:"check"`
@@ -23,7 +23,7 @@ type TransitionCfg struct {
 	} `json:"events" yaml:"events"`
 }
 
-func (t TransitionCfg) getLoadHandlers(stateMachine StateMachineType, handlers *handlers) (loadHandlers LoadHandlerList, err error) {
+func (t transitionCfg) getLoadHandlers(stateMachine StateMachineType, handlers *handlers) (loadHandlers loadHandlerList, err error) {
 	for _, name := range t.Load {
 		handler, err := handlers.getLoadHandler(stateMachine, name)
 		if err != nil {
@@ -35,7 +35,7 @@ func (t TransitionCfg) getLoadHandlers(stateMachine StateMachineType, handlers *
 	return loadHandlers, nil
 }
 
-func (t TransitionCfg) getCheckHandlers(stateMachine StateMachineType, handlers *handlers) (checkHandlers CheckHandlerList, err error) {
+func (t transitionCfg) getCheckHandlers(stateMachine StateMachineType, handlers *handlers) (checkHandlers checkHandlerList, err error) {
 	for _, name := range t.Check {
 		handler, err := handlers.getCheckHandler(stateMachine, name)
 		if err != nil {
@@ -47,7 +47,7 @@ func (t TransitionCfg) getCheckHandlers(stateMachine StateMachineType, handlers 
 	return checkHandlers, nil
 }
 
-func (t TransitionCfg) getExecuteHandlers(stateMachine StateMachineType, handlers *handlers) (executeHandlers ExecuteHandlerList, err error) {
+func (t transitionCfg) getExecuteHandlers(stateMachine StateMachineType, handlers *handlers) (executeHandlers executeHandlerList, err error) {
 	for _, name := range t.Execute {
 		handler, err := handlers.getExecuteHandler(stateMachine, name)
 		if err != nil {
@@ -59,7 +59,7 @@ func (t TransitionCfg) getExecuteHandlers(stateMachine StateMachineType, handler
 	return executeHandlers, nil
 }
 
-func (t TransitionCfg) getEventSuccessHandlers(stateMachine StateMachineType, handlers *handlers) (eventSuccessHandlers EventSuccessHandlerList, err error) {
+func (t transitionCfg) getEventSuccessHandlers(stateMachine StateMachineType, handlers *handlers) (eventSuccessHandlers eventSuccessHandlerList, err error) {
 	for _, name := range t.Events.Success {
 		handler, err := handlers.getEventSuccessHandler(stateMachine, name)
 		if err != nil {
@@ -71,7 +71,7 @@ func (t TransitionCfg) getEventSuccessHandlers(stateMachine StateMachineType, ha
 	return eventSuccessHandlers, nil
 }
 
-func (t TransitionCfg) getEventErrorHandlers(stateMachine StateMachineType, handlers *handlers) (eventErrorHandlers EventErrorHandlerList, err error) {
+func (t transitionCfg) getEventErrorHandlers(stateMachine StateMachineType, handlers *handlers) (eventErrorHandlers eventErrorHandlerList, err error) {
 	for _, name := range t.Events.Error {
 		handler, err := handlers.getEventErrorHandler(stateMachine, name)
 		if err != nil {

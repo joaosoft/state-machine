@@ -6,22 +6,22 @@ import (
 	"github.com/joaosoft/manager"
 )
 
-// AppConfig ...
-type AppConfig struct {
-	StateMachine *StateMachineConfig `json:"state_machine"`
+// appConfig ...
+type appConfig struct {
+	StateMachine *stateMachineConfig `json:"state_machine"`
 }
 
-// StateMachineConfig ...
-type StateMachineConfig struct {
+// stateMachineConfig ...
+type stateMachineConfig struct {
 	Log       struct {
 		Level string `json:"level"`
 	} `json:"log"`
 }
 
-// NewConfig ...
-func NewConfig() (*AppConfig, manager.IConfig, error) {
-	appConfig := &AppConfig{}
-	simpleConfig, err := manager.NewSimpleConfig(fmt.Sprintf("/config/app.%s.json", GetEnv()), appConfig)
+// newConfig ...
+func newConfig() (*appConfig, manager.IConfig, error) {
+	appConfig := &appConfig{}
+	simpleConfig, err := manager.NewSimpleConfig(fmt.Sprintf("/config/app.%s.json", getEnv()), appConfig)
 
 	return appConfig, simpleConfig, err
 }

@@ -1,34 +1,10 @@
 package state_machine
 
-type ManualHandlerTag string
+type manualHandlerTag string
 
-// manual handlers
-func AddManualHandler(tag ManualHandlerTag, handler ManualHandler, stateMachine ...StateMachineType) *stateMachine {
-	return stateMachineInstance.addManualHandler(tag, handler, stateMachine...)
+func NewAddHandlers(stateMachine StateMachineType) *addHandler {
+	return stateMachineInstance.newAddHandler(stateMachine)
 }
-
-// handlers
-func AddLoadHandler(name string, handler LoadHandler, stateMachine ...StateMachineType) *stateMachine {
-	return stateMachineInstance.addHandler(name, handler, stateMachine...)
-}
-
-func AddCheckHandler(name string, handler CheckHandler, stateMachine ...StateMachineType) *stateMachine {
-	return stateMachineInstance.addHandler(name, handler, stateMachine...)
-}
-
-func AddExecuteHandler(name string, handler ExecuteHandler, stateMachine ...StateMachineType) *stateMachine {
-	return stateMachineInstance.addHandler(name, handler, stateMachine...)
-}
-
-func AddEventOnSuccessHandler(name string, handler EventSuccessHandler, stateMachine ...StateMachineType) *stateMachine {
-	return stateMachineInstance.addHandler(name, handler, stateMachine...)
-}
-
-func AddEventOnErrorHandler(name string, handler EventSuccessHandler, stateMachine ...StateMachineType) *stateMachine {
-	return stateMachineInstance.addHandler(name, handler, stateMachine...)
-}
-
-// tools
 
 func NewStateMachine() *newStateMachine {
 	return stateMachineInstance.newStateMachine()
@@ -47,7 +23,7 @@ func NewGetTransitions() *newGetTransitions {
 }
 
 // manual handlers
-func (sm *stateMachine) AddManualHandler(tag ManualHandlerTag, handler ManualHandler, stateMachine ...StateMachineType) *stateMachine {
+func (sm *stateMachine) AddManualHandler(tag manualHandlerTag, handler ManualHandler, stateMachine ...StateMachineType) *stateMachine {
 	return sm.addManualHandler(tag, handler, stateMachine...)
 }
 

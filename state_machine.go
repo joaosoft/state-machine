@@ -13,23 +13,23 @@ var (
 	stateMachineInstance, _ = new()
 )
 
-func new(options ...StateMachineOption) (*stateMachine, error) {
-	config, _, err := NewConfig()
+func new(options ...stateMachineOption) (*stateMachine, error) {
+	config, _, err := newConfig()
 
 	newStateMachine := &stateMachine{
-		stateMachineMap:     make(StateMachineMap),
-		userStateMachineMap: make(UserStateMachineMap),
+		stateMachineMap:     make(stateMachineMap),
+		userStateMachineMap: make(userStateMachineMap),
 		handlers: &handlers{
-			handlersMap: &HandlersMap{
-				Manual:  make(ManualHandlerMap),
-				Check:   make(CheckHandlerMap),
-				Execute: make(ExecuteHandlerMap),
-				Events: &EventMap{
-					Success: make(EventSuccessHandlerMap),
-					Error:   make(EventErrorHandlerMap),
+			handlersMap: &handlersMap{
+				manual:  make(manualHandlerMap),
+				check:   make(checkHandlerMap),
+				execute: make(executeHandlerMap),
+				events: &eventMap{
+					success: make(eventSuccessHandlerMap),
+					error:   make(eventErrorHandlerMap),
 				},
 			},
-			stateMachineHandlersMap: make(StateMachineHandlersMap),
+			stateMachineHandlersMap: make(stateMachineHandlersMap),
 		},
 		logger: logger.NewLogDefault("state_machine", logger.WarnLevel),
 		config: config.StateMachine,
@@ -51,8 +51,8 @@ func new(options ...StateMachineOption) (*stateMachine, error) {
 
 func (sm *stateMachine) validate(ctx *Context, states ...int) (bool, error) {
 	var ok bool
-	var stateMachineMap StateMachineMap
-	var stateMachineData *StateMachineData
+	var stateMachineMap stateMachineMap
+	var stateMachineData *stateMachineData
 
 	if stateMachineMap, ok = sm.userStateMachineMap[ctx.User]; !ok {
 		return false, errors.New(fmt.Sprintf("user [%s] not found", ctx.User))
@@ -75,14 +75,14 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 	sm.mux.Lock()
 	defer sm.mux.Unlock()
 
-	config := StateMachineCfg{}
+	config := stateMachineCfg{}
 	_, err := manager.NewSimpleConfig(file, &config)
 	if err != nil {
 		return err
 	}
 
-	states := make(StateMap)
-	sm.stateMachineMap[stateMachine] = &StateMachineData{
+	states := make(stateMap)
+	sm.stateMachineMap[stateMachine] = &stateMachineData{
 		stateMap:          states,
 		transitionHandler: transitionHandler,
 	}
@@ -90,10 +90,10 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 	// load state machine
 	for _, stateCfg := range config.StateMachine {
 
-		state := &State{
-			Id:            stateCfg.Id,
-			Name:          stateCfg.Name,
-			TransitionMap: make(TransitionMap),
+		state := &state{
+			id:            stateCfg.Id,
+			name:          stateCfg.Name,
+			transitionMap: make(transitionMap),
 		}
 
 		for _, transitionCfg := range stateCfg.Transitions {
@@ -102,37 +102,37 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 			}
 
 			// load
-			transition.Handler.Load, err = transitionCfg.getLoadHandlers(stateMachine, sm.handlers)
+			transition.handler.load, err = transitionCfg.getLoadHandlers(stateMachine, sm.handlers)
 			if err != nil {
 				return err
 			}
 
 			// check
-			transition.Handler.Check, err = transitionCfg.getCheckHandlers(stateMachine, sm.handlers)
+			transition.handler.check, err = transitionCfg.getCheckHandlers(stateMachine, sm.handlers)
 			if err != nil {
 				return err
 			}
 
 			// execute
-			transition.Handler.Execute, err = transitionCfg.getExecuteHandlers(stateMachine, sm.handlers)
+			transition.handler.execute, err = transitionCfg.getExecuteHandlers(stateMachine, sm.handlers)
 			if err != nil {
 				return err
 			}
 
 			// events
 			// -- success
-			transition.Handler.Events.Success, err = transitionCfg.getEventSuccessHandlers(stateMachine, sm.handlers)
+			transition.handler.events.success, err = transitionCfg.getEventSuccessHandlers(stateMachine, sm.handlers)
 			if err != nil {
 				return err
 			}
 
 			// -- error
-			transition.Handler.Events.Error, err = transitionCfg.getEventErrorHandlers(stateMachine, sm.handlers)
+			transition.handler.events.error, err = transitionCfg.getEventErrorHandlers(stateMachine, sm.handlers)
 			if err != nil {
 				return err
 			}
 
-			state.TransitionMap[transitionCfg.Id] = transition
+			state.transitionMap[transitionCfg.Id] = transition
 		}
 
 		states[stateCfg.Id] = state
@@ -140,22 +140,22 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 
 	// load users state machine
 	for user, statesCfg := range config.Users {
-		stateMap := make(StateMap)
+		stateMap := make(stateMap)
 
 		transitionStates := make(map[int]bool)
 		for _, stateCfg := range statesCfg {
-			var state *State
+			var fromState *state
 			var ok bool
 
 			// check if state is valid !
-			if state, ok = states[stateCfg.Id]; !ok {
+			if fromState, ok = states[stateCfg.Id]; !ok {
 				return errors.New(fmt.Sprintf("state not found %d", stateCfg.Id))
 			}
 
-			userState := &State{
-				Id:            state.Id,
-				Name:          state.Name,
-				TransitionMap: make(TransitionMap),
+			userState := &state{
+				id:            fromState.id,
+				name:          fromState.name,
+				transitionMap: make(transitionMap),
 			}
 
 			transitionStates[stateCfg.Id] = true
@@ -164,25 +164,25 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 				transitionStates[transitionCfg.Id] = false
 
 				// check if transition is valid !
-				var stateTransition *State
-				if stateTransition, ok = states[transitionCfg.Id]; !ok {
+				var toState *state
+				if toState, ok = states[transitionCfg.Id]; !ok {
 					return errors.New(fmt.Sprintf("state not found %d", stateCfg.Id))
 				}
 
 				var transition *Transition
-				if transition, ok = states[stateCfg.Id].TransitionMap[transitionCfg.Id]; !ok {
+				if transition, ok = states[stateCfg.Id].transitionMap[transitionCfg.Id]; !ok {
 					return errors.New(fmt.Sprintf("transition From %d To %d not found", stateCfg.Id, transitionCfg.Id))
 				}
 
 				userTransition := &Transition{
 					Id:   transition.Id,
-					Name: stateTransition.Name,
-					Handler: Handler{
-						Check:   append([]CheckHandler{}, transition.Handler.Check...),
-						Execute: append([]ExecuteHandler{}, transition.Handler.Execute...),
-						Events: Events{
-							Success: append([]EventSuccessHandler{}, transition.Handler.Events.Success...),
-							Error:   append([]EventErrorHandler{}, transition.Handler.Events.Error...),
+					Name: toState.name,
+					handler: handler{
+						check:   append([]CheckHandler{}, transition.handler.check...),
+						execute: append([]ExecuteHandler{}, transition.handler.execute...),
+						events: events{
+							success: append([]EventSuccessHandler{}, transition.handler.events.success...),
+							error:   append([]EventErrorHandler{}, transition.handler.events.error...),
 						},
 					},
 				}
@@ -194,21 +194,21 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 				if err != nil {
 					return err
 				}
-				userTransition.Handler.Load = append(userTransition.Handler.Load, loadHandlers...)
+				userTransition.handler.load = append(userTransition.handler.load, loadHandlers...)
 
 				// check
 				checkHandlers, err := transitionCfg.getCheckHandlers(stateMachine, sm.handlers)
 				if err != nil {
 					return err
 				}
-				userTransition.Handler.Check = append(userTransition.Handler.Check, checkHandlers...)
+				userTransition.handler.check = append(userTransition.handler.check, checkHandlers...)
 
 				// execute
 				executeHandlers, err := transitionCfg.getExecuteHandlers(stateMachine, sm.handlers)
 				if err != nil {
 					return err
 				}
-				userTransition.Handler.Execute = append(userTransition.Handler.Execute, executeHandlers...)
+				userTransition.handler.execute = append(userTransition.handler.execute, executeHandlers...)
 
 				// events
 				// -- success
@@ -216,16 +216,16 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 				if err != nil {
 					return err
 				}
-				userTransition.Handler.Events.Success = append(userTransition.Handler.Events.Success, eventSuccessHandlers...)
+				userTransition.handler.events.success = append(userTransition.handler.events.success, eventSuccessHandlers...)
 
 				// -- error
 				eventErrorHandlers, err := transitionCfg.getEventErrorHandlers(stateMachine, sm.handlers)
 				if err != nil {
 					return err
 				}
-				userTransition.Handler.Events.Error = append(userTransition.Handler.Events.Error, eventErrorHandlers...)
+				userTransition.handler.events.error = append(userTransition.handler.events.error, eventErrorHandlers...)
 
-				userState.TransitionMap[userTransition.Id] = userTransition
+				userState.transitionMap[userTransition.Id] = userTransition
 			}
 
 			stateMap[stateCfg.Id] = userState
@@ -234,23 +234,23 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 		// add missing user transition states
 		for idState, added := range transitionStates {
 			if !added {
-				var stateTransition *State
+				var toState *state
 				var ok bool
-				if stateTransition, ok = states[idState]; !ok {
+				if toState, ok = states[idState]; !ok {
 					return errors.New(fmt.Sprintf("state not found %d", idState))
 				}
-				stateMap[idState] = &State{
-					Id:            idState,
-					Name:          stateTransition.Name,
-					TransitionMap: make(TransitionMap),
+				stateMap[idState] = &state{
+					id:            idState,
+					name:          toState.name,
+					transitionMap: make(transitionMap),
 				}
 			}
 		}
 
 		if _, ok := sm.userStateMachineMap[UserType(user)]; !ok {
-			sm.userStateMachineMap[UserType(user)] = make(StateMachineMap)
+			sm.userStateMachineMap[UserType(user)] = make(stateMachineMap)
 		}
-		sm.userStateMachineMap[UserType(user)][stateMachine] = &StateMachineData{
+		sm.userStateMachineMap[UserType(user)][stateMachine] = &stateMachineData{
 			stateMap:          stateMap,
 			transitionHandler: transitionHandler,
 		}
@@ -259,23 +259,23 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 	return nil
 }
 
-func (sm *stateMachine) addManualHandler(tag ManualHandlerTag, handler ManualHandler, stateMachine ...StateMachineType) *stateMachine {
+func (sm *stateMachine) addManualHandler(tag manualHandlerTag, handler ManualHandler, stateMachine ...StateMachineType) *stateMachine {
 	sm.mux.Lock()
 	defer sm.mux.Unlock()
 
 	if len(stateMachine) > 0 {
 		for _, stateMachine := range stateMachine {
 			sm.handlers.initStateMachineHandlers(stateMachine)
-			if _, ok := sm.handlers.stateMachineHandlersMap[stateMachine].Manual[tag]; !ok {
-				sm.handlers.stateMachineHandlersMap[stateMachine].Manual[tag] = make(ManualHandlerList, 0)
+			if _, ok := sm.handlers.stateMachineHandlersMap[stateMachine].manual[tag]; !ok {
+				sm.handlers.stateMachineHandlersMap[stateMachine].manual[tag] = make(manualHandlerList, 0)
 			}
-			sm.handlers.stateMachineHandlersMap[stateMachine].Manual[tag] = append(sm.handlers.stateMachineHandlersMap[stateMachine].Manual[tag], handler)
+			sm.handlers.stateMachineHandlersMap[stateMachine].manual[tag] = append(sm.handlers.stateMachineHandlersMap[stateMachine].manual[tag], handler)
 		}
 	} else {
-		if _, ok := sm.handlers.handlersMap.Manual[tag]; !ok {
-			sm.handlers.handlersMap.Manual[tag] = make(ManualHandlerList, 0)
+		if _, ok := sm.handlers.handlersMap.manual[tag]; !ok {
+			sm.handlers.handlersMap.manual[tag] = make(manualHandlerList, 0)
 		}
-		sm.handlers.handlersMap.Manual[tag] = append(sm.handlers.handlersMap.Manual[tag], handler)
+		sm.handlers.handlersMap.manual[tag] = append(sm.handlers.handlersMap.manual[tag], handler)
 	}
 
 	return sm
@@ -293,13 +293,13 @@ func (sm *stateMachine) addHandler(name string, handler interface{}, stateMachin
 			case LoadHandler:
 				sm.handlers.stateMachineHandlersMap[stateMachine].Load[name] = h
 			case CheckHandler:
-				sm.handlers.stateMachineHandlersMap[stateMachine].Check[name] = h
+				sm.handlers.stateMachineHandlersMap[stateMachine].check[name] = h
 			case ExecuteHandler:
-				sm.handlers.stateMachineHandlersMap[stateMachine].Execute[name] = h
+				sm.handlers.stateMachineHandlersMap[stateMachine].execute[name] = h
 			case EventSuccessHandler:
-				sm.handlers.stateMachineHandlersMap[stateMachine].Events.Success[name] = h
+				sm.handlers.stateMachineHandlersMap[stateMachine].events.success[name] = h
 			case EventErrorHandler:
-				sm.handlers.stateMachineHandlersMap[stateMachine].Events.Error[name] = h
+				sm.handlers.stateMachineHandlersMap[stateMachine].events.error[name] = h
 			}
 		}
 	} else {
@@ -307,13 +307,13 @@ func (sm *stateMachine) addHandler(name string, handler interface{}, stateMachin
 		case LoadHandler:
 			sm.handlers.handlersMap.Load[name] = h
 		case CheckHandler:
-			sm.handlers.handlersMap.Check[name] = h
+			sm.handlers.handlersMap.check[name] = h
 		case ExecuteHandler:
-			sm.handlers.handlersMap.Execute[name] = h
+			sm.handlers.handlersMap.execute[name] = h
 		case EventSuccessHandler:
-			sm.handlers.handlersMap.Events.Success[name] = h
+			sm.handlers.handlersMap.events.success[name] = h
 		case EventErrorHandler:
-			sm.handlers.handlersMap.Events.Error[name] = h
+			sm.handlers.handlersMap.events.error[name] = h
 		}
 	}
 
@@ -348,19 +348,19 @@ func (sm *stateMachine) checkTransition(ctx *Context) (bool, error) {
 		return false, nil
 	}
 
-	transition, ok := state.TransitionMap[ctx.To]
+	transition, ok := state.transitionMap[ctx.To]
 	if !ok {
 		return false, nil
 	}
 
 	// load
-	err := transition.Handler.Load.Run(ctx)
+	err := transition.handler.load.Run(ctx)
 	if err != nil {
 		return false, err
 	}
 
 	// check
-	allowed, err := transition.Handler.Check.Run(ctx)
+	allowed, err := transition.handler.check.Run(ctx)
 	if err != nil {
 		return false, err
 	}
@@ -400,12 +400,12 @@ func (sm *stateMachine) executeTransition(ctx *Context) (bool, error) {
 	}
 
 	// to
-	transition, ok := state.TransitionMap[ctx.To]
+	transition, ok := state.transitionMap[ctx.To]
 	if !ok {
 		return false, nil
 	}
 
-	return transition.Handler.Run(ctx, states.transitionHandler, sm.handlers)
+	return transition.handler.Run(ctx, states.transitionHandler, sm.handlers)
 }
 
 func (sm *stateMachine) getTransitions(ctx *Context) (transitions []*Transition, err error) {
@@ -419,7 +419,7 @@ func (sm *stateMachine) getTransitions(ctx *Context) (transitions []*Transition,
 	if userStateMachine, ok := sm.userStateMachineMap[ctx.User]; ok {
 		if stateMachineData, ok := userStateMachine[ctx.StateMachine]; ok {
 			if state, ok := stateMachineData.stateMap[ctx.From]; ok {
-				for _, transition := range state.TransitionMap {
+				for _, transition := range state.transitionMap {
 					transitions = append(transitions, transition)
 				}
 			} else {
