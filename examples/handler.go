@@ -35,7 +35,7 @@ func executeNewToInProgress(ctx *state_machine.Context) error {
 }
 
 func executeNewToInProgressByRole(ctx *state_machine.Context) error {
-	fmt.Printf("by user: execute in-progress handler with %+v\n", ctx.Args)
+	fmt.Printf("by role: execute in-progress handler with %+v\n", ctx.Args)
 	return nil
 }
 
@@ -56,7 +56,7 @@ func eventOnSuccessNewToInProgress(ctx *state_machine.Context) error {
 }
 
 func eventOnSuccessNewToInProgressByRole(ctx *state_machine.Context) error {
-	fmt.Printf("by user: success event in-progress handler with %+v\n", ctx.Args)
+	fmt.Printf("by role: success event in-progress handler with %+v\n", ctx.Args)
 	return nil
 }
 
