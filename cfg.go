@@ -6,10 +6,10 @@ type stateMachineCfg struct {
 		Name        string          `json:"name" yaml:"name"`
 		Transitions []transitionCfg `json:"transitions" yaml:"transitions"`
 	} `json:"state_machine" yaml:"state_machine"`
-	Users map[string][]struct {
+	Roles map[string][]struct {
 		Id          int             `json:"id" yaml:"id"`
 		Transitions []transitionCfg `json:"transitions" yaml:"transitions"`
-	} `json:"users" yaml:"users"`
+	} `json:"roles" yaml:"roles"`
 }
 
 type transitionCfg struct {

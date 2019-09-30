@@ -9,7 +9,7 @@ import (
 type stateMap map[int]*state
 
 type Context struct {
-	User         UserType
+	Role         RoleType
 	StateMachine StateMachineType
 	From         int
 	To           int
@@ -44,7 +44,7 @@ type handlers struct {
 type stateMachine struct {
 	config              *stateMachineConfig
 	stateMachineMap     stateMachineMap
-	userStateMachineMap userStateMachineMap
+	roleStateMachineMap roleStateMachineMap
 	handlers            *handlers
 	logger              logger.ILogger
 	mux                 *sync.RWMutex
@@ -55,7 +55,7 @@ type stateMachineData struct {
 	stateMap          stateMap
 	transitionHandler TransitionHandler
 }
-type userStateMachineMap map[UserType]stateMachineMap
+type roleStateMachineMap map[RoleType]stateMachineMap
 
 type state struct {
 	id            int
@@ -102,5 +102,5 @@ type eventMap struct {
 	error   eventErrorHandlerMap
 }
 
-type UserType string
+type RoleType string
 type StateMachineType string

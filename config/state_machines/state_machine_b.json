@@ -64,7 +64,7 @@
       "name": "Canceled"
     }
   ],
-  "users": {
+  "roles": {
     "worker": [
       {
         "id": 1,

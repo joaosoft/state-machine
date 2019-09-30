@@ -12,8 +12,8 @@ func (sm *stateMachine) newCheckTransition() *newCheckTransition {
 	}
 }
 
-func (ct *newCheckTransition) User(name UserType) *newCheckTransition {
-	ct.ctx.User = name
+func (ct *newCheckTransition) Role(name RoleType) *newCheckTransition {
+	ct.ctx.Role = name
 	return ct
 }
 

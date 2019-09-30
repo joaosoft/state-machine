@@ -12,8 +12,8 @@ func (sm *stateMachine) newTransition() *newTransition {
 	}
 }
 
-func (nt *newTransition) User(name UserType) *newTransition {
-	nt.ctx.User = name
+func (nt *newTransition) Role(name RoleType) *newTransition {
+	nt.ctx.Role = name
 	return nt
 }
 

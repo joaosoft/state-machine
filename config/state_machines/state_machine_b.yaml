@@ -52,7 +52,7 @@ state_machine:
     id: 4
     name: "Canceled"
 
-users:
+roles:
   worker:
     -
       id: 1

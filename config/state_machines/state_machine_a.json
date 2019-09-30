@@ -67,7 +67,7 @@
       "name": "Denied"
     }
   ],
-  "users": {
+  "roles": {
     "operator": [
       {
         "id": 1,
@@ -75,11 +75,11 @@
           {
             "id": 2,
             "execute": [
-              "execute_new_to_in-progress_user"
+              "execute_new_to_in-progress_role"
             ],
             "events": {
               "success": [
-                "event_success_new_to_in-progress_user"
+                "event_success_new_to_in-progress_role"
               ]
             }
           }

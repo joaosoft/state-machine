@@ -12,8 +12,8 @@ func (sm *stateMachine) newGetTransitions() *newGetTransitions {
 	}
 }
 
-func (gt *newGetTransitions) User(name UserType) *newGetTransitions {
-	gt.ctx.User = name
+func (gt *newGetTransitions) Role(name RoleType) *newGetTransitions {
+	gt.ctx.Role = name
 	return gt
 }
 

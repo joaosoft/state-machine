@@ -6,7 +6,7 @@ A simple state machine.
 ###### If i miss something or you have something interesting, please be part of this project. Let me know! My contact is at the end.
 
 ## With support for
-* Users
+* Roles
 * State Machines
 * Transitions
 * Handlers
@@ -110,7 +110,7 @@ state_machine:
     id: 4
     name: "Denied"
 
-users:
+roles:
   operator:
     -
       id: 1
@@ -118,10 +118,10 @@ users:
         -
           id: 2
           execute:
-            - "execute_new_to_in-progress_user"
+            - "execute_new_to_in-progress_role"
           events:
             success:
-              - "event_success_new_to_in-progress_user"
+              - "event_success_new_to_in-progress_role"
     -
       id: 2
       transitions:
@@ -203,7 +203,7 @@ users:
       "name": "Canceled"
     }
   ],
-  "users": {
+  "roles": {
     "worker": [
       {
         "id": 1,
@@ -237,10 +237,10 @@ users:
 ```go
 const (
     StateMachineA     state_machine.StateMachineType = "A"
-    UserStateMachineA state_machine.UserType         = "operator"
+    RoleStateMachineA state_machine.RoleType         = "operator"
 
     StateMachineB     state_machine.StateMachineType = "B"
-    UserStateMachineB state_machine.UserType         = "worker"
+    RoleStateMachineB state_machine.RoleType         = "worker"
 )
 
 func init() {
@@ -256,11 +256,11 @@ func init() {
         Check("check_in-progress_to_denied", checkInProgressToDenied).
         //
         Execute("execute_new_to_in-progress", executeNewToInProgress).
-        Execute("execute_new_to_in-progress_user", executeNewToInProgressByUser).
+        Execute("execute_new_to_in-progress_role", executeNewToInProgressByRole).
         Execute("execute_in-progress_to_approved", executeInProgressToApproved).
         Execute("execute_in-progress_to_denied", executeInProgressToDenied).
         //
-        EventSuccess("event_success_new_to_in-progress_user", eventOnSuccessNewToInProgressByUser).
+        EventSuccess("event_success_new_to_in-progress_role", eventOnSuccessNewToInProgressByRole).
         EventSuccess("event_success_new_to_in-progress", eventOnSuccessNewToInProgress).
         EventSuccess("event_success_in-progress_to_approved", eventOnSuccessInProgressToApproved).
         EventSuccess("event_success_in-progress_to_denied", eventOnSuccessInProgressToDenied).
@@ -315,14 +315,14 @@ func init() {
 
 func main() {
     stateMachines := []state_machine.StateMachineType{StateMachineA, StateMachineB}
-    stateMachinesUsers := []state_machine.UserType{UserStateMachineA, UserStateMachineB}
+    stateMachinesRoles := []state_machine.RoleType{RoleStateMachineA, RoleStateMachineB}
     maxLen := 4
     ok := false
 
     // get all transitions of state machine A
     fmt.Println("\n:: State Machine: A - get all transition from 1 to 2")
     transitions, err := state_machine.NewGetTransitions().
-        User(UserStateMachineA).
+        Role(RoleStateMachineA).
         StateMachine(StateMachineA).
         From(1).
         Execute()
@@ -339,7 +339,7 @@ func main() {
         for i := 1; i <= maxLen; i++ {
             for j := maxLen; j >= 1; j-- {
                 ok, err := state_machine.NewCheckTransition().
-                    User(stateMachinesUsers[index]).
+                    Role(stateMachinesRoles[index]).
                     StateMachine(stateMachine).
                     From(i).
                     To(j).
@@ -347,7 +347,7 @@ func main() {
                 if err != nil {
                     panic(err)
                 }
-                fmt.Printf("transition from %d to %d  with user %s ? %t\n", i, j, stateMachinesUsers[index], ok)
+                fmt.Printf("transition from %d to %d  with role %s ? %t\n", i, j, stateMachinesRoles[index], ok)
             }
         }
     }
@@ -355,7 +355,7 @@ func main() {
     // check transaction - state machine B - from the state loaded by method 'beforeExecuteLoadFromState' to state 2
     fmt.Println("\n:: State Machine: B - check transition from state 1 (loaded) to state 2")
     ok, err = state_machine.NewTransition().
-        User(UserStateMachineB).
+        Role(RoleStateMachineB).
         StateMachine(StateMachineB).
         To(2).
         Execute(1, "text", true)
@@ -370,7 +370,7 @@ func main() {
     // execute transaction - state machine B - from the state loaded by method 'beforeExecuteLoadFromState' to state 2
     fmt.Println("\n:: State Machine: B - making transition from state 1 (loaded) to state 2")
     ok, err = state_machine.NewTransition().
-        User(UserStateMachineB).
+        Role(RoleStateMachineB).
         StateMachine(StateMachineB).
         To(2).
         Execute(1, "text", true)
@@ -399,63 +399,63 @@ func main() {
 can make transition to In progress
 
 :: State Machine: A - check transitions
-transition from 1 to 4  with user operator ? false
-transition from 1 to 3  with user operator ? false
+transition from 1 to 4  with role operator ? false
+transition from 1 to 3  with role operator ? false
 check in-progress handler with [1 text true]
-transition from 1 to 2  with user operator ? true
-transition from 1 to 1  with user operator ? false
+transition from 1 to 2  with role operator ? true
+transition from 1 to 1  with role operator ? false
 check in-progress to denied handler with [1 text true]
-transition from 2 to 4  with user operator ? true
+transition from 2 to 4  with role operator ? true
 check in-progress to approved handler with [1 text true]
-transition from 2 to 3  with user operator ? true
-transition from 2 to 2  with user operator ? false
-transition from 2 to 1  with user operator ? false
-transition from 3 to 4  with user operator ? false
-transition from 3 to 3  with user operator ? false
-transition from 3 to 2  with user operator ? false
-transition from 3 to 1  with user operator ? false
-transition from 4 to 4  with user operator ? false
-transition from 4 to 3  with user operator ? false
-transition from 4 to 2  with user operator ? false
-transition from 4 to 1  with user operator ? false
+transition from 2 to 3  with role operator ? true
+transition from 2 to 2  with role operator ? false
+transition from 2 to 1  with role operator ? false
+transition from 3 to 4  with role operator ? false
+transition from 3 to 3  with role operator ? false
+transition from 3 to 2  with role operator ? false
+transition from 3 to 1  with role operator ? false
+transition from 4 to 4  with role operator ? false
+transition from 4 to 3  with role operator ? false
+transition from 4 to 2  with role operator ? false
+transition from 4 to 1  with role operator ? false
 
 :: State Machine: B - check transitions
 load 'from' state handler with [1 text true]
-transition from 1 to 4  with user worker ? false
+transition from 1 to 4  with role worker ? false
 load 'from' state handler with [1 text true]
-transition from 1 to 3  with user worker ? false
-load 'from' state handler with [1 text true]
-check in-development handler with [1 text true]
-transition from 1 to 2  with user worker ? true
-load 'from' state handler with [1 text true]
-transition from 1 to 1  with user worker ? false
-load 'from' state handler with [1 text true]
-transition from 2 to 4  with user worker ? false
-load 'from' state handler with [1 text true]
-transition from 2 to 3  with user worker ? false
+transition from 1 to 3  with role worker ? false
 load 'from' state handler with [1 text true]
 check in-development handler with [1 text true]
-transition from 2 to 2  with user worker ? true
+transition from 1 to 2  with role worker ? true
 load 'from' state handler with [1 text true]
-transition from 2 to 1  with user worker ? false
+transition from 1 to 1  with role worker ? false
 load 'from' state handler with [1 text true]
-transition from 3 to 4  with user worker ? false
+transition from 2 to 4  with role worker ? false
 load 'from' state handler with [1 text true]
-transition from 3 to 3  with user worker ? false
+transition from 2 to 3  with role worker ? false
+load 'from' state handler with [1 text true]
+check in-development handler role [1 text true]
+transition from 2 to 2  with role worker ? true
+load 'from' state handler with [1 text true]
+transition from 2 to 1  with role worker ? false
+load 'from' state handler with [1 text true]
+transition from 3 to 4  with role worker ? false
+load 'from' state handler with [1 text true]
+transition from 3 to 3  with role worker ? false
 load 'from' state handler with [1 text true]
 check in-development handler with [1 text true]
-transition from 3 to 2  with user worker ? true
+transition from 3 to 2  with role worker ? true
 load 'from' state handler with [1 text true]
-transition from 3 to 1  with user worker ? false
+transition from 3 to 1  with role worker ? false
 load 'from' state handler with [1 text true]
-transition from 4 to 4  with user worker ? false
+transition from 4 to 4  with role worker ? false
 load 'from' state handler with [1 text true]
-transition from 4 to 3  with user worker ? false
+transition from 4 to 3  with role worker ? false
 load 'from' state handler with [1 text true]
 check in-development handler with [1 text true]
-transition from 4 to 2  with user worker ? true
+transition from 4 to 2  with role worker ? true
 load 'from' state handler with [1 text true]
-transition from 4 to 1  with user worker ? false
+transition from 4 to 1  with role worker ? false
 
 :: State Machine: B - check transition from state 1 (loaded) to state 2
 load 'from' state handler with [1 text true]

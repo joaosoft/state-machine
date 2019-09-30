@@ -18,7 +18,7 @@ func new(options ...stateMachineOption) (*stateMachine, error) {
 
 	newStateMachine := &stateMachine{
 		stateMachineMap:     make(stateMachineMap),
-		userStateMachineMap: make(userStateMachineMap),
+		roleStateMachineMap: make(roleStateMachineMap),
 		handlers: &handlers{
 			handlersMap: &handlersMap{
 				manual:  make(manualHandlerMap),
@@ -54,8 +54,8 @@ func (sm *stateMachine) validate(ctx *Context, states ...int) (bool, error) {
 	var stateMachineMap stateMachineMap
 	var stateMachineData *stateMachineData
 
-	if stateMachineMap, ok = sm.userStateMachineMap[ctx.User]; !ok {
-		return false, errors.New(fmt.Sprintf("user [%s] not found", ctx.User))
+	if stateMachineMap, ok = sm.roleStateMachineMap[ctx.Role]; !ok {
+		return false, errors.New(fmt.Sprintf("role [%s] not found", ctx.Role))
 	}
 
 	if stateMachineData, ok = stateMachineMap[ctx.StateMachine]; !ok {
@@ -138,8 +138,8 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 		states[stateCfg.Id] = state
 	}
 
-	// load users state machine
-	for user, statesCfg := range config.Users {
+	// load roles state machine
+	for role, statesCfg := range config.Roles {
 		stateMap := make(stateMap)
 
 		transitionStates := make(map[int]bool)
@@ -152,7 +152,7 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 				return errors.New(fmt.Sprintf("state not found %d", stateCfg.Id))
 			}
 
-			userState := &state{
+			roleState := &state{
 				id:            fromState.id,
 				name:          fromState.name,
 				transitionMap: make(transitionMap),
@@ -174,7 +174,7 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 					return errors.New(fmt.Sprintf("transition From %d To %d not found", stateCfg.Id, transitionCfg.Id))
 				}
 
-				userTransition := &Transition{
+				roleTransition := &Transition{
 					Id:   transition.Id,
 					Name: toState.name,
 					handler: handler{
@@ -187,28 +187,28 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 					},
 				}
 
-				// add specific handlers for the user
+				// add specific handlers for the role
 
 				// load
 				loadHandlers, err := transitionCfg.getLoadHandlers(stateMachine, sm.handlers)
 				if err != nil {
 					return err
 				}
-				userTransition.handler.load = append(userTransition.handler.load, loadHandlers...)
+				roleTransition.handler.load = append(roleTransition.handler.load, loadHandlers...)
 
 				// check
 				checkHandlers, err := transitionCfg.getCheckHandlers(stateMachine, sm.handlers)
 				if err != nil {
 					return err
 				}
-				userTransition.handler.check = append(userTransition.handler.check, checkHandlers...)
+				roleTransition.handler.check = append(roleTransition.handler.check, checkHandlers...)
 
 				// execute
 				executeHandlers, err := transitionCfg.getExecuteHandlers(stateMachine, sm.handlers)
 				if err != nil {
 					return err
 				}
-				userTransition.handler.execute = append(userTransition.handler.execute, executeHandlers...)
+				roleTransition.handler.execute = append(roleTransition.handler.execute, executeHandlers...)
 
 				// events
 				// -- success
@@ -216,22 +216,22 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 				if err != nil {
 					return err
 				}
-				userTransition.handler.events.success = append(userTransition.handler.events.success, eventSuccessHandlers...)
+				roleTransition.handler.events.success = append(roleTransition.handler.events.success, eventSuccessHandlers...)
 
 				// -- error
 				eventErrorHandlers, err := transitionCfg.getEventErrorHandlers(stateMachine, sm.handlers)
 				if err != nil {
 					return err
 				}
-				userTransition.handler.events.error = append(userTransition.handler.events.error, eventErrorHandlers...)
+				roleTransition.handler.events.error = append(roleTransition.handler.events.error, eventErrorHandlers...)
 
-				userState.transitionMap[userTransition.Id] = userTransition
+				roleState.transitionMap[roleTransition.Id] = roleTransition
 			}
 
-			stateMap[stateCfg.Id] = userState
+			stateMap[stateCfg.Id] = roleState
 
 		}
-		// add missing user transition states
+		// add missing role transition states
 		for idState, added := range transitionStates {
 			if !added {
 				var toState *state
@@ -247,10 +247,10 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 			}
 		}
 
-		if _, ok := sm.userStateMachineMap[UserType(user)]; !ok {
-			sm.userStateMachineMap[UserType(user)] = make(stateMachineMap)
+		if _, ok := sm.roleStateMachineMap[RoleType(role)]; !ok {
+			sm.roleStateMachineMap[RoleType(role)] = make(stateMachineMap)
 		}
-		sm.userStateMachineMap[UserType(user)][stateMachine] = &stateMachineData{
+		sm.roleStateMachineMap[RoleType(role)][stateMachine] = &stateMachineData{
 			stateMap:          stateMap,
 			transitionHandler: transitionHandler,
 		}
@@ -343,7 +343,7 @@ func (sm *stateMachine) checkTransition(ctx *Context) (bool, error) {
 		return ok, err
 	}
 
-	stateM, ok := sm.userStateMachineMap[ctx.User]
+	stateM, ok := sm.roleStateMachineMap[ctx.Role]
 	if !ok {
 		return false, nil
 	}
@@ -403,14 +403,14 @@ func (sm *stateMachine) executeTransition(ctx *Context) (bool, error) {
 		return ok, err
 	}
 
-	// user
-	userStateMachine, ok := sm.userStateMachineMap[ctx.User]
+	// role
+	roleStateMachine, ok := sm.roleStateMachineMap[ctx.Role]
 	if !ok {
 		return false, nil
 	}
 
 	// state machine
-	states, ok := userStateMachine[ctx.StateMachine]
+	states, ok := roleStateMachine[ctx.StateMachine]
 	if !ok {
 		return false, nil
 	}
@@ -459,8 +459,8 @@ func (sm *stateMachine) getTransitions(ctx *Context) (transitions []*Transition,
 		return nil, err
 	}
 
-	if userStateMachine, ok := sm.userStateMachineMap[ctx.User]; ok {
-		if stateMachineData, ok := userStateMachine[ctx.StateMachine]; ok {
+	if roleStateMachine, ok := sm.roleStateMachineMap[ctx.Role]; ok {
+		if stateMachineData, ok := roleStateMachine[ctx.StateMachine]; ok {
 			if state, ok := stateMachineData.stateMap[ctx.From]; ok {
 				for _, transition := range state.transitionMap {
 					transitions = append(transitions, transition)
