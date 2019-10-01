@@ -22,18 +22,17 @@ A simple state machine.
 * NewTransition, to make a transition
 * NewGetTransitions, to get the allowed transitions from the current state
 
-## With manual handler types
+## With manual handlers
+### Executed on Check Transition (method NewCheckTransition)
+* BeforeCheck, execute before check
 
-### Check Transition (method NewCheckTransition)
-* BeforeCheck, before check
+### Executed on Transition (method NewTransition)
+* BeforeExecute, execute before execute
+* AfterExecute, execute after execute
+* OnSuccess, execute on success
+* OnError, execute on error
 
-### Execute Transition (method NewTransition)
-* BeforeExecute, before execute
-* AfterExecute, after execute
-* OnSuccess, on success
-* OnError, on error
-
-## Dependecy Management 
+## Dependency Management 
 >### Dep
 
 Project dependencies are managed using Dep. Read more about [Dep](https://github.com/golang/dep).
