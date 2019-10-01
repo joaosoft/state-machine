@@ -459,20 +459,25 @@ func (sm *stateMachine) getTransitions(ctx *Context) (transitions []*Transition,
 		return nil, err
 	}
 
-	if roleStateMachine, ok := sm.roleStateMachineMap[ctx.Role]; ok {
-		if stateMachineData, ok := roleStateMachine[ctx.StateMachine]; ok {
-			if state, ok := stateMachineData.stateMap[ctx.From]; ok {
-				for _, transition := range state.transitionMap {
-					transitions = append(transitions, transition)
-				}
-			} else {
-				return nil, nil
-			}
-		} else {
-			return nil, nil
-		}
-	} else {
+	var ok bool
+
+	var roleStateMachine stateMachineMap
+	if roleStateMachine, ok = sm.roleStateMachineMap[ctx.Role]; !ok {
 		return nil, nil
+	}
+
+	var stateMachineData *stateMachineData
+	if stateMachineData, ok = roleStateMachine[ctx.StateMachine]; !ok {
+		return nil, nil
+	}
+
+	var state *state
+	if state, ok = stateMachineData.stateMap[ctx.From]; !ok {
+		return nil, nil
+	}
+
+	for _, transition := range state.transitionMap {
+		transitions = append(transitions, transition)
 	}
 
 	return transitions, nil
