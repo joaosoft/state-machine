@@ -476,8 +476,25 @@ func (sm *stateMachine) getTransitions(ctx *Context) (transitions []*Transition,
 		return nil, nil
 	}
 
+	newCtx := &Context{
+		Role:         ctx.Role,
+		StateMachine: ctx.StateMachine,
+		From:         ctx.From,
+		Resource:     ctx.Resource,
+		Args:         ctx.Args,
+	}
+
+	var allowed bool
+
 	for _, transition := range state.transitionMap {
-		transitions = append(transitions, transition)
+		newCtx.To = transition.Id
+		if allowed, err = sm.checkTransition(newCtx); err != nil {
+			return nil, err
+		}
+
+		if allowed {
+			transitions = append(transitions, transition)
+		}
 	}
 
 	return transitions, nil
