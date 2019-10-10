@@ -96,7 +96,7 @@ func StateMachineATransitionHandler(ctx *state_machine.Context) error {
 // manual - init
 func beforeExecuteLoadFromState(ctx *state_machine.Context) error {
 	fmt.Printf("load 'from' state handler with %+v\n", ctx.Args)
-	ctx.From = 1
+	ctx.From = "1"
 	return nil
 }
 

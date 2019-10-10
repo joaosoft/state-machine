@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	state_machine "state-machine"
+	"strconv"
 )
 
 const (
@@ -94,7 +95,7 @@ func main() {
 	transitions, err := state_machine.NewGetTransitions().
 		Role(RoleStateMachineA).
 		StateMachine(StateMachineA).
-		From(1).
+		From("1").
 		Execute()
 	if err != nil {
 		panic(err)
@@ -111,8 +112,8 @@ func main() {
 				ok, err := state_machine.NewCheckTransition().
 					Role(stateMachinesRoles[index]).
 					StateMachine(stateMachine).
-					From(i).
-					To(j).
+					From(strconv.Itoa(i)).
+					To(strconv.Itoa(j)).
 					Execute(1, "text", true)
 				if err != nil {
 					panic(err)
@@ -127,7 +128,7 @@ func main() {
 	ok, err = state_machine.NewTransition().
 		Role(RoleStateMachineB).
 		StateMachine(StateMachineB).
-		To(2).
+		To("2").
 		Execute(1, "text", true)
 	if err != nil {
 		panic(err)
@@ -142,7 +143,7 @@ func main() {
 	ok, err = state_machine.NewTransition().
 		Role(RoleStateMachineB).
 		StateMachine(StateMachineB).
-		To(2).
+		To("2").
 		Execute(1, "text", true)
 	if err != nil {
 		panic(err)

@@ -1,10 +1,10 @@
 state_machine:
   -
-    id: 1
+    id: "1"
     name: "Todo"
     transitions:
       -
-        id: 2
+        id: "2"
         check:
           -
             "check_todo_to_in-development"
@@ -12,11 +12,11 @@ state_machine:
           -
             "execute_todo_to_in-development"
   -
-    id: 2
+    id: "2"
     name: "In development"
     transitions:
       -
-        id: 3
+        id: "3"
         check:
           -
             "check_in-development_to_done"
@@ -31,7 +31,7 @@ state_machine:
             -
               "event_error_in-development_to_done"
       -
-      id: 4
+      id: "4"
       check:
         -
           "check_in-development_to_canceled"
@@ -46,23 +46,23 @@ state_machine:
           -
             "event_error_in-development_to_canceled"
   -
-    id: 3
+    id: "3"
     name: "Done"
   -
-    id: 4
+    id: "4"
     name: "Canceled"
 
 roles:
   worker:
     -
-      id: 1
+      id: "1"
       transitions:
         -
-          id: 2
+          id: "2"
     -
-      id: 2
+      id: "2"
       transitions:
         -
-          id: 3
+          id: "3"
         -
-          id: 4
+          id: "4"

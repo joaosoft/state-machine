@@ -6,13 +6,13 @@ import (
 	"github.com/joaosoft/logger"
 )
 
-type stateMap map[int]*state
+type stateMap map[string]*state
 
 type Context struct {
 	Role         RoleType
 	StateMachine StateMachineType
-	From         int
-	To           int
+	From         string
+	To           string
 	Resource     interface{}
 	Args         []interface{}
 }
@@ -58,15 +58,15 @@ type stateMachineData struct {
 type roleStateMachineMap map[RoleType]stateMachineMap
 
 type state struct {
-	id            int
+	id            string
 	name          string
 	transitionMap transitionMap
 }
 
-type transitionMap map[int]*Transition
+type transitionMap map[string]*Transition
 
 type Transition struct {
-	Id      int    `json:"id"`
+	Id      string    `json:"id"`
 	Name    string `json:"name"`
 	handler handler
 }

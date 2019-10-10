@@ -22,12 +22,12 @@ func (ct *newCheckTransition) StateMachine(name StateMachineType) *newCheckTrans
 	return ct
 }
 
-func (ct *newCheckTransition) From(idStatus int) *newCheckTransition {
+func (ct *newCheckTransition) From(idStatus string) *newCheckTransition {
 	ct.ctx.From = idStatus
 	return ct
 }
 
-func (ct *newCheckTransition) To(idStatus int) *newCheckTransition {
+func (ct *newCheckTransition) To(idStatus string) *newCheckTransition {
 	ct.ctx.To = idStatus
 	return ct
 }

@@ -1,11 +1,11 @@
 {
   "state_machine": [
     {
-      "id": 1,
+      "id": "1",
       "name": "New",
       "transitions": [
         {
-          "id": 2,
+          "id": "2",
           "load": [
             "load_dummy-progress"
           ],
@@ -19,11 +19,11 @@
       ]
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "In progress",
       "transitions": [
         {
-          "id": 3,
+          "id": "3",
           "check": [
             "check_in-progress_to_approved"
           ],
@@ -40,7 +40,7 @@
           }
         },
         {
-          "id": 4,
+          "id": "4",
           "check": [
             "check_in-progress_to_denied"
           ],
@@ -59,21 +59,21 @@
       ]
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "Approved"
     },
     {
-      "id": 4,
+      "id": "4",
       "name": "Denied"
     }
   ],
   "roles": {
     "operator": [
       {
-        "id": 1,
+        "id": "1",
         "transitions": [
           {
-            "id": 2,
+            "id": "2",
             "execute": [
               "execute_new_to_in-progress_role"
             ],
@@ -86,13 +86,13 @@
         ]
       },
       {
-        "id": 2,
+        "id": "2",
         "transitions": [
           {
-            "id": 3
+            "id": "3"
           },
           {
-            "id": 4
+            "id": "4"
           }
         ]
       }

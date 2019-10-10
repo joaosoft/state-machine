@@ -40,7 +40,7 @@ func new(options ...stateMachineOption) (*stateMachine, error) {
 		newStateMachine.logger.Error(err.Error())
 	} else if config.StateMachine != nil {
 		level, _ := logger.ParseLevel(config.StateMachine.Log.Level)
-		newStateMachine.logger.Debugf("setting log level To %s", level)
+		newStateMachine.logger.Debugf("setting log level to %s", level)
 		newStateMachine.logger.Reconfigure(logger.WithLevel(level))
 	}
 
@@ -49,7 +49,7 @@ func new(options ...stateMachineOption) (*stateMachine, error) {
 	return newStateMachine, nil
 }
 
-func (sm *stateMachine) validate(ctx *Context, states ...int) (bool, error) {
+func (sm *stateMachine) validate(ctx *Context, states ...string) (bool, error) {
 	var ok bool
 	var stateMachineMap stateMachineMap
 	var stateMachineData *stateMachineData
@@ -63,7 +63,7 @@ func (sm *stateMachine) validate(ctx *Context, states ...int) (bool, error) {
 	} else {
 		for _, state := range states {
 			if _, ok = stateMachineData.stateMap[state]; !ok {
-				return false, errors.New(fmt.Sprintf("state [%d] not found", state))
+				return false, errors.New(fmt.Sprintf("state [%s] not found", state))
 			}
 		}
 	}
@@ -142,14 +142,14 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 	for role, statesCfg := range config.Roles {
 		stateMap := make(stateMap)
 
-		transitionStates := make(map[int]bool)
+		transitionStates := make(map[string]bool)
 		for _, stateCfg := range statesCfg {
 			var fromState *state
 			var ok bool
 
 			// check if state is valid !
 			if fromState, ok = states[stateCfg.Id]; !ok {
-				return errors.New(fmt.Sprintf("state not found %d", stateCfg.Id))
+				return errors.New(fmt.Sprintf("state not found %s", stateCfg.Id))
 			}
 
 			roleState := &state{
@@ -166,12 +166,12 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 				// check if transition is valid !
 				var toState *state
 				if toState, ok = states[transitionCfg.Id]; !ok {
-					return errors.New(fmt.Sprintf("state not found %d", stateCfg.Id))
+					return errors.New(fmt.Sprintf("state not found %s", stateCfg.Id))
 				}
 
 				var transition *Transition
 				if transition, ok = states[stateCfg.Id].transitionMap[transitionCfg.Id]; !ok {
-					return errors.New(fmt.Sprintf("transition From %d To %d not found", stateCfg.Id, transitionCfg.Id))
+					return errors.New(fmt.Sprintf("transition from %s to %s not found", stateCfg.Id, transitionCfg.Id))
 				}
 
 				roleTransition := &Transition{
@@ -237,7 +237,7 @@ func (sm *stateMachine) add(stateMachine StateMachineType, file string, transiti
 				var toState *state
 				var ok bool
 				if toState, ok = states[idState]; !ok {
-					return errors.New(fmt.Sprintf("state not found %d", idState))
+					return errors.New(fmt.Sprintf("state not found %s", idState))
 				}
 				stateMap[idState] = &state{
 					id:            idState,

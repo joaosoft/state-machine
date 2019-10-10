@@ -22,7 +22,7 @@ func (gt *newGetTransitions) StateMachine(name StateMachineType) *newGetTransiti
 	return gt
 }
 
-func (gt *newGetTransitions) From(idStatus int) *newGetTransitions {
+func (gt *newGetTransitions) From(idStatus string) *newGetTransitions {
 	gt.ctx.From = idStatus
 	return gt
 }

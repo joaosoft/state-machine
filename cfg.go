@@ -2,18 +2,18 @@ package state_machine
 
 type stateMachineCfg struct {
 	StateMachine []struct {
-		Id          int             `json:"id" yaml:"id"`
+		Id          string             `json:"id" yaml:"id"`
 		Name        string          `json:"name" yaml:"name"`
 		Transitions []transitionCfg `json:"transitions" yaml:"transitions"`
 	} `json:"state_machine" yaml:"state_machine"`
 	Roles map[string][]struct {
-		Id          int             `json:"id" yaml:"id"`
+		Id          string             `json:"id" yaml:"id"`
 		Transitions []transitionCfg `json:"transitions" yaml:"transitions"`
 	} `json:"roles" yaml:"roles"`
 }
 
 type transitionCfg struct {
-	Id      int      `json:"id" yaml:"id"`
+	Id      string      `json:"id" yaml:"id"`
 	Load    []string `json:"load" yaml:"load"`
 	Check   []string `json:"check" yaml:"check"`
 	Execute []string `json:"execute" yaml:"execute"`
