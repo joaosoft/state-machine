@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	state_machine "state-machine"
+	state_machine "github.com/joaosoft/state-machine"
 	"strconv"
 )
 
